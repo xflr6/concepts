@@ -1,6 +1,12 @@
 Concepts Changelog
 ==================
 
+Version 0.1.1
+-------------
+
+Switch to standalone bitsets implementation.
+
+
 Version 0.1
 -----------
 

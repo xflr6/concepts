@@ -2,10 +2,8 @@
 
 """Formal Concept Analysis contexts."""
 
-import collections
-
 import formats
-import bitmatrix
+import matrices
 import lattices
 import relations
 from tools import lazyproperty
@@ -54,7 +52,7 @@ class Context(object):
             or {len(b) for b in bools} != {len(properties)}):
             raise ValueError('%r bools is not %d items of length %d' % (self.__class__, len(objects), len(properties)))
 
-        self._intents, self._extents = bitmatrix.relation('Intent', 'Extent',
+        self._intents, self._extents = matrices.relation('Intent', 'Extent',
             properties, objects, bools)
 
         self._Intent = self._intents.BitSet
@@ -72,23 +70,6 @@ class Context(object):
         for it in intent.powerset():
             if it.prime() == extent:
                 yield it
-
-    def _minimize2(self, extent, intent):  # alternative implementation
-        """Yield intent subsets generating extent in reverse shortlex order."""
-        yield intent
-        if not extent:
-            return
-        Intent = self._Intent.from_int
-        queue = collections.deque([(intent, [~a for a in intent.atoms()])])
-        while queue:
-            current, other = queue.popleft()
-            while other:
-                first, other = other[0], other[1:]
-                result = Intent(current & first)
-                if result.prime() == extent:
-                    yield result
-                    if other:
-                        queue.append((result, other))
 
     def _neighbors(self, objects):  # TODO: check order
         """Yield upper neighbors from extent (cf. C. Lindig. 2000. Fast Concept Analysis)."""
@@ -164,7 +145,7 @@ class Context(object):
         """Return the context serialized in the given string-based format."""
         frmat = formats.Format[frmat]
         return frmat.dumps(self._Extent._members, self._Intent._members,
-            self._intents.iterbools(), **kwargs)
+            self._intents.bools(), **kwargs)
 
     @property
     def objects(self):

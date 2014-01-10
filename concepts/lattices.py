@@ -8,6 +8,7 @@ import collections
 import functools
 
 import bitsets
+
 import graphviz
 
 __all__ = ['Lattice']
@@ -86,7 +87,8 @@ class Lattice(object):
     @staticmethod
     def _link(concepts):
         """Connect each concept with its neighbors and indirect neighbors."""
-        Concepts = bitsets.bitset('Concepts', tuple(concepts), cached=False)
+        Concepts = bitsets.bitset('Concepts', tuple(concepts),
+            cached=False, base=bitsets.bases.MemberBits)
         BitSet = Concepts.from_members
 
         for i, c in enumerate(concepts):
@@ -130,7 +132,8 @@ class Lattice(object):
     def __setstate__(self, state):
         self._context, state = state
         self._concepts = [Concept(self, *s[:3]) for s in state]
-        self._Concepts = bitsets.bitset('Concepts', tuple(self._concepts), False)
+        self._Concepts = bitsets.bitset('Concepts', tuple(self._concepts),
+            cached=False, base=bitsets.bases.MemberBits)
         BitSet = self._Concepts.from_int
         self._map = mapping = {}
         for c, s in izip(self._concepts, state):
