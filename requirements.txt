@@ -1,1 +1,1 @@
-bitsets==0.1.2
+bitsets==0.1.3

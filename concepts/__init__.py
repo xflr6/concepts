@@ -37,9 +37,9 @@ relations
 """
 
 __title__ = 'concepts'
-__version__ = '0.1.2'
+__version__ = '0.1.3'
 __author__ = 'Sebastian Bank <sebastian.bank@uni-leipzig.de>'
-__license__ = 'MIT, see LICENSE.txt'
+__license__ = 'MIT,see LICENSE'
 __copyright__ = 'Copyright (c) 2013-2014 Sebastian Bank'
 
 from contexts import Context

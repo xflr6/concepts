@@ -24,13 +24,13 @@ object and property names need to be disjoint to uniquely identify them.
     >>> from concepts import Context
 
     >>> c = Context.from_string('''
-                   |human|knight|king |mysterious|
-        King Arthur|  X  |  X   |  X  |          |
-        Sir Robin  |  X  |  X   |     |          |
-        holy grail |     |      |     |     X    |
-        ''')
+    ...            |human|knight|king |mysterious|
+    ... King Arthur|  X  |  X   |  X  |          |
+    ... Sir Robin  |  X  |  X   |     |          |
+    ... holy grail |     |      |     |     X    |
+    ... ''')
 
-    >>> c
+    >>> c  # doctest: +ELLIPSIS
     <Context object mapping 3 objects to 4 properties at ...>
 
 After creation, the parsed content of the table is available on the **context object**.
@@ -127,12 +127,12 @@ The concept lattice of a context contains **all pairs of objects and properties*
 
 .. code:: python
 
-    >>> c
+    >>> c  # doctest: +ELLIPSIS
     <Context object mapping 3 objects to 4 properties at ...>
     
     >>> l = c.lattice
 
-    >>> l
+    >>> l  # doctest: +ELLIPSIS
     <Lattice object of 2 atoms 5 concepts 2 coatoms at ...>
 
     >>> for extent, intent in l:
@@ -176,8 +176,8 @@ To visualize the lattice, use its **graphviz** method:
 
 .. code:: python
 
-    >>> print l.graphviz()
-    // <Lattice object of 2 atoms 5 concepts 2 coatoms at 2DA9B00>
+    >>> print l.graphviz()  # doctest: +ELLIPSIS, +NORMALIZE_WHITESPACE
+    // <Lattice object of 2 atoms 5 concepts 2 coatoms at ...>
     digraph Lattice {
     node [width=.15 style=filled shape=circle]
     edge [labeldistance=1.5 dir=none]
@@ -210,3 +210,9 @@ Aachen, Germany, 2000.
 
 - http://www.st.cs.uni-saarland.de/~lindig/papers/lindig-fca-2000.pdf
 
+
+License
+-------
+
+Concepts is distributed under the `MIT license
+<http://opensource.org/licenses/MIT>`_.
