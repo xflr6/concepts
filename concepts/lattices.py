@@ -59,7 +59,8 @@ class Lattice(object):
             a.__class__ = Atom
 
     def _build(self, context, concept):
-        """Return the list of concept in short lexicographic order (cf. C. Lindig. 2000. Fast Concept Analysis)."""
+        """Return the list of concept in short lexicographic order
+        (cf. C. Lindig. 2000. Fast Concept Analysis)."""
         concepts = []
         mapping = {concept._extent: concept}
         heap = [(concept._extent.shortlex(), concept)]
@@ -88,7 +89,7 @@ class Lattice(object):
     def _link(concepts):
         """Connect each concept with its neighbors and indirect neighbors."""
         Concepts = bitsets.bitset('Concepts', tuple(concepts),
-            cached=False, base=bitsets.bases.MemberBits)
+            base=bitsets.bases.MemberBits)
         BitSet = Concepts.from_members
 
         for i, c in enumerate(concepts):
@@ -133,7 +134,7 @@ class Lattice(object):
         self._context, state = state
         self._concepts = [Concept(self, *s[:3]) for s in state]
         self._Concepts = bitsets.bitset('Concepts', tuple(self._concepts),
-            cached=False, base=bitsets.bases.MemberBits)
+            base=bitsets.bases.MemberBits)
         BitSet = self._Concepts.from_int
         self._map = mapping = {}
         for c, s in izip(self._concepts, state):
@@ -343,7 +344,7 @@ class Concept(object):
             (self._extent | other._extent) == self.lattice.supremum._extent)
 
     def subcontrary_with(self, other):
-        return (not not self._extent & other._extent and
+        return (self._extent & other._extent and
             (self._extent | other._extent) == self.lattice.supremum._extent)
 
     def __str__(self):
@@ -373,7 +374,6 @@ class Supremum(Concept):
 
 
 def _test(verbose=False):
-    global l
     l = Lattice('''
        |+1|-1|+2|-2|+3|-3|+sg|+pl|-sg|-pl|
     1sg| X|  |  | X|  | X|  X|   |   |  X|
@@ -387,6 +387,8 @@ def _test(verbose=False):
     import doctest
     doctest.testmod(verbose=verbose, extraglobs=locals())
 
+def _test_misc():
+    global l
     l = Lattice('''
        |+1|-1|+2|-2|+3|-3|+sg|+du|+pl|-sg|-du|-pl|
     1s | X|  |  | X|  | X|  X|   |   |   |  X|  X|
@@ -401,9 +403,9 @@ def _test(verbose=False):
     3d |  | X|  | X| X|  |   |  X|   |  X|   |  X|
     3p |  | X|  | X| X|  |   |   |  X|  X|  X|   |
     ''')
-
     assert len(l.supremum.lower_neighbors) == 6
     print l
 
 if __name__ == '__main__':
     _test()
+    _test_misc()

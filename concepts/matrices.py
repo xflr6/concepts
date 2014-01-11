@@ -10,7 +10,7 @@ __all__ = ['relation']
 
 
 def from_members(cls, members=()):
-    """Create a set from an iterable of members or a comma/space separated string."""
+    """Create a set from an iterable of members or a space/comma separated string."""
     if isinstance(members, basestring):
         members = members.replace(',', ' ').split()
     return cls.from_int(sum(imap(cls._map.__getitem__, set(members))))
@@ -62,11 +62,16 @@ class relation(tuple):
 
     __slots__ = ()
 
-    def __new__(cls, xname, yname, xmembers, ymembers, xbools, xcached=False, ycached=False):
-        X = bitsets.bitset(xname, xmembers, cached=xcached,
-            base=bitsets.bases.MemberBits, tuple=Vectors)
-        Y = bitsets.bitset(yname, ymembers, cached=ycached,
-            base=bitsets.bases.MemberBits, tuple=Vectors)
+    def __new__(cls, xname, yname, xmembers, ymembers, xbools, _ids=None):
+        base = bitsets.bases.MemberBits
+        if _ids is not None:
+            # unpickle reconstruction
+            xid, yid = _ids
+            X = bitsets.meta.bitset(xname, xmembers, xid, base, None, Vectors)
+            Y = bitsets.meta.bitset(yname, ymembers, yid, base, None, Vectors)
+        else:
+            X = bitsets.bitset(xname, xmembers, base, tuple=Vectors)
+            Y = bitsets.bitset(yname, ymembers, base, tuple=Vectors)
 
         # attach string splitting constructor method
         X.from_members = Y.from_members = classmethod(from_members)
@@ -87,9 +92,10 @@ class relation(tuple):
         return '<%s(%r, %r)>' % (self.__class__.__name__, self[0], self[1])
 
     def __reduce__(self):
-        X, Y = (twin.BitSet for twin in self)
-        args = (X.__name__, Y.__name__, X._members, Y._members, self[0].bools(),
-            X._id, Y._id)
+        X, Y = (v.BitSet for v in self)
+        bools = self[0].bools()
+        ids = (X._id, Y._id)
+        args = (X.__name__, Y.__name__, X._members, Y._members, bools, ids)
         return relation, args
         
 

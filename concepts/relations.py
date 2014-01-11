@@ -31,11 +31,13 @@ class relations(list):
 
     def __init__(self, items, booleans):
         """Filter out items with tautological or contradictory booleans."""
-        unary = [Relation(i, None, bools) for i, bools in izip(items, booleans)]
+        unary = [Relation(i, None, bools)
+            for i, bools in izip(items, booleans)]
         combos = combinations(((u.left, u.bools)
             for u in unary if u.__class__ is Contingency), 2)
         binary = (Relation(l, r, izip(lbools, rbools))
             for (l, lbools), (r, rbools) in combos)
+
         super(relations, self).__init__(binary)
         self.sort(key=lambda r: r.order)
 
@@ -54,6 +56,7 @@ class RelationMeta(type):
     def __init__(self, name, bases, dct):
         if 'binary' not in dct:
             return
+
         table = self.__doc__.strip().partition('\n\n')[2].strip().splitlines()
         flags = {'T': True, 'F': False}
         if self.binary:
@@ -67,7 +70,8 @@ class RelationMeta(type):
             for obj, props in (l.strip('|').partition('|')[::2] for l in table[1:])]
         for index, ((name, symbol, order), flags) in enumerate(obj_flags):
             pattern = frozenset(p for p, f in izip(properties,flags) if f)
-            ns = {'index': index, 'order': int(order), 'kind': name.lower(), 'symbol': symbol, 'pattern': pattern}
+            ns = {'index': index, 'order': int(order), 'kind': name.lower(),
+                'symbol': symbol, 'pattern': pattern}
             cls = type(name, (self,), ns)
             globals()[cls.__name__] = self.__map[pattern] = cls
             __all__.append(cls.__name__)
@@ -98,6 +102,7 @@ class Unary(Relation):
     """
 
     binary = False
+
     right = ''
 
     def __init__(self, left, bools):

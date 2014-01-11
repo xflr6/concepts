@@ -1,6 +1,15 @@
 Concepts Changelog
 ==================
 
+
+Version 0.1.2
+-------------
+
+Account for bitsets internal api change.
+
+Improve documentation.
+
+
 Version 0.1.1
 -------------
 

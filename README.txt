@@ -171,8 +171,42 @@ concepts, superconcepts) and downward (less general concepts, subconcepts):
     >>> l[1].lower_neighbors
     (<Infimum {} <-> [human knight king mysterious]>,)
 
+
+To visualize the lattice, use its **graphviz** method:
+
+.. code:: python
+
+    >>> print l.graphviz()
+    // <Lattice object of 2 atoms 5 concepts 2 coatoms at 2DA9B00>
+    digraph Lattice {
+    node [width=.15 style=filled shape=circle]
+    edge [labeldistance=1.5 dir=none]
+	    "" [label=""]
+		    "" -> mysterious
+		    "" -> human
+	    human [label=""]
+		    human -> human [headlabel="Sir Robin" taillabel="human knight" color=transparent labelangle=90]
+		    human -> king
+	    mysterious [label=""]
+		    mysterious -> mysterious [headlabel="holy grail" taillabel="mysterious" color=transparent labelangle=90]
+		    mysterious -> "human knight king mysterious"
+	    king [label=""]
+		    king -> king [headlabel="King Arthur" taillabel="king" color=transparent labelangle=90]
+		    king -> "human knight king mysterious"
+	    "human knight king mysterious" [label=""]
+    }
+
+
 Further reading
 ---------------
 
 - http://en.wikipedia.org/wiki/Formal_concept_analysis
 - http://www.upriss.org.uk/fca/fca.html
+
+The generation of the concept lattice is based on the algorithm from
+C. Lindig. Fast Concept Analysis. In Gerhard Stumme, editors, Working
+with Conceptual Structures - Contributions to ICCS 2000, Shaker Verlag,
+Aachen, Germany, 2000.
+
+- http://www.st.cs.uni-saarland.de/~lindig/papers/lindig-fca-2000.pdf
+

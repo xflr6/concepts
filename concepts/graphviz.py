@@ -129,7 +129,8 @@ class Graphviz(object):
     def edges(self, parent_child):
         """Create a bunch of edges."""
         key = self._key
-        self.body.extend('\t\t%s -> %s' % (key(p), key(c)) for p, c in parent_child)
+        self.body.extend('\t\t%s -> %s' % (key(p), key(c))
+            for p, c in parent_child)
 
     def save(self, filename=None, compile=False, view=False, directory=None):
         """Save the source to file."""

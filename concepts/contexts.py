@@ -43,14 +43,18 @@ class Context(object):
         properties = tuple(properties)
 
         if len(set(objects)) != len(objects):
-            raise ValueError('%r duplicate objects: %r' % (self.__class__, objects))
+            raise ValueError('%r duplicate objects: %r' % (
+                self.__class__, objects))
         if len(set(properties)) != len(properties):
-            raise ValueError('%r duplicate properties: %r' % (self.__class__, properties))
+            raise ValueError('%r duplicate properties: %r' % (
+                self.__class__, properties))
         if not set(objects).isdisjoint(properties):
-            raise ValueError('%r objects and properties overlap: %r' % (self.__class__, set(objects) & set(properties)))
+            raise ValueError('%r objects and properties overlap: %r' % (
+                self.__class__, set(objects) & set(properties)))
         if (len(bools) != len(objects)
             or {len(b) for b in bools} != {len(properties)}):
-            raise ValueError('%r bools is not %d items of length %d' % (self.__class__, len(objects), len(properties)))
+            raise ValueError('%r bools is not %d items of length %d' % (
+                self.__class__, len(objects), len(properties)))
 
         self._intents, self._extents = matrices.relation('Intent', 'Extent',
             properties, objects, bools)
@@ -135,8 +139,8 @@ class Context(object):
 
     def __repr__(self):
         return '<%s object mapping %d objects to %d properties at %X>' % (
-            self.__class__.__name__, len(self._Extent._members), len(self._Intent._members),
-            id(self))
+            self.__class__.__name__, len(self._Extent._members),
+            len(self._Intent._members), id(self))
 
     def __str__(self):
         return '%r\n%s' % (self, self.to_string(indent=4))
@@ -170,7 +174,6 @@ class Context(object):
 
 
 def _test(verbose=False):
-    global c
     c = Context.from_string('''
        |+1|-1|+2|-2|+3|-3|+sg|+pl|-sg|-pl|
     1sg| X|  |  | X|  | X|  X|   |   |  X|
@@ -184,6 +187,8 @@ def _test(verbose=False):
     import doctest
     doctest.testmod(verbose=verbose, extraglobs=locals())
 
+def _test_misc():
+    global c
     c = Context.from_string('''
        |+1|-1|+2|-2|+3|-3|+sg|+du|+pl|-sg|-du|-pl|
     1s | X|  |  | X|  | X|  X|   |   |   |  X|  X|
@@ -200,6 +205,6 @@ def _test(verbose=False):
     ''')
     print c
 
-
 if __name__ == '__main__':
     _test()
+    _test_misc()

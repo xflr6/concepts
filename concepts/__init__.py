@@ -37,7 +37,7 @@ relations
 """
 
 __title__ = 'concepts'
-__version__ = '0.1.1'
+__version__ = '0.1.2'
 __author__ = 'Sebastian Bank <sebastian.bank@uni-leipzig.de>'
 __license__ = 'MIT, see LICENSE.txt'
 __copyright__ = 'Copyright (c) 2013-2014 Sebastian Bank'

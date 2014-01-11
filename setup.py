@@ -4,13 +4,13 @@ from distutils.core import setup
 
 setup(
     name='concepts',
-    version='0.1.1',
+    version='0.1.2',
     url='http://pypi.python.org/pypi/concepts',
     license='MIT',
     author='Sebastian Bank',
     author_email='sebastian.bank@uni-leipzig.de',
     description='Formal Concept Analysis with Python',
-    install_requires=['bitsets == 0.1.1'],
+    install_requires=['bitsets==0.1.2'],
     long_description=open('README.txt').read(),
     packages=['concepts'],
     classifiers=[
