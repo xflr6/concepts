@@ -10,6 +10,14 @@ has or not. A table called *formal context* defines which objects have a given
 property and vice versa which properties a given object has.
 
 
+Installation
+------------
+
+.. code:: bash
+
+    $ pip install concepts
+
+
 Formal contexts
 ---------------
 
@@ -48,8 +56,9 @@ After creation, the parsed content of the table is available on the **context ob
 
 
 The context object can be queried to return the **common properties** for a
-collection of objects (common *intent*) as well as the **common objects** for a
-collection of properties (common *extent*):
+collection of objects (common *intent*, ``intension``) as well as the
+**common objects** for a collection of properties (common *extent*, 
+``extension``):
 
 .. code:: python
 
@@ -83,7 +92,7 @@ concept*. Informally, they result from maximal rectangles of *X*-marks in the
 context table, when rows and columns can be reordered freely.
 
 You can retrieve the **closest matching concept** corresponding to a collection
-of objects or properties with the __getitem__ method of the concept object:
+of objects or properties with the ``__getitem__`` method of the concept object:
 
 .. code:: python
 
@@ -122,7 +131,7 @@ having the **supremum** concept (i.e. the tautology) at the top, the **infimum**
 Concept lattice
 ---------------
 
-The concept lattice of a context contains **all pairs of objects and properties**
+The concept ``lattice`` of a context contains **all pairs of objects and properties**
 (*formal concepts*) that can be retrieved from a formal context:
 
 .. code:: python
@@ -172,11 +181,16 @@ concepts, superconcepts) and downward (less general concepts, subconcepts):
     (<Infimum {} <-> [human knight king mysterious]>,)
 
 
-To visualize the lattice, use its **graphviz** method:
+Visualization
+-------------
+
+To visualize the lattice, use its ``graphviz`` method:
 
 .. code:: python
 
-    >>> print l.graphviz()  # doctest: +ELLIPSIS, +NORMALIZE_WHITESPACE
+    >>> dot = l.graphviz()
+
+    >>> print dot.source  # doctest: +ELLIPSIS, +NORMALIZE_WHITESPACE
     // <Lattice object of 2 atoms 5 concepts 2 coatoms at ...>
     digraph Lattice {
     node [width=.15 style=filled shape=circle]

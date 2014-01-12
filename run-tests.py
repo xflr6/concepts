@@ -1,4 +1,4 @@
-# tests.py
+# run-tests.py
 
 import doctest
 

@@ -1,10 +1,13 @@
 # setup.py
 
-from distutils.core import setup
+try:
+    from setuptools import setup
+except ImportError:
+    from distutils.core import setup
 
 setup(
     name='concepts',
-    version='0.1.3',
+    version='0.1.4',
     author='Sebastian Bank',
     author_email='sebastian.bank@uni-leipzig.de',
     description='Formal Concept Analysis with Python',
@@ -12,7 +15,8 @@ setup(
     keywords='fca complete lattice graph',
     url='http://github.com/xflr6/concepts',
     packages=['concepts'],
-    install_requires=['bitsets==0.1.3'],
+    install_requires=['bitsets==0.1.4', 'graphviz==0.1'],
+    platforms='any',
     long_description=open('README.rst').read(),
     classifiers=[
         'Development Status :: 3 - Alpha',

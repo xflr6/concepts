@@ -8,7 +8,6 @@ import collections
 import functools
 
 import bitsets
-
 import graphviz
 
 __all__ = ['Lattice']
@@ -224,13 +223,15 @@ class Lattice(object):
             dot.node(key, '')
             attributes = {}
             if concept.objects:
+                objects = ' '.join(concept.objects).replace('-', '&minus;')
                 attributes.update(
-                    headlabel='"%s"' % ' '.join(concept.objects),
+                    headlabel='"%s"' % objects,
                     labelangle='270',
                     color='transparent')
             if concept.properties:
+                properties = ' '.join(concept.properties).replace('-', '&minus;')
                 attributes.update(
-                    taillabel='"%s"' % ' '.join(concept.properties),
+                    taillabel='"%s"' % properties,
                     labelangle='90',
                     color='transparent')
             if attributes:

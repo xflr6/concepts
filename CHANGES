@@ -2,6 +2,12 @@ Concepts Changelog
 ==================
 
 
+Version 0.1.4
+-------------
+
+Switch to standalone graphviz interface implementation.
+
+
 Version 0.1.3
 -------------
 

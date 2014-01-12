@@ -5,7 +5,7 @@
 import formats
 import matrices
 import lattices
-import relations
+import junctors
 from tools import lazyproperty
 
 __all__ = ['Context']
@@ -170,7 +170,7 @@ class Context(object):
 
     def relations(self):
         """Return the logical relations between the context properties."""
-        return relations.relations(self.properties, self._extents.bools())
+        return junctors.relations(self.properties, self._extents.bools())
 
 
 def _test(verbose=False):

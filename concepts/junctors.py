@@ -1,4 +1,4 @@
-# relations.py - logical relations between contingent boolean vectors
+# junctors.py - logical relations between contingent boolean vectors
 
 """Logical relations between sequences of truth conditions."""
 
