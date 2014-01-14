@@ -34,6 +34,18 @@ class Format(object):
     __metaclass__ = FormatMeta
 
     default = False
+
+    @classmethod
+    def load(cls, filename):
+        with open(filename, 'rb') as fd:
+            source = fd.read()
+        return cls.loads(source)
+
+    @classmethod
+    def dump(cls, filename, objects, properties, bools):
+        source = cls.dumps(objects, properties, bools)
+        with open(filename, 'wb') as fd:
+            fd.write(source)
     
     @staticmethod
     def loads(source):
@@ -96,6 +108,7 @@ class Cxt(Format):
     sold_out
     .X
     .X
+    <BLANKLINE>
     """
 
     @staticmethod
@@ -110,11 +123,12 @@ class Cxt(Format):
 
     @staticmethod
     def dumps(objects, properties, bools):
-        result = ['B\n\n%d\n%d\n' % (len(objects), len(properties))]
+        result = ['B', '', '%d' % len(objects), '%d' % len(properties), '']
         result.extend(objects)
         result.extend(properties)
         result.extend(''.join('X' if b else '.' for b in intent)
             for intent in bools)
+        result.append('')
         return '\n'.join(result)
 
 

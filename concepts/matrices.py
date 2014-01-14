@@ -9,23 +9,19 @@ import bitsets
 __all__ = ['relation']
 
 
-def from_members(cls, members=()):
-    """Create a set from an iterable of members or a space/comma separated string."""
-    if isinstance(members, basestring):
-        members = members.replace(',', ' ').split()
-    return cls.from_int(sum(imap(cls._map.__getitem__, set(members))))
+Vector = bitsets.bases.MemberBits
+"""Single row or column of a boolean matrix as bit vector."""
 
 
 class Vectors(bitsets.series.Tuple):
-    """Paired row or column vector collection of a relation as boolean matrix."""
+    """Paired collection of rows or columns of a boolean matrix relation."""
 
-    def _pair_with(self, other, relation, index):
+    def _pair_with(self, relation, index, other):
         if hasattr(self, 'prime'):
             raise RuntimeError('%r attempt _pair_with' % self)
 
-        self.twin = other
         self.relation = relation
-        self.index = index
+        self.relation_index = index
 
         _prime = other.BitSet.from_bools
         _double = self.BitSet.from_bools
@@ -43,7 +39,7 @@ class Vectors(bitsets.series.Tuple):
         self.double = self.BitSet.double = double
 
     def __reduce__(self):
-        return self.relation, (self.index,)
+        return self.relation, (self.relation_index,)
     
 
 class relation(tuple):
@@ -56,33 +52,29 @@ class relation(tuple):
     >>> br
     <relation(ConditionVectors('1011', '1101'), SymbolVectors('11', '01', '10', '11'))>
 
-    >>> br[1].BitSet.from_members('-> <-').prime().members()
+    >>> br[1].BitSet.from_members(('->', '<-')).prime().members()
     ('TT', 'FF')
     """ 
 
     __slots__ = ()
 
     def __new__(cls, xname, yname, xmembers, ymembers, xbools, _ids=None):
-        base = bitsets.bases.MemberBits
         if _ids is not None:
             # unpickle reconstruction
             xid, yid = _ids
-            X = bitsets.meta.bitset(xname, xmembers, xid, base, None, Vectors)
-            Y = bitsets.meta.bitset(yname, ymembers, yid, base, None, Vectors)
+            X = bitsets.meta.bitset(xname, xmembers, xid, Vector, None, Vectors)
+            Y = bitsets.meta.bitset(yname, ymembers, yid, Vector, None, Vectors)
         else:
-            X = bitsets.bitset(xname, xmembers, base, tuple=Vectors)
-            Y = bitsets.bitset(yname, ymembers, base, tuple=Vectors)
-
-        # attach string splitting constructor method
-        X.from_members = Y.from_members = classmethod(from_members)
+            X = bitsets.bitset(xname, xmembers, Vector, tuple=Vectors)
+            Y = bitsets.bitset(yname, ymembers, Vector, tuple=Vectors)
 
         x = X.Tuple.from_bools(xbools)
         y = Y.Tuple.from_bools(izip(*x.bools()))
 
         self = super(relation, cls).__new__(cls, (x, y))
 
-        x._pair_with(y, self, 0)
-        y._pair_with(x, self, 1)
+        x._pair_with(self, 0, y)
+        y._pair_with(self, 1, x)
 
         return self
 

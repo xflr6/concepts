@@ -153,10 +153,10 @@ class Lattice(object):
     def __getitem__(self, key):
         """Return concept by index, intension, or extension.
 
-        >>> l['1sg 1pl 2pl']
+        >>> l[('1sg', '1pl', '2pl')]
         <Concept {1sg, 1pl, 2sg, 2pl} <-> [-3] <=> -3>
 
-        >>> l['-1 -sg']
+        >>> l[('-1', '-sg')]
         <Concept {2pl, 3pl} <-> [-1 +pl -sg]>
         """
         if isinstance(key, (int, slice)):
@@ -169,7 +169,7 @@ class Lattice(object):
     def __call__(self, properties):
         """Return concept having all given properties as intension.
 
-        >>> l('+1 -sg')
+        >>> l(['+1', '-sg'])
         <Atom {1pl} <-> [+1 -2 -3 +pl -sg] <=> 1pl>
         """
         extent = self._context._Intent.from_members(properties).prime()
@@ -182,7 +182,7 @@ class Lattice(object):
         return len(self._concepts)
 
     def __repr__(self):
-        return '<%s object of %d atoms %d concepts %d coatoms at %X>' % (
+        return '<%s object of %d atoms %d concepts %d coatoms at %#x>' % (
             self.__class__.__name__, len(self.infimum.upper_neighbors),
             len(self._concepts), len(self.supremum.lower_neighbors), id(self))
 
@@ -196,7 +196,7 @@ class Lattice(object):
     def join(self, concepts):
         """Return the nearest concept that subsumes all given concepts.
 
-        >>> l.join([l['1sg'], l['1pl'], l['2sg']])
+        >>> l.join([l[('1sg',)], l[('1pl',)], l[('2sg',)]])
         <Concept {1sg, 1pl, 2sg, 2pl} <-> [-3] <=> -3>
         """
         common = functools.reduce(long.__or__, (c._extent for c in concepts))
@@ -206,7 +206,7 @@ class Lattice(object):
     def meet(self, concepts):
         """Return the nearest concept that implies all given concepts.
 
-        >>> l.meet([l['-1'], l['-2'], l['-pl']])
+        >>> l.meet([l[('-1',)], l[('-2',)], l[('-pl',)]])
         <Atom {3sg} <-> [-1 -2 +3 +sg -pl] <=> 3sg>
         """
         common = functools.reduce(long.__and__, (c._extent for c in concepts))
@@ -317,7 +317,7 @@ class Concept(object):
     def join(self, other):
         """Least upper bound, supremum, or, intersection.
 
-        >>> l['+1'] | l['+2']
+        >>> l[('+1',)] | l[('+2',)]
         <Concept {1sg, 1pl, 2sg, 2pl} <-> [-3] <=> -3>
         """
         common = self._extent | other._extent
@@ -327,7 +327,7 @@ class Concept(object):
     def meet(self, other):
         """Greatest lower bound, infimum, and, unification.
 
-        >>> l['-1 -2'] & l['-pl']
+        >>> l[('-1', '-2')] & l[('-pl',)]
         <Atom {3sg} <-> [-1 -2 +3 +sg -pl] <=> 3sg>
         """
         common = self._extent & other._extent

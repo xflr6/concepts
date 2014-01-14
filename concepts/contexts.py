@@ -6,7 +6,7 @@ import formats
 import matrices
 import lattices
 import junctors
-from tools import lazyproperty
+import tools
 
 __all__ = ['Context']
 
@@ -38,6 +38,13 @@ class Context(object):
         objects, properties, bools = frmat.loads(source)
         return cls(objects, properties, bools)
 
+    @classmethod
+    def from_file(cls, filename, frmat='cxt'):
+        """Return a new context from file source in given format."""
+        frmat = formats.Format[frmat]
+        objects, properties, bools = frmat.load(filename)
+        return cls(objects, properties, bools)
+
     def __init__(self, objects, properties, bools):
         objects = tuple(objects)
         properties = tuple(properties)
@@ -61,6 +68,23 @@ class Context(object):
 
         self._Intent = self._intents.BitSet
         self._Extent = self._extents.BitSet
+
+    def __getstate__(self):
+        return self._intents, self._extents
+
+    def __setstate__(self, state):
+        self._intents, self._extents = state
+        self._Intent = self._intents.BitSet
+        self._Extent = self._extents.BitSet
+
+    def __eq__(self, other):
+        if not isinstance(other, self.__class__):
+            raise NotImplementedError
+        return (self.objects == other.objects and self.properties == other.properties
+            and self.bools == other.bools)
+
+    def __ne__(self, other):
+        return not self == other
 
     def _minimal(self, extent, intent):
         """Return short lexicograpically minimum intent generating extent."""
@@ -92,10 +116,10 @@ class Context(object):
     def __getitem__(self, items, raw=False):
         """Return (extension, intension) pair by shared objects or properties.
 
-        >>> c['1sg 1pl 2pl']
+        >>> c[('1sg', '1pl', '2pl')]
         (('1sg', '1pl', '2sg', '2pl'), ('-3',))
 
-        >>> c['-1 -sg']
+        >>> c[('-1', '-sg')]
         (('2pl', '3pl'), ('-1', '+pl', '-sg'))
         """
         try:
@@ -114,7 +138,7 @@ class Context(object):
     def intension(self, objects):
         """Return all properties shared by the given objects.
 
-        >>> c.intension('1sg')
+        >>> c.intension(['1sg'])
         ('+1', '-2', '-3', '+sg', '-pl')
         """
         return self._Extent.from_members(objects).prime().members()
@@ -122,7 +146,7 @@ class Context(object):
     def extension(self, properties):
         """Return all objects sharing the given properties.
 
-        >>> c.extension('+1')
+        >>> c.extension(['+1'])
         ('1sg', '1pl')
         """
         return self._Intent.from_members(properties).prime().members()
@@ -130,7 +154,7 @@ class Context(object):
     def neighbors(self, objects):
         """Return the upper neighbors of the concept having all given objects.
 
-        >>> c.neighbors('1sg 1pl 2pl')
+        >>> c.neighbors(['1sg', '1pl', '2pl'])
         [(('1sg', '1pl', '2sg', '2pl', '3sg', '3pl'), ())]
         """
         objects = self._Extent.from_members(objects).double()
@@ -138,7 +162,7 @@ class Context(object):
             for extent, intent in self._neighbors(objects)]
 
     def __repr__(self):
-        return '<%s object mapping %d objects to %d properties at %X>' % (
+        return '<%s object mapping %d objects to %d properties at %#x>' % (
             self.__class__.__name__, len(self._Extent._members),
             len(self._Intent._members), id(self))
 
@@ -151,6 +175,12 @@ class Context(object):
         return frmat.dumps(self._Extent._members, self._Intent._members,
             self._intents.bools(), **kwargs)
 
+    def to_file(self, filename, frmat='cxt', **kwargs):
+        """Save the context serialized to file in the given format."""
+        frmat = formats.Format[frmat]
+        return frmat.dump(filename, self._Extent._members, self._Intent._members,
+            self._intents.bools(), **kwargs)
+        
     @property
     def objects(self):
         return self._Extent._members
@@ -163,7 +193,7 @@ class Context(object):
     def bools(self):
         return self._intents.bools()
 
-    @lazyproperty
+    @tools.lazyproperty
     def lattice(self):
         """Return the concept lattice of the formal context."""
         return lattices.Lattice(self)

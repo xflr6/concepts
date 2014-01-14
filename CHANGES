@@ -2,6 +2,16 @@ Concepts Changelog
 ==================
 
 
+Version 0.2
+-----------
+
+Added loading and dumping of contexts and include some example cxt files.
+
+Make context objects picklable.
+
+Context and lattice methods no more implicitly split string arguments.
+
+
 Version 0.1.4
 -------------
 

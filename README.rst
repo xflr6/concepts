@@ -41,7 +41,7 @@ object and property names need to be disjoint to uniquely identify them.
     ... ''')
 
     >>> c  # doctest: +ELLIPSIS
-    <Context object mapping 3 objects to 4 properties at ...>
+    <Context object mapping 3 objects to 4 properties at 0x...>
 
 After creation, the parsed content of the table is available on the **context object**.
 
@@ -73,15 +73,12 @@ collection of objects (common *intent*, ``intension``) as well as the
 In FCA these operations are called *derivations* and usually notated with the
 *prime* symbol(').
 
-For convenience, the derivation methods **automatically split string arguments** on
-whitespace. If your names lack whitespace, you can also use them like this:
-
 .. code:: python
 
-    >>> c.extension('knight king')
+    >>> c.extension(['knight', 'king'])
     ('King Arthur',)
 
-    >>> c.extension('mysterious human')
+    >>> c.extension(['mysterious', 'human'])
     ()
 
 
@@ -98,7 +95,7 @@ of objects or properties with the ``__getitem__`` method of the concept object:
 
 .. code:: python
 
-    >>> c['king']  # closest concept matching intent/extent
+    >>> c[('king',)]  # closest concept matching intent/extent
     (('King Arthur',), ('human', 'knight', 'king'))
 
     >>> assert c.intension(('King Arthur',)) == ('human', 'knight', 'king')
@@ -213,11 +210,40 @@ To visualize the lattice, use its ``graphviz`` method:
     }
 
 
+Persistence
+-----------
+
+Contexts can be loaded from and saved to files in cxt and table format:
+
+.. code:: python
+
+    >>> c1 = Context.from_file('examples/liveinwater.cxt')
+    >>> c1  # doctest: +ELLIPSIS
+    <Context object mapping 8 objects to 9 properties at 0x...>
+
+    >>> c2 = Context.from_file('examples/liveinwater.txt', frmat='table')
+    >>> c2  # doctest: +ELLIPSIS
+    <Context object mapping 8 objects to 9 properties at 0x...>
+
+    >>> c1 == c2
+    True
+
+
+Context objects are picklable:
+
+.. code:: python
+
+    >>> import pickle
+
+    >>> pickle.loads(pickle.dumps(c)) == c
+    True
+
+
 Further reading
 ---------------
 
 - http://en.wikipedia.org/wiki/Formal_concept_analysis
-- http://www.upriss.org.uk/fca/fca.html
+- http://www.upriss.org.uk/fca/
 
 The generation of the concept lattice is based on the algorithm from
 C. Lindig. Fast Concept Analysis. In Gerhard Stumme, editors, Working
@@ -226,6 +252,8 @@ Aachen, Germany, 2000.
 
 - http://www.st.cs.uni-saarland.de/~lindig/papers/lindig-fca-2000.pdf
 
+The included example cxt files are taken from `Uta Priss' FCA homepage
+<http://www.upriss.org.uk/fca/examples.html>`_
 
 License
 -------
