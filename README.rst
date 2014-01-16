@@ -190,24 +190,56 @@ To visualize the lattice, use its ``graphviz`` method:
     >>> dot = l.graphviz()
 
     >>> print dot.source  # doctest: +ELLIPSIS, +NORMALIZE_WHITESPACE
-    // <Lattice object of 2 atoms 5 concepts 2 coatoms at ...>
+    // <Lattice object of 2 atoms 5 concepts 2 coatoms at 0x...>
     digraph Lattice {
-    node [width=.15 style=filled shape=circle]
-    edge [labeldistance=1.5 dir=none]
-	    "" [label=""]
-		    "" -> mysterious
-		    "" -> human
-	    human [label=""]
-		    human -> human [headlabel="Sir Robin" taillabel="human knight" color=transparent labelangle=90]
-		    human -> king
-	    mysterious [label=""]
-		    mysterious -> mysterious [headlabel="holy grail" taillabel="mysterious" color=transparent labelangle=90]
-		    mysterious -> "human knight king mysterious"
-	    king [label=""]
-		    king -> king [headlabel="King Arthur" taillabel="king" color=transparent labelangle=90]
-		    king -> "human knight king mysterious"
-	    "human knight king mysterious" [label=""]
+    node [width=.25 style=filled shape=circle label=""]
+    edge [labeldistance=1.5 dir=none minlen=2]
+    	c0
+    	c1
+    		c1 -> c1 [color=transparent headlabel="King Arthur" labelangle=270]
+    		c1 -> c1 [color=transparent taillabel="king" labelangle=90]
+    		c1 -> c0
+    	c2
+    		c2 -> c2 [color=transparent headlabel="holy grail" labelangle=270]
+    		c2 -> c2 [color=transparent taillabel="mysterious" labelangle=90]
+    		c2 -> c0
+    	c3
+    		c3 -> c3 [color=transparent headlabel="Sir Robin" labelangle=270]
+    		c3 -> c3 [color=transparent taillabel="human knight" labelangle=90]
+    		c3 -> c1
+    	c4
+    		c4 -> c2
+    		c4 -> c3
     }
+
+.. image:: https://raw.github.com/xflr6/concepts/master/docs/holy-grail.png
+
+
+For example:
+
+.. code:: python
+
+    >>> w = Context.from_file('examples/liveinwater.cxt')
+    >>> dot = w.lattice.graphviz()
+    >>> print dot.source  # doctest: +ELLIPSIS, +NORMALIZE_WHITESPACE
+    // <Lattice object of 4 atoms 19 concepts 4 coatoms at 0x...>
+    digraph Lattice {
+    node [width=.25 style=filled shape=circle label=""]
+    edge [labeldistance=1.5 dir=none minlen=2]
+    	c0
+    	c1
+    		c1 -> c1 [color=transparent headlabel="frog" labelangle=270]
+    		c1 -> c0
+    	c2
+    		c2 -> c2 [color=transparent headlabel="dog" labelangle=270]
+    		c2 -> c2 [color=transparent taillabel="breast feeds" labelangle=90]
+    		c2 -> c0
+    	c3
+    		c3 -> c3 [color=transparent headlabel="reed" labelangle=270]
+    		c3 -> c0
+    ...
+
+.. image:: https://raw.github.com/xflr6/concepts/master/docs/liveinwater.png
 
 
 Persistence
@@ -254,6 +286,7 @@ Aachen, Germany, 2000.
 
 The included example cxt files are taken from `Uta Priss' FCA homepage
 <http://www.upriss.org.uk/fca/examples.html>`_
+
 
 License
 -------

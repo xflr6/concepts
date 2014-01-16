@@ -7,7 +7,7 @@ except ImportError:
 
 setup(
     name='concepts',
-    version='0.2',
+    version='0.2.1',
     author='Sebastian Bank',
     author_email='sebastian.bank@uni-leipzig.de',
     description='Formal Concept Analysis with Python',
@@ -15,7 +15,7 @@ setup(
     keywords='fca complete lattice graph',
     url='http://github.com/xflr6/concepts',
     packages=['concepts'],
-    install_requires=['bitsets==0.1.4', 'graphviz==0.1'],
+    install_requires=['bitsets==0.2', 'graphviz==0.1'],
     platforms='any',
     long_description=open('README.rst').read(),
     classifiers=[

@@ -8,7 +8,8 @@ import collections
 import functools
 
 import bitsets
-import graphviz
+
+import visualize
 
 __all__ = ['Lattice']
 
@@ -90,6 +91,7 @@ class Lattice(object):
         Concepts = bitsets.bitset('Concepts', tuple(concepts),
             base=bitsets.bases.MemberBits)
         BitSet = Concepts.from_members
+        Atoms = Concepts.from_int
 
         for i, c in enumerate(concepts):
             c._upper_neighbors = BitSet(c._upper_neighbors)
@@ -97,10 +99,12 @@ class Lattice(object):
             e = c._extent
             c._upset = BitSet(u for u in concepts[i:] if e & u._extent == e)
 
+        atoms = concepts[0]._upper_neighbors
         downward = sorted(concepts, key=lambda c: c._extent.longlex())
         for i, c in enumerate(downward):
             e = c._extent
             c._downset = BitSet(d for d in downward[i:] if e | d._extent == e)
+            c._atoms = Atoms(c._downset & atoms)
 
         return Concepts
 
@@ -126,7 +130,8 @@ class Lattice(object):
     def __getstate__(self):
         concepts = [(c._extent, c._intent, c._minimal,
             c._upper_neighbors.real, c._lower_neighbors.real,
-            c._upset.real, c._downset.real) for c in self._concepts]
+            c._upset.real, c._downset.real,
+            c._atoms.real) for c in self._concepts]
         return self._context, concepts
 
     def __setstate__(self, state):
@@ -138,7 +143,7 @@ class Lattice(object):
         self._map = mapping = {}
         for c, s in izip(self._concepts, state):
             (c._upper_neighbors, c._lower_neighbors,
-             c._upset, c._downset) = (BitSet(x) for x in s[3:])
+             c._upset, c._downset, c._atoms) = (BitSet(x) for x in s[3:])
             mapping[c._extent] = c
 
         self._annotate(self._context, self._concepts)
@@ -215,32 +220,7 @@ class Lattice(object):
 
     def graphviz(self, save=False, compile=False, view=False):
         """Return graphviz source for visualizing the lattice graph."""
-        dot = graphviz.Digraph(comment=self, key=self.__class__.__name__,
-            node_attr=dict(shape='circle', width='.15', style='filled'),
-            edge_attr=dict(dir='none', labeldistance='1.5'))
-        for concept in self._concepts[::-1]:
-            key = ' '.join(concept.minimal)
-            dot.node(key, '')
-            attributes = {}
-            if concept.objects:
-                objects = ' '.join(concept.objects).replace('-', '&minus;')
-                attributes.update(
-                    headlabel='"%s"' % objects,
-                    labelangle='270',
-                    color='transparent')
-            if concept.properties:
-                properties = ' '.join(concept.properties).replace('-', '&minus;')
-                attributes.update(
-                    taillabel='"%s"' % properties,
-                    labelangle='90',
-                    color='transparent')
-            if attributes:
-                dot.edge(key, key, _attributes=attributes)
-            dot.edges((key, ' '.join(c.minimal))
-                for c in concept.lower_neighbors)
-        if save or compile or view:
-            dot.save(compile=compile, view=view)
-        return dot
+        return visualize.lattice(self, save, compile, view)
 
 
 class Concept(object):
@@ -289,8 +269,7 @@ class Concept(object):
 
     @property
     def atoms(self):
-        atoms = self._downset & self.lattice.infimum._upper_neighbors
-        return self.lattice._Concepts.from_int(atoms).members()
+        return self._atoms.members()
 
     @property
     def attributes(self):
@@ -375,6 +354,7 @@ class Supremum(Concept):
 
 
 def _test(verbose=False):
+    global l
     l = Lattice('''
        |+1|-1|+2|-2|+3|-3|+sg|+pl|-sg|-pl|
     1sg| X|  |  | X|  | X|  X|   |   |  X|
@@ -387,26 +367,7 @@ def _test(verbose=False):
 
     import doctest
     doctest.testmod(verbose=verbose, extraglobs=locals())
-
-def _test_misc():
-    global l
-    l = Lattice('''
-       |+1|-1|+2|-2|+3|-3|+sg|+du|+pl|-sg|-du|-pl|
-    1s | X|  |  | X|  | X|  X|   |   |   |  X|  X|
-    1de| X|  |  | X|  | X|   |  X|   |  X|   |  X|
-    1pe| X|  |  | X|  | X|   |   |  X|  X|  X|   |
-    1di| X|  | X|  |  | X|   |  X|   |  X|   |  X|
-    1pi| X|  | X|  |  | X|   |   |  X|  X|  X|   |
-    2s |  | X| X|  |  | X|  X|   |   |   |  X|  X|
-    2d |  | X| X|  |  | X|   |  X|   |  X|   |  X|
-    2p |  | X| X|  |  | X|   |   |  X|  X|  X|   |
-    3s |  | X|  | X| X|  |  X|   |   |   |  X|  X|
-    3d |  | X|  | X| X|  |   |  X|   |  X|   |  X|
-    3p |  | X|  | X| X|  |   |   |  X|  X|  X|   |
-    ''')
-    assert len(l.supremum.lower_neighbors) == 6
     print l
 
 if __name__ == '__main__':
     _test()
-    _test_misc()
