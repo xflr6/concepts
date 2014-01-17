@@ -136,12 +136,12 @@ The concept ``lattice`` of a context contains **all pairs of objects and propert
 .. code:: python
 
     >>> c  # doctest: +ELLIPSIS
-    <Context object mapping 3 objects to 4 properties at ...>
+    <Context object mapping 3 objects to 4 properties at 0x...>
     
     >>> l = c.lattice
 
     >>> l  # doctest: +ELLIPSIS
-    <Lattice object of 2 atoms 5 concepts 2 coatoms at ...>
+    <Lattice object of 2 atoms 5 concepts 2 coatoms at 0x...>
 
     >>> for extent, intent in l:
     ...     print extent, intent
@@ -197,11 +197,11 @@ To visualize the lattice, use its ``graphviz`` method:
     	c0
     	c1
     		c1 -> c1 [color=transparent headlabel="King Arthur" labelangle=270]
-    		c1 -> c1 [color=transparent taillabel="king" labelangle=90]
+    		c1 -> c1 [color=transparent taillabel=king labelangle=90]
     		c1 -> c0
     	c2
     		c2 -> c2 [color=transparent headlabel="holy grail" labelangle=270]
-    		c2 -> c2 [color=transparent taillabel="mysterious" labelangle=90]
+    		c2 -> c2 [color=transparent taillabel=mysterious labelangle=90]
     		c2 -> c0
     	c3
     		c3 -> c3 [color=transparent headlabel="Sir Robin" labelangle=270]
@@ -228,14 +228,14 @@ For example:
     edge [labeldistance=1.5 dir=none minlen=2]
     	c0
     	c1
-    		c1 -> c1 [color=transparent headlabel="frog" labelangle=270]
+    		c1 -> c1 [color=transparent headlabel=frog labelangle=270]
     		c1 -> c0
     	c2
-    		c2 -> c2 [color=transparent headlabel="dog" labelangle=270]
+    		c2 -> c2 [color=transparent headlabel=dog labelangle=270]
     		c2 -> c2 [color=transparent taillabel="breast feeds" labelangle=90]
     		c2 -> c0
     	c3
-    		c3 -> c3 [color=transparent headlabel="reed" labelangle=270]
+    		c3 -> c3 [color=transparent headlabel=reed labelangle=270]
     		c3 -> c0
     ...
 

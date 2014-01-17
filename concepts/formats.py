@@ -37,12 +37,14 @@ class Format(object):
 
     @classmethod
     def load(cls, filename):
+        """Load and parse serialized objects, properties, bools from file."""
         with open(filename, 'rb') as fd:
             source = fd.read()
         return cls.loads(source)
 
     @classmethod
     def dump(cls, filename, objects, properties, bools):
+        """Write serialized objects, properties, bools to file."""
         source = cls.dumps(objects, properties, bools)
         with open(filename, 'wb') as fd:
             fd.write(source)

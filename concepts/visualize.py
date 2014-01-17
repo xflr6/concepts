@@ -17,12 +17,12 @@ def lattice(lattice, save, compile, view):
 
         if concept.objects:
             dot.edge(key, key,
-                headlabel='"%s"' % ' '.join(concept.objects).replace('-', '&minus;'),
+                headlabel=dot.quote(' '.join(concept.objects)),
                 labelangle='270', color='transparent')
 
         if concept.properties:
             dot.edge(key, key,
-                taillabel='"%s"' % ' '.join(concept.properties).replace('-', '&minus;'),
+                taillabel=dot.quote(' '.join(concept.properties)),
                 labelangle='90', color='transparent')
 
         dot.edges((key, 'c%d' % c.index) for c in concept.lower_neighbors)

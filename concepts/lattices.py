@@ -196,6 +196,7 @@ class Lattice(object):
 
     @property
     def atoms(self):
+        """Minimal non-infimum cocepts."""
         return self.infimum.upper_neighbors
 
     def join(self, concepts):
@@ -236,56 +237,70 @@ class Concept(object):
         self._lower_neighbors = []
 
     def __iter__(self):
+        """Pair of extent and intent."""
         yield self._extent.members()
         yield self._intent.members()
 
     @property
     def extent(self):
+        """Objects subsumed by the concept."""
         return self._extent.members()
 
     @property
     def intent(self):
+        """Properties implied by the concept."""
         return self._intent.members()
 
     @property
     def minimal(self):
+        """Shortlex minimal properties generating the concept."""
         return self._minimal.members()
 
     @property
     def upper_neighbors(self):
+        """Immediately subsuming concepts."""
         return self._upper_neighbors.members()
 
     @property
     def lower_neighbors(self):
+        """Immediately implying concepts."""
         return self._lower_neighbors.members()
 
     @property
     def upset(self):
+        """Subsuming concepts."""
         return self._upset.members()
 
     @property
     def downset(self):
+        """Implying concepts."""
         return self._downset.members()
 
     @property
     def atoms(self):
+        """Subsumed minimal non-infimum concepts."""
         return self._atoms.members()
 
     @property
     def attributes(self):
+        """Shortlex ordered properties generating the concept."""
         minimize = self.lattice._context._minimize(self._extent, self._intent)
         return [i.members() for i in minimize]
 
     def implies(self, other):
+        """Implication."""
         return self._extent & other._extent == self._extent
 
     def subsumes(self, other):
+        """Subsumption."""
         return self._extent | other._extent == self._extent
 
     def properly_implies(self, other):
+        """Proper implication."""
         return self._extent & other._extent == self._extent != other._extent
 
     def properly_subsumes(self, other):
+        """Proper subsumption."""
         return self._extent | other._extent == self._extent != other._extent
 
     __le__ = implies
@@ -317,13 +332,16 @@ class Concept(object):
     __and__ = meet
 
     def incompatible_with(self, other):
+        """Infimum meet."""
         return not self._extent & other._extent
 
     def complement_of(self, other):
+        """Infimum meet and supremum join."""
         return (not self._extent & other._extent and
             (self._extent | other._extent) == self.lattice.supremum._extent)
 
     def subcontrary_with(self, other):
+        """Non-infimum meet and supremum join."""
         return (self._extent & other._extent and
             (self._extent | other._extent) == self.lattice.supremum._extent)
 

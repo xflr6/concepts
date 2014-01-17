@@ -1,8 +1,7 @@
 # tools.py
 
-"""Tools."""
-
 __all__ = ['lazyproperty']
+
 
 class lazyproperty(object):
     """Non-data descriptor caching the computed result as instance attribute.
