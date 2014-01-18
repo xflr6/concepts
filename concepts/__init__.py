@@ -3,7 +3,7 @@
 """Formal Concept Analysis (FCA) with Python."""
 
 __title__ = 'concepts'
-__version__ = '0.2.2'
+__version__ = '0.2.3'
 __author__ = 'Sebastian Bank <sebastian.bank@uni-leipzig.de>'
 __license__ = 'MIT, see LICENSE'
 __copyright__ = 'Copyright (c) 2013-2014 Sebastian Bank'
@@ -30,7 +30,6 @@ def _test():
     3p |  | X|  | X| X|  |   |   |  X|  X|  X|   |
     ''').lattice
     assert len(l.supremum.lower_neighbors) == 6
-    print l
 
 if __name__ == '__main__':
     _test()

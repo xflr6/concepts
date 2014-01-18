@@ -23,12 +23,6 @@ class Context(object):
     ... 3sg|  | X|  | X| X|  |  X|   |   |  X|
     ... 3pl|  | X|  | X| X|  |   |  X|  X|   |
     ... ''')
-
-    >>> c.objects
-    ('1sg', '1pl', '2sg', '2pl', '3sg', '3pl')
-
-    >>> c.properties
-    ('+1', '-1', '+2', '-2', '+3', '-3', '+sg', '+pl', '-sg', '-pl')
     """
 
     @classmethod
@@ -70,9 +64,11 @@ class Context(object):
         self._Extent = self._extents.BitSet
 
     def __getstate__(self):
+        """Pickle as (intents, extents) tuple."""
         return self._intents, self._extents
 
     def __setstate__(self, state):
+        """Unpickle from (intents, extents) tuple."""
         self._intents, self._extents = state
         self._Intent = self._intents.BitSet
         self._Extent = self._extents.BitSet
@@ -100,7 +96,10 @@ class Context(object):
                 yield it
 
     def _neighbors(self, objects):  # TODO: check order
-        """Yield upper neighbors from extent (cf. C. Lindig. 2000. Fast Concept Analysis)."""
+        """Yield upper neighbors from extent.
+
+        cf. C. Lindig. 2000. Fast Concept Analysis.
+        """
         Extent = self._Extent.from_int
         minimal = ~objects
         remaining = [a for a in self._Extent._atoms if a & minimal]
@@ -183,14 +182,34 @@ class Context(object):
         
     @property
     def objects(self):
+        """(Names of the) objects described by the context.
+
+        >>> c.objects
+        ('1sg', '1pl', '2sg', '2pl', '3sg', '3pl')
+        """
         return self._Extent._members
 
     @property
     def properties(self):
+        """(Names of the) properties that describe the objects.
+
+        >>> c.properties
+        ('+1', '-1', '+2', '-2', '+3', '-3', '+sg', '+pl', '-sg', '-pl')
+        """
         return self._Intent._members
 
     @property
     def bools(self):
+        """Row-wise boolean relation matrix between objects and properties.
+
+        >>> c.bools  # doctest: +NORMALIZE_WHITESPACE
+        [(True, False, False, True, False, True, True, False, False, True),
+         (True, False, False, True, False, True, False, True, True, False),
+         (False, True, True, False, False, True, True, False, False, True),
+         (False, True, True, False, False, True, False, True, True, False),
+         (False, True, False, True, True, False, True, False, False, True),
+         (False, True, False, True, True, False, False, True, True, False)]
+        """
         return self._intents.bools()
 
     @tools.lazyproperty
@@ -204,6 +223,7 @@ class Context(object):
 
 
 def _test(verbose=False):
+    global c
     c = Context.from_string('''
        |+1|-1|+2|-2|+3|-3|+sg|+pl|-sg|-pl|
     1sg| X|  |  | X|  | X|  X|   |   |  X|
@@ -217,24 +237,6 @@ def _test(verbose=False):
     import doctest
     doctest.testmod(verbose=verbose, extraglobs=locals())
 
-def _test_misc():
-    global c
-    c = Context.from_string('''
-       |+1|-1|+2|-2|+3|-3|+sg|+du|+pl|-sg|-du|-pl|
-    1s | X|  |  | X|  | X|  X|   |   |   |  X|  X|
-    1de| X|  |  | X|  | X|   |  X|   |  X|   |  X|
-    1pe| X|  |  | X|  | X|   |   |  X|  X|  X|   |
-    1di| X|  | X|  |  | X|   |  X|   |  X|   |  X|
-    1pi| X|  | X|  |  | X|   |   |  X|  X|  X|   |
-    2s |  | X| X|  |  | X|  X|   |   |   |  X|  X|
-    2d |  | X| X|  |  | X|   |  X|   |  X|   |  X|
-    2p |  | X| X|  |  | X|   |   |  X|  X|  X|   |
-    3s |  | X|  | X| X|  |  X|   |   |   |  X|  X|
-    3d |  | X|  | X| X|  |   |  X|   |  X|   |  X|
-    3p |  | X|  | X| X|  |   |   |  X|  X|  X|   |
-    ''')
-    print c
 
 if __name__ == '__main__':
     _test()
-    _test_misc()

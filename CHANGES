@@ -1,6 +1,14 @@
 Concepts Changelog
 ==================
 
+
+Version 0.2.3
+-------------
+
+Support empty iterables in Lattice join and meet.
+
+
+
 Version 0.2.2
 -------------
 

@@ -5,7 +5,6 @@
 from itertools import izip
 import heapq
 import collections
-import functools
 
 import bitsets
 
@@ -59,8 +58,10 @@ class Lattice(object):
             a.__class__ = Atom
 
     def _build(self, context, concept):
-        """Return the list of concept in short lexicographic order
-        (cf. C. Lindig. 2000. Fast Concept Analysis)."""
+        """Return the list of concept in short lexicographic order.
+
+        cf. C. Lindig. 2000. Fast Concept Analysis.
+        """
         concepts = []
         mapping = {concept._extent: concept}
         heap = [(concept._extent.shortlex(), concept)]
@@ -204,9 +205,13 @@ class Lattice(object):
 
         >>> l.join([l[('1sg',)], l[('1pl',)], l[('2sg',)]])
         <Concept {1sg, 1pl, 2sg, 2pl} <-> [-3] <=> -3>
+        >>> l.join([])
+        <Infimum {} <-> [+1 -1 +2 -2 +3 -3 +sg +pl -sg -pl]>
         """
-        common = functools.reduce(long.__or__, (c._extent for c in concepts))
-        extent = self._context._extents.double(common)
+        join = self.infimum._extent
+        for c in concepts:
+            join |= c._extent
+        extent = self._context._extents.double(join)
         return self._map[extent]
 
     def meet(self, concepts):
@@ -214,10 +219,14 @@ class Lattice(object):
 
         >>> l.meet([l[('-1',)], l[('-2',)], l[('-pl',)]])
         <Atom {3sg} <-> [-1 -2 +3 +sg -pl] <=> 3sg>
+        >>> l.meet([])
+        <Supremum {1sg, 1pl, 2sg, 2pl, 3sg, 3pl} <-> []>
         """
-        common = functools.reduce(long.__and__, (c._extent for c in concepts))
-        extent = self._context._extents.double(common)
-        return self._map[extent]        
+        meet = self.supremum._extent
+        for c in concepts:
+            meet &= c._extent
+        extent = self._context._extents.double(meet)
+        return self._map[extent]
 
     def graphviz(self, save=False, compile=False, view=False):
         """Return graphviz source for visualizing the lattice graph."""
@@ -385,7 +394,6 @@ def _test(verbose=False):
 
     import doctest
     doctest.testmod(verbose=verbose, extraglobs=locals())
-    print l
 
 if __name__ == '__main__':
     _test()
