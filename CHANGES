@@ -2,18 +2,22 @@ Concepts Changelog
 ==================
 
 
+Version 0.3
+-----------
+
+Update graphviz interface dependency to 0.2 (UTF-8 support) with changed api.
+
+
 Version 0.2.3
 -------------
 
 Support empty iterables in Lattice join and meet.
 
 
-
 Version 0.2.2
 -------------
 
 Simplified graphviz quoting.
-
 
 
 Version 0.2.1

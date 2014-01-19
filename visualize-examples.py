@@ -1,11 +1,5 @@
-# visualize-examples
+# visualize-examples.py
 
-import os
-import glob
+import concepts.visualize
 
-from concepts import Context
-
-for filename in glob.glob('examples/*.cxt'):
-    c = Context.from_file(filename)
-    name, ext = os.path.splitext(filename)
-    c.lattice.graphviz().save('%s.gv' % name, compile=True)
+concepts.visualize.render_all('examples/*.cxt')

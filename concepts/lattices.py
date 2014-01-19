@@ -129,6 +129,7 @@ class Lattice(object):
                 c.objects = c.properties = ()
 
     def __getstate__(self):
+        """Pickle as (context, concept_states) tuple."""
         concepts = [(c._extent, c._intent, c._minimal,
             c._upper_neighbors.real, c._lower_neighbors.real,
             c._upset.real, c._downset.real,
@@ -136,6 +137,7 @@ class Lattice(object):
         return self._context, concepts
 
     def __setstate__(self, state):
+        """Unpickle from (context, concept_states) tuple."""
         self._context, state = state
         self._concepts = [Concept(self, *s[:3]) for s in state]
         self._Concepts = bitsets.bitset('Concepts', tuple(self._concepts),
@@ -143,9 +145,9 @@ class Lattice(object):
         BitSet = self._Concepts.from_int
         self._map = mapping = {}
         for c, s in izip(self._concepts, state):
+            mapping[c._extent] = c
             (c._upper_neighbors, c._lower_neighbors,
              c._upset, c._downset, c._atoms) = (BitSet(x) for x in s[3:])
-            mapping[c._extent] = c
 
         self._annotate(self._context, self._concepts)
 
@@ -228,9 +230,9 @@ class Lattice(object):
         extent = self._context._extents.double(meet)
         return self._map[extent]
 
-    def graphviz(self, save=False, compile=False, view=False):
+    def graphviz(self, filename=None, directory=None, render=False, view=False):
         """Return graphviz source for visualizing the lattice graph."""
-        return visualize.lattice(self, save, compile, view)
+        return visualize.lattice(self, filename, directory, render, view)
 
 
 class Concept(object):

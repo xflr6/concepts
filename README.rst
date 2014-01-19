@@ -173,8 +173,9 @@ concepts, superconcepts) and downward (less general concepts, subconcepts):
 
 .. code:: python
 
-    >>> l.infimum.upper_neighbors
-    (<Atom {King Arthur} <-> [human knight king] <=> King Arthur <=> king>, <Atom {holy grail} <-> [mysterious] <=> holy grail <=> mysterious>)
+    >>> l.infimum.upper_neighbors  # doctest: +NORMALIZE_WHITESPACE
+    (<Atom {King Arthur} <-> [human knight king] <=> King Arthur <=> king>,
+     <Atom {holy grail} <-> [mysterious] <=> holy grail <=> mysterious>)
 
     >>> l[1].lower_neighbors
     (<Infimum {} <-> [human knight king mysterious]>,)
@@ -221,6 +222,7 @@ For example:
 
     >>> w = Context.from_file('examples/liveinwater.cxt')
     >>> dot = w.lattice.graphviz()
+
     >>> print dot.source  # doctest: +ELLIPSIS, +NORMALIZE_WHITESPACE
     // <Lattice object of 4 atoms 19 concepts 4 coatoms at 0x...>
     digraph Lattice {
