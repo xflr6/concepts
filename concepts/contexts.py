@@ -14,7 +14,7 @@ __all__ = ['Context']
 class Context(object):
     """Formal context defining a relation between objects and properties.
 
-    >>> c = Context.from_string('''
+    >>> c = Context.fromstring('''
     ...    |+1|-1|+2|-2|+3|-3|+sg|+pl|-sg|-pl|
     ... 1sg| X|  |  | X|  | X|  X|   |   |  X|
     ... 1pl| X|  |  | X|  | X|   |  X|  X|   |
@@ -26,14 +26,14 @@ class Context(object):
     """
 
     @classmethod
-    def from_string(cls, source, frmat='table'):
+    def fromstring(cls, source, frmat='table'):
         """Return a new context from string source in given format."""
         frmat = formats.Format[frmat]
         objects, properties, bools = frmat.loads(source)
         return cls(objects, properties, bools)
 
     @classmethod
-    def from_file(cls, filename, frmat='cxt'):
+    def fromfile(cls, filename, frmat='cxt'):
         """Return a new context from file source in given format."""
         frmat = formats.Format[frmat]
         objects, properties, bools = frmat.load(filename)
@@ -95,17 +95,16 @@ class Context(object):
             if it.prime() == extent:
                 yield it
 
-    def _neighbors(self, objects):  # TODO: check order
+    def _neighbors(self, objects):  # TODO: verify order
         """Yield upper neighbors from extent.
 
         cf. C. Lindig. 2000. Fast Concept Analysis.
         """
-        Extent = self._Extent.from_int
+        prime = self._extents.prime
         minimal = ~objects
-        remaining = [a for a in self._Extent._atoms if a & minimal]
-        for add in remaining:
-            objects_ = Extent(objects | add)
-            intent = objects_.prime()
+        for add in self._Extent.atomic(minimal):
+            objects_ = objects | add
+            intent = prime(objects_)
             extent = intent.prime()
             if minimal & (extent & ~objects_):
                 minimal &= ~add
@@ -122,9 +121,9 @@ class Context(object):
         (('2pl', '3pl'), ('-1', '+pl', '-sg'))
         """
         try:
-            extent = self._Extent.from_members(items)
+            extent = self._Extent.frommembers(items)
         except KeyError:
-            intent = self._Intent.from_members(items)
+            intent = self._Intent.frommembers(items)
             extent = intent.prime()
             intent = extent.prime()
         else:
@@ -140,7 +139,7 @@ class Context(object):
         >>> c.intension(['1sg'])
         ('+1', '-2', '-3', '+sg', '-pl')
         """
-        return self._Extent.from_members(objects).prime().members()
+        return self._Extent.frommembers(objects).prime().members()
 
     def extension(self, properties):
         """Return all objects sharing the given properties.
@@ -148,7 +147,7 @@ class Context(object):
         >>> c.extension(['+1'])
         ('1sg', '1pl')
         """
-        return self._Intent.from_members(properties).prime().members()
+        return self._Intent.frommembers(properties).prime().members()
 
     def neighbors(self, objects):
         """Return the upper neighbors of the concept having all given objects.
@@ -156,7 +155,7 @@ class Context(object):
         >>> c.neighbors(['1sg', '1pl', '2pl'])
         [(('1sg', '1pl', '2sg', '2pl', '3sg', '3pl'), ())]
         """
-        objects = self._Extent.from_members(objects).double()
+        objects = self._Extent.frommembers(objects).double()
         return [(extent.members(), intent.members())
             for extent, intent in self._neighbors(objects)]
 
@@ -166,15 +165,15 @@ class Context(object):
             len(self._Intent._members), id(self))
 
     def __str__(self):
-        return '%r\n%s' % (self, self.to_string(indent=4))
+        return '%r\n%s' % (self, self.tostring(indent=4))
 
-    def to_string(self, frmat='table', **kwargs):
+    def tostring(self, frmat='table', **kwargs):
         """Return the context serialized in the given string-based format."""
         frmat = formats.Format[frmat]
         return frmat.dumps(self._Extent._members, self._Intent._members,
             self._intents.bools(), **kwargs)
 
-    def to_file(self, filename, frmat='cxt', **kwargs):
+    def tofile(self, filename, frmat='cxt', **kwargs):
         """Save the context serialized to file in the given format."""
         frmat = formats.Format[frmat]
         return frmat.dump(filename, self._Extent._members, self._Intent._members,
@@ -224,7 +223,7 @@ class Context(object):
 
 def _test(verbose=False):
     global c
-    c = Context.from_string('''
+    c = Context.fromstring('''
        |+1|-1|+2|-2|+3|-3|+sg|+pl|-sg|-pl|
     1sg| X|  |  | X|  | X|  X|   |   |  X|
     1pl| X|  |  | X|  | X|   |  X|  X|   |
@@ -236,7 +235,6 @@ def _test(verbose=False):
 
     import doctest
     doctest.testmod(verbose=verbose, extraglobs=locals())
-
 
 if __name__ == '__main__':
     _test()

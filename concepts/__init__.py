@@ -3,7 +3,7 @@
 """Formal Concept Analysis (FCA) with Python."""
 
 __title__ = 'concepts'
-__version__ = '0.3'
+__version__ = '0.4'
 __author__ = 'Sebastian Bank <sebastian.bank@uni-leipzig.de>'
 __license__ = 'MIT, see LICENSE'
 __copyright__ = 'Copyright (c) 2013-2014 Sebastian Bank'
@@ -15,7 +15,7 @@ __all__ = ['Context']
 
 def _test():
     global l
-    l = Context.from_string('''
+    l = Context.fromstring('''
        |+1|-1|+2|-2|+3|-3|+sg|+du|+pl|-sg|-du|-pl|
     1s | X|  |  | X|  | X|  X|   |   |   |  X|  X|
     1de| X|  |  | X|  | X|   |  X|   |  X|   |  X|

@@ -2,6 +2,19 @@ Concepts Changelog
 ==================
 
 
+Version 0.4
+-----------
+
+Add context file csv format.
+
+Added newline normalization to context file loading.
+
+Update bitset dependency to 0.5 (better neighbors).
+
+Backwards incompatible: removed underscore from (from|to)_(string|file) method
+names.
+
+
 Version 0.3
 -----------
 
@@ -31,7 +44,7 @@ Version 0.2
 
 Added loading and dumping of contexts and include some example cxt files.
 
-Make context objects picklable.
+Make context objects pickleable.
 
 Context and lattice methods no more implicitly split string arguments.
 

@@ -3,12 +3,13 @@ Concepts
 
 |PyPI version| |License| |Downloads|
 
-Concepts is a simple Python implementation of **Formal Concept Analysis** (FCA).
+Concepts is a simple Python implementation of **Formal Concept Analysis**
+(FCA_).
 
 FCA provides a mathematical model for describing a set of **objects** (e.g. King
 Arthur, Sir Robin, and the holy grail) with a set of **properties** or features
-(e.g. human, knight, king, and mysterious) which each of the objects either
-has or not. A table called *formal context* defines which objects have a given
+(e.g. human, knight, king, and mysterious) which each of the objects either has
+or not. A table called *formal context* defines which objects have a given
 property and vice versa which properties a given object has.
 
 
@@ -23,17 +24,18 @@ Installation
 Formal contexts
 ---------------
 
-With Concepts, context objects can be created from a string with an ascii-art
+With Concepts, context objects can be created from a string with an ASCII-art
 style table. The objects and properties will simply be represented by strings.
-Separate the property columns with *pipe* symbols, create one row for each objects
-and indicate the presence of a property with the character *X*. Note that the
-object and property names need to be disjoint to uniquely identify them.
+Separate the property columns with *pipe* symbols, create one row for each
+objects and indicate the presence of a property with the character *X*. Note
+that the object and property names need to be disjoint to uniquely identify
+them.
 
 .. code:: python
 
     >>> from concepts import Context
 
-    >>> c = Context.from_string('''
+    >>> c = Context.fromstring('''
     ...            |human|knight|king |mysterious|
     ... King Arthur|  X  |  X   |  X  |          |
     ... Sir Robin  |  X  |  X   |     |          |
@@ -43,7 +45,8 @@ object and property names need to be disjoint to uniquely identify them.
     >>> c  # doctest: +ELLIPSIS
     <Context object mapping 3 objects to 4 properties at 0x...>
 
-After creation, the parsed content of the table is available on the **context object**.
+After creation, the parsed content of the table is available on the **context
+object**.
 
 .. code:: python
 
@@ -58,9 +61,8 @@ After creation, the parsed content of the table is available on the **context ob
 
 
 The context object can be queried to return the **common properties** for a
-collection of objects (common *intent*, ``intension``) as well as the
-**common objects** for a collection of properties (common *extent*, 
-``extension``):
+collection of objects (common *intent*, ``intension``) as well as the **common
+objects** for a collection of properties (common *extent*,  ``extension``):
 
 .. code:: python
 
@@ -87,7 +89,7 @@ Formal concepts
 
 A pair of objects and properties such that the objects share exactly the
 properties and the properties apply to exactly the objects is called *formal
-concept*. Informally, they result from maximal rectangles of *X*-marks in the
+concept*. Informally, they result from maximal rectangles of ``X``-marks in the
 context table, when rows and columns can be reordered freely.
 
 You can retrieve the **closest matching concept** corresponding to a collection
@@ -104,8 +106,8 @@ of objects or properties with the ``__getitem__`` method of the concept object:
     >>> c[('King Arthur', 'Sir Robin')]
     (('King Arthur', 'Sir Robin'), ('human', 'knight'))
 
-Within each context, there is a **maximally general concept** comprising all
-of the objects as extent and having an empty intent (*supremum*).
+Within each context, there is a **maximally general concept** comprising all of
+the objects as extent and having an empty intent (*supremum*).
 
 .. code:: python
 
@@ -121,17 +123,18 @@ and having all properties as intent (*infimum*).
     >>> c[('mysterious', 'knight')]  # minimal concept, infimum
     ((), ('human', 'knight', 'king', 'mysterious'))
 
-The concepts of a context can be ordered by extent set-inclusion (or dually 
+The concepts of a context can be ordered by extent set-inclusion (or dually
 intent set-inclusion). With this (partial) order, they form a *concept lattice*
-having the **supremum** concept (i.e. the tautology) at the top, the **infimum** concept
-(i.e. the contradiction) at the bottom, and the other concepts in between.
+having the **supremum** concept (i.e. the tautology) at the top, the **infimum**
+concept (i.e. the contradiction) at the bottom, and the other concepts in
+between.
 
 
 Concept lattice
 ---------------
 
-The concept ``lattice`` of a context contains **all pairs of objects and properties**
-(*formal concepts*) that can be retrieved from a formal context:
+The concept ``lattice`` of a context contains **all pairs of objects and
+properties** (*formal concepts*) that can be retrieved from a formal context:
 
 .. code:: python
 
@@ -168,8 +171,9 @@ Individual concepts can be retrieved by different means :
     <Atom {holy grail} <-> [mysterious] <=> holy grail <=> mysterious>
 
 
-The concepts form a **directed acyclic graph** and are linked upward (more general
-concepts, superconcepts) and downward (less general concepts, subconcepts):
+The concepts form a **directed acyclic graph** and are linked upward (more
+general concepts, superconcepts) and downward (less general concepts,
+subconcepts):
 
 .. code:: python
 
@@ -214,13 +218,14 @@ To visualize the lattice, use its ``graphviz`` method:
     }
 
 .. image:: https://raw.github.com/xflr6/concepts/master/docs/holy-grail.png
+    :align: center
 
 
 For example:
 
 .. code:: python
 
-    >>> w = Context.from_file('examples/liveinwater.cxt')
+    >>> w = Context.fromfile('examples/liveinwater.cxt')
     >>> dot = w.lattice.graphviz()
 
     >>> print dot.source  # doctest: +ELLIPSIS, +NORMALIZE_WHITESPACE
@@ -242,24 +247,29 @@ For example:
     ...
 
 .. image:: https://raw.github.com/xflr6/concepts/master/docs/liveinwater.png
+    :align: center
 
 
 Persistence
 -----------
 
-Contexts can be loaded from and saved to files in cxt and table format:
+Contexts can be loaded from and saved to files in cxt, table, and csv format:
 
 .. code:: python
 
-    >>> c1 = Context.from_file('examples/liveinwater.cxt')
+    >>> c1 = Context.fromfile('examples/liveinwater.cxt')
     >>> c1  # doctest: +ELLIPSIS
     <Context object mapping 8 objects to 9 properties at 0x...>
 
-    >>> c2 = Context.from_file('examples/liveinwater.txt', frmat='table')
+    >>> c2 = Context.fromfile('examples/liveinwater.txt', frmat='table')
     >>> c2  # doctest: +ELLIPSIS
     <Context object mapping 8 objects to 9 properties at 0x...>
 
-    >>> c1 == c2
+    >>> c3 = Context.fromfile('examples/liveinwater.csv', frmat='csv')
+    >>> c3  # doctest: +ELLIPSIS
+    <Context object mapping 8 objects to 9 properties at 0x...>
+
+    >>> c1 == c2 == c3
     True
 
 
@@ -279,22 +289,45 @@ Further reading
 - http://en.wikipedia.org/wiki/Formal_concept_analysis
 - http://www.upriss.org.uk/fca/
 
-The generation of the concept lattice is based on the algorithm from
-C. Lindig. Fast Concept Analysis. In Gerhard Stumme, editors, Working
-with Conceptual Structures - Contributions to ICCS 2000, Shaker Verlag,
-Aachen, Germany, 2000.
+The generation of the concept lattice is based on the algorithm from C. Lindig.
+`Fast Concept Analysis`_. In Gerhard Stumme, editors, Working with Conceptual
+Structures - Contributions to ICCS 2000, Shaker Verlag, Aachen, Germany, 2000.
 
-- http://www.st.cs.uni-saarland.de/~lindig/papers/lindig-fca-2000.pdf
+The included example ``cxt`` files are taken from Uta Priss' `FCA homepage`_
 
-The included example cxt files are taken from `Uta Priss' FCA homepage
-<http://www.upriss.org.uk/fca/examples.html>`_
+
+See also
+--------
+
+The implementation is based on these Python packages:
+
+- bitsets_ |--| Ordered subsets over a predefined domain
+- graphviz_ |--| Simple Python interface for Graphviz
+
+The following package is build on top of concepts:
+
+- features_ |--| Feature set algebra for linguistics
 
 
 License
 -------
 
-Concepts is distributed under the `MIT license
-<http://opensource.org/licenses/MIT>`_.
+Concepts is distributed under the `MIT license`_.
+
+
+.. _FCA: http://en.wikipedia.org/wiki/Formal_concept_analysis
+.. _Fast Concept Analysis: http://www.st.cs.uni-saarland.de/~lindig/papers/lindig-fca-2000.pdf
+.. _FCA homepage: http://www.upriss.org.uk/fca/examples.html
+
+.. _bitsets: http://pypi.python.org/pypi/bitsets
+.. _graphviz: http://pypi.python.org/pypi/graphviz
+.. _features: http://pypi.python.org/pypi/features
+
+.. _MIT license: http://opensource.org/licenses/MIT
+
+
+.. |--| unicode:: U+2013
+
 
 .. |PyPI version| image:: https://pypip.in/v/concepts/badge.png
     :target: https://pypi.python.org/pypi/concepts

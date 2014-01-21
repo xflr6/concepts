@@ -3,6 +3,15 @@
 """Parse and serialize formal contexts in different formats."""
 
 from itertools import izip
+import contextlib
+import codecs
+import csv
+
+try:
+    import cStringIO as StringIO
+except ImportError:
+    import StringIO
+
 
 __all__ = ['Format']
 
@@ -10,19 +19,14 @@ __all__ = ['Format']
 class FormatMeta(type):
 
     _map = {}
-    _default = None
 
     def __init__(self, name, bases, dct):
         if '__metaclass__' not in dct:
             if 'name' not in dct:
                 self.name = name.lower()
             self._map[self.name] = self
-            if self.default:
-                self.__class__._default = self.name
 
     def __getitem__(self, name):
-        if not name:
-            name = self._default
         if name not in self._map:
             raise KeyError('%r unknown format: %r' % (self, name))
         return self._map[name]
@@ -33,21 +37,35 @@ class Format(object):
 
     __metaclass__ = FormatMeta
 
-    default = False
+    encoding = None
+
+    normalize_newlines = True
 
     @classmethod
     def load(cls, filename):
         """Load and parse serialized objects, properties, bools from file."""
-        with open(filename, 'rb') as fd:
-            source = fd.read()
+        if cls.encoding is None:
+            with open(filename, 'rb') as fd:
+                source = fd.read()
+        else:
+           with codecs.open(filename, 'rb', cls.encoding) as fd:
+                source = fs.read()
+ 
+        if cls.normalize_newlines:
+            source = source.replace('\r\n', '\n').replace('\r', '\n')
         return cls.loads(source)
 
     @classmethod
     def dump(cls, filename, objects, properties, bools):
         """Write serialized objects, properties, bools to file."""
         source = cls.dumps(objects, properties, bools)
-        with open(filename, 'wb') as fd:
-            fd.write(source)
+
+        if cls.encoding is None:
+            with open(filename, 'wb') as fd:
+                fd.write(source)
+        else:
+            with codecs.open(filename, 'wb', cls.encoding) as fd:
+                fd.write(source)
     
     @staticmethod
     def loads(source):
@@ -60,42 +78,8 @@ class Format(object):
         raise NotImplementedError
 
 
-class Table(Format):
-    """Formal context as ascii-art style table.
-
-    >>> print Table.dumps(['Cheddar', 'Limburger'], ['in_stock', 'sold_out'],
-    ... [(False, True), (False, True)])
-             |in_stock|sold_out|
-    Cheddar  |        |X       |
-    Limburger|        |X       |
-    """
-
-    default = True
-
-    @staticmethod
-    def loads(source):
-        lines = (l.partition('#')[0].strip() for l in source.splitlines())
-        lines = filter(None, lines)
-        properties = [p.strip() for p in lines[0].strip('|').split('|')]
-        table = [(obj.strip(),
-            [bool(f.strip()) for f in flags.strip('|').split('|')])
-            for obj, flags in
-                (objflags.partition('|')[::2] for objflags in lines[1:])]
-        objects, bools = zip(*table)
-        return objects, properties, bools
-
-    @staticmethod
-    def dumps(objects, properties, bools, indent=0):
-        wd = [max(len(o) for o in objects)] + map(len, properties)
-        tmpl = ' ' * indent + '|'.join('%%-%ds' % w for w in wd) + '|'
-        result = [tmpl % (('',) + tuple(properties))]
-        result.extend(tmpl % ((o,) + tuple('X' if b else '' for b in intent))
-            for o, intent in izip(objects, bools))
-        return '\n'.join(result)
-        
-        
 class Cxt(Format):
-    """Formal context in cxt format.
+    """Formal context in the classic CXT format.
 
     >>> print Cxt.dumps(['Cheddar', 'Limburger'], ['in_stock', 'sold_out'],
     ... [(False, True), (False, True)])
@@ -134,8 +118,116 @@ class Cxt(Format):
         return '\n'.join(result)
 
 
+class Table(Format):
+    """Formal context as ASCII-art style table.
+
+    >>> print Table.dumps(['Cheddar', 'Limburger'], ['in_stock', 'sold_out'],
+    ... [(False, True), (False, True)])
+             |in_stock|sold_out|
+    Cheddar  |        |X       |
+    Limburger|        |X       |
+    """
+
+    @staticmethod
+    def loads(source):
+        lines = (l.partition('#')[0].strip() for l in source.splitlines())
+        lines = filter(None, lines)
+        properties = [p.strip() for p in lines[0].strip('|').split('|')]
+        table = [(obj.strip(),
+            [bool(f.strip()) for f in flags.strip('|').split('|')])
+            for obj, flags in
+                (objflags.partition('|')[::2] for objflags in lines[1:])]
+        objects, bools = zip(*table)
+        return objects, properties, bools
+
+    @staticmethod
+    def dumps(objects, properties, bools, indent=0):
+        wd = [max(len(o) for o in objects)] + map(len, properties)
+        tmpl = ' ' * indent + '|'.join('%%-%ds' % w for w in wd) + '|'
+        result = [tmpl % (('',) + tuple(properties))]
+        result.extend(tmpl % ((o,) + tuple('X' if b else '' for b in intent))
+            for o, intent in izip(objects, bools))
+        return '\n'.join(result)
+
+
+class Csv(Format):
+    """Formal context as CSV table.
+
+    >>> print Csv.dumps(['Cheddar', 'Limburger'], ['in_stock', 'sold_out'],
+    ... [(False, True), (False, True)])  # doctest: +NORMALIZE_WHITESPACE
+    ,in_stock,sold_out
+    Cheddar,,X
+    Limburger,,X
+    <BLANKLINE>
+    """
+
+    dialect = 'excel'
+
+    @classmethod
+    def load(cls, filename, dialect=None):
+        if dialect is None:
+            dialect = cls.dialect
+
+        with open(filename, 'rb') as fd:
+            return cls._load(fd, dialect, cls.encoding)
+
+    @classmethod
+    def dump(cls, filename, objects, properties, bools, dialect=None):
+        if dialect is None:
+            dialect = cls.dialect
+
+        with open(filename, 'wb') as fd:
+            cls._dump(fd, objects, properties, bools, dialect, cls.encofing)
+
+    @classmethod
+    def loads(cls, source, dialect=None):
+        if dialect is None:
+            dialect = cls.dialect
+
+        with contextlib.closing(StringIO.StringIO(source)) as fd:
+            return cls._load(fd, dialect, cls.encoding)
+
+    @classmethod
+    def dumps(cls, objects, properties, bools, dialect=None):
+        if dialect is None:
+            dialect = cls.dialect
+
+        with contextlib.closing(StringIO.StringIO()) as fd:
+            cls._dump(fd, objects, properties, bools, dialect, cls.encoding)
+            return fd.getvalue()
+
+    @staticmethod
+    def _load(fd, dialect, encoding):
+        objects, bools = [], []
+        reader = csv.reader(fd, dialect)
+        if encoding is None:
+            properties = next(reader)[1:]
+            for cols in reader:
+                objects.append(cols[0])
+                bools.append(tuple(c == 'X' for c in cols[1:]))
+        else:
+            properties = [col.decode(encoding) for col in next(reader)[1:]]
+            for cols in reader:
+                objects.append(cols[0].decode(encoding))
+                bools.append(tuple(c == 'X' for c in cols[1:]))
+        return objects, properties, bools
+    
+    @staticmethod
+    def _dump(fd, objects, properties, bools, dialect, encoding):
+        symbool = ('', 'X').__getitem__
+        writer = csv.writer(fd, dialect)
+        if encoding is None:
+            writer.writerow([''] + list(properties))
+            writer.writerows([o] + map(symbool, bs)
+                for o, bs in izip(objects, bools))
+        else:
+            writer.writerow([''] + [p.encode(encoding) for p in properties])
+            writer.writerows([o.encode(encoding)] + map(symbool, bs)
+                for o, bs in izip(objects, bools))
+
+
 class WikiTable(Format):
-    """Formal context as mediawiki markup table.
+    """Formal context as MediaWiki markup table.
 
     >>> print WikiTable.dumps(['Cheddar', 'Limburger'], ['in_stock', 'sold_out'],
     ... [(False, True), (False, True)])

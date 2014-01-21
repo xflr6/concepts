@@ -16,7 +16,8 @@ __all__ = ['Lattice']
 class Lattice(object):
     """Formal concept lattice as directed acyclic graph of concepts.
 
-    >>> l = Lattice('''
+    >>> import contexts
+    >>> l = contexts.Context.fromstring('''
     ...    |+1|-1|+2|-2|+3|-3|+sg|+pl|-sg|-pl|
     ... 1sg| X|  |  | X|  | X|  X|   |   |  X|
     ... 1pl| X|  |  | X|  | X|   |  X|  X|   |
@@ -24,7 +25,7 @@ class Lattice(object):
     ... 2pl|  | X| X|  |  | X|   |  X|  X|   |
     ... 3sg|  | X|  | X| X|  |  X|   |   |  X|
     ... 3pl|  | X|  | X| X|  |   |  X|  X|   |
-    ... ''')
+    ... ''').lattice
 
     >>> l.infimum
     <Infimum {} <-> [+1 -1 +2 -2 +3 -3 +sg +pl -sg -pl]>
@@ -37,11 +38,6 @@ class Lattice(object):
     """
 
     def __init__(self, context, infimum=()):
-        if isinstance(context, basestring):  # mainly for doctests
-            from contexts import Context
-            context = Context.from_string(context)
-            context.__dict__['lattice'] = self
-
         self._context = context
 
         extent, intent = context.__getitem__(infimum, raw=True)
@@ -91,8 +87,8 @@ class Lattice(object):
         """Connect each concept with its neighbors and indirect neighbors."""
         Concepts = bitsets.bitset('Concepts', tuple(concepts),
             base=bitsets.bases.MemberBits)
-        BitSet = Concepts.from_members
-        Atoms = Concepts.from_int
+        BitSet = Concepts.frommembers
+        Atoms = Concepts.frombitset
 
         for i, c in enumerate(concepts):
             c._upper_neighbors = BitSet(c._upper_neighbors)
@@ -114,11 +110,11 @@ class Lattice(object):
         """Annotate object/attribute concepts with their objects/properties."""
         labels = collections.defaultdict(lambda: ([], []))
 
-        Extent = context._Extent.from_members
+        Extent = context._Extent.frommembers
         for o in context.objects:
             labels[Extent([o]).double()][0].append(o)
 
-        Intent = context._Intent.from_members
+        Intent = context._Intent.frommembers
         for p in context.properties:
             labels[Intent([p]).prime()][1].append(p)
 
@@ -131,9 +127,9 @@ class Lattice(object):
     def __getstate__(self):
         """Pickle as (context, concept_states) tuple."""
         concepts = [(c._extent, c._intent, c._minimal,
-            c._upper_neighbors.real, c._lower_neighbors.real,
-            c._upset.real, c._downset.real,
-            c._atoms.real) for c in self._concepts]
+            c._upper_neighbors.int, c._lower_neighbors.int,
+            c._upset.int, c._downset.int,
+            c._atoms.int) for c in self._concepts]
         return self._context, concepts
 
     def __setstate__(self, state):
@@ -142,7 +138,7 @@ class Lattice(object):
         self._concepts = [Concept(self, *s[:3]) for s in state]
         self._Concepts = bitsets.bitset('Concepts', tuple(self._concepts),
             base=bitsets.bases.MemberBits)
-        BitSet = self._Concepts.from_int
+        BitSet = self._Concepts.fromint
         self._map = mapping = {}
         for c, s in izip(self._concepts, state):
             mapping[c._extent] = c
@@ -180,7 +176,7 @@ class Lattice(object):
         >>> l(['+1', '-sg'])
         <Atom {1pl} <-> [+1 -2 -3 +pl -sg] <=> 1pl>
         """
-        extent = self._context._Intent.from_members(properties).prime()
+        extent = self._context._Intent.frommembers(properties).prime()
         return self._map[extent]
 
     def __iter__(self):
@@ -210,7 +206,7 @@ class Lattice(object):
         >>> l.join([])
         <Infimum {} <-> [+1 -1 +2 -2 +3 -3 +sg +pl -sg -pl]>
         """
-        join = self.infimum._extent
+        join = self._context._Extent.frombitset(self.infimum._extent)
         for c in concepts:
             join |= c._extent
         extent = self._context._extents.double(join)
@@ -224,7 +220,7 @@ class Lattice(object):
         >>> l.meet([])
         <Supremum {1sg, 1pl, 2sg, 2pl, 3sg, 3pl} <-> []>
         """
-        meet = self.supremum._extent
+        meet = self._context._Extent.frombitset(self.supremum._extent)
         for c in concepts:
             meet &= c._extent
         extent = self._context._extents.double(meet)
@@ -383,8 +379,9 @@ class Supremum(Concept):
 
 
 def _test(verbose=False):
+    import contexts
     global l
-    l = Lattice('''
+    l = contexts.Context.fromstring('''
        |+1|-1|+2|-2|+3|-3|+sg|+pl|-sg|-pl|
     1sg| X|  |  | X|  | X|  X|   |   |  X|
     1pl| X|  |  | X|  | X|   |  X|  X|   |
@@ -392,7 +389,7 @@ def _test(verbose=False):
     2pl|  | X| X|  |  | X|   |  X|  X|   |
     3sg|  | X|  | X| X|  |  X|   |   |  X|
     3pl|  | X|  | X| X|  |   |  X|  X|   |
-    ''')
+    ''').lattice
 
     import doctest
     doctest.testmod(verbose=verbose, extraglobs=locals())

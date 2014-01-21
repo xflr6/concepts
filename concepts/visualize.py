@@ -48,7 +48,7 @@ def render_all(filepattern, frmat='cxt'):
     from concepts import Context
 
     for filename in glob.glob(filepattern):
-        c = Context.from_file(filename, frmat)
+        c = Context.fromfile(filename, frmat)
         name, ext = os.path.splitext(filename)
         filename = '%s.gv' % name
 

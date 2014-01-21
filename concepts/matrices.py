@@ -23,8 +23,8 @@ class Vectors(bitsets.series.Tuple):
         self.relation = relation
         self.relation_index = index
 
-        _prime = other.BitSet.from_bools
-        _double = self.BitSet.from_bools
+        _prime = other.BitSet.frombools
+        _double = self.BitSet.frombools
 
         def prime(bitset):
             """FCA derivation operator (extent->intent, intent->extent)."""
@@ -52,7 +52,7 @@ class relation(tuple):
     >>> br
     <relation(ConditionVectors('1011', '1101'), SymbolVectors('11', '01', '10', '11'))>
 
-    >>> br[1].BitSet.from_members(('->', '<-')).prime().members()
+    >>> br[1].BitSet.frommembers(('->', '<-')).prime().members()
     ('TT', 'FF')
     """ 
 
@@ -68,8 +68,8 @@ class relation(tuple):
             X = bitsets.bitset(xname, xmembers, Vector, tuple=Vectors)
             Y = bitsets.bitset(yname, ymembers, Vector, tuple=Vectors)
 
-        x = X.Tuple.from_bools(xbools)
-        y = Y.Tuple.from_bools(izip(*x.bools()))
+        x = X.Tuple.frombools(xbools)
+        y = Y.Tuple.frombools(izip(*x.bools()))
 
         self = super(relation, cls).__new__(cls, (x, y))
 
