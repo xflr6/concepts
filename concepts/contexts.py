@@ -26,17 +26,17 @@ class Context(object):
     """
 
     @classmethod
-    def fromstring(cls, source, frmat='table'):
+    def fromstring(cls, source, frmat='table', **kwargs):
         """Return a new context from string source in given format."""
         frmat = formats.Format[frmat]
-        objects, properties, bools = frmat.loads(source)
+        objects, properties, bools = frmat.loads(source, **kwargs)
         return cls(objects, properties, bools)
 
     @classmethod
-    def fromfile(cls, filename, frmat='cxt'):
+    def fromfile(cls, filename, frmat='cxt', encoding=None, **kwargs):
         """Return a new context from file source in given format."""
         frmat = formats.Format[frmat]
-        objects, properties, bools = frmat.load(filename)
+        objects, properties, bools = frmat.load(filename, encoding, **kwargs)
         return cls(objects, properties, bools)
 
     def __init__(self, objects, properties, bools):
@@ -106,7 +106,7 @@ class Context(object):
             objects_ = objects | add
             intent = prime(objects_)
             extent = intent.prime()
-            if minimal & (extent & ~objects_):
+            if minimal & extent & ~objects_:
                 minimal &= ~add
             else:
                 yield extent, intent
@@ -165,6 +165,9 @@ class Context(object):
             len(self._Intent._members), id(self))
 
     def __str__(self):
+        return '%r\n%s' % (self, self.tostring(escape=True, indent=4))
+
+    def __unicode__(self):
         return '%r\n%s' % (self, self.tostring(indent=4))
 
     def tostring(self, frmat='table', **kwargs):
@@ -173,11 +176,11 @@ class Context(object):
         return frmat.dumps(self._Extent._members, self._Intent._members,
             self._intents.bools(), **kwargs)
 
-    def tofile(self, filename, frmat='cxt', **kwargs):
+    def tofile(self, filename, frmat='cxt', encoding=None, **kwargs):
         """Save the context serialized to file in the given format."""
         frmat = formats.Format[frmat]
         return frmat.dump(filename, self._Extent._members, self._Intent._members,
-            self._intents.bools(), **kwargs)
+            self._intents.bools(), encoding, **kwargs)
         
     @property
     def objects(self):

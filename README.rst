@@ -25,11 +25,11 @@ Formal contexts
 ---------------
 
 With Concepts, context objects can be created from a string with an ASCII-art
-style table. The objects and properties will simply be represented by strings.
-Separate the property columns with *pipe* symbols, create one row for each
-objects and indicate the presence of a property with the character *X*. Note
-that the object and property names need to be disjoint to uniquely identify
-them.
+style **table**. The objects and properties will simply be represented by
+strings. Separate the property columns with *pipe* symbols (`|`), create one
+row for each objects and indicate the presence of a property with the character
+`X`. Note that the object and property names need to be *disjoint* to uniquely
+identify them.
 
 .. code:: python
 
@@ -44,6 +44,9 @@ them.
 
     >>> c  # doctest: +ELLIPSIS
     <Context object mapping 3 objects to 4 properties at 0x...>
+
+You can also load contexts from files in different **plain-text formats**, see
+below.
 
 After creation, the parsed content of the table is available on the **context
 object**.
@@ -249,11 +252,17 @@ For example:
 .. image:: https://raw.github.com/xflr6/concepts/master/docs/liveinwater.png
     :align: center
 
+For details on the resulting objects intercase, check the documentation of
+`this package`__.
+
+.. __: http://pypi.python.org/pypi/graphviz
+
 
 Persistence
 -----------
 
-Contexts can be loaded from and saved to files in cxt, table, and csv format:
+Contexts can be loaded from and saved to files in CXT, ASCII-art table, and CSV
+format:
 
 .. code:: python
 
@@ -293,7 +302,7 @@ The generation of the concept lattice is based on the algorithm from C. Lindig.
 `Fast Concept Analysis`_. In Gerhard Stumme, editors, Working with Conceptual
 Structures - Contributions to ICCS 2000, Shaker Verlag, Aachen, Germany, 2000.
 
-The included example ``cxt`` files are taken from Uta Priss' `FCA homepage`_
+The included example ``CXT`` files are taken from Uta Priss' `FCA homepage`_
 
 
 See also
@@ -307,6 +316,15 @@ The implementation is based on these Python packages:
 The following package is build on top of concepts:
 
 - features_ |--| Feature set algebra for linguistics
+
+If you want to apply FCA to bigger data sets, you might want to consider `other
+implementations`__ based on `more sophisticated algorithms`__ like In-Close__
+or Fcbo__.
+
+.. __: http://www.upriss.org.uk/fca/fcasoftware.html
+.. __: http://www.upriss.org.uk/fca/fcaalgorithms.html
+.. __: http://sourceforge.net/projects/inclose/
+.. __: http://fcalgs.sourceforge.net/
 
 
 License

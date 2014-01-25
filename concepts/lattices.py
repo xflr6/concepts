@@ -41,7 +41,7 @@ class Lattice(object):
         self._context = context
 
         extent, intent = context.__getitem__(infimum, raw=True)
-        infimum = Infimum(self, extent, intent, intent)
+        infimum = Infimum(self, extent, intent)
 
         self._concepts, self._map = self._build(context, infimum)
         self._Concepts = self._link(self._concepts)
@@ -63,7 +63,6 @@ class Lattice(object):
         heap = [(concept._extent.shortlex(), concept)]
         push, pop = heapq.heappush, heapq.heappop
         get_neighbors = context._neighbors
-        get_minimal = context._minimal
         index = 0
         while heap:
             concept = pop(heap)[1]
@@ -74,8 +73,7 @@ class Lattice(object):
                 if extent in mapping:
                     neighbor = mapping[extent]
                 else:
-                    minimal = get_minimal(extent, intent)
-                    neighbor = Concept(self, extent, intent, minimal)
+                    neighbor = Concept(self, extent, intent)
                     mapping[extent] = neighbor
                     push(heap, (extent.shortlex(), neighbor))
                 concept._upper_neighbors.append(neighbor)
@@ -126,7 +124,7 @@ class Lattice(object):
 
     def __getstate__(self):
         """Pickle as (context, concept_states) tuple."""
-        concepts = [(c._extent, c._intent, c._minimal,
+        concepts = [(c._extent, c._intent,
             c._upper_neighbors.int, c._lower_neighbors.int,
             c._upset.int, c._downset.int,
             c._atoms.int) for c in self._concepts]
@@ -135,7 +133,7 @@ class Lattice(object):
     def __setstate__(self, state):
         """Unpickle from (context, concept_states) tuple."""
         self._context, state = state
-        self._concepts = [Concept(self, *s[:3]) for s in state]
+        self._concepts = [Concept(self, *s[:2]) for s in state]
         self._Concepts = bitsets.bitset('Concepts', tuple(self._concepts),
             base=bitsets.bases.MemberBits)
         BitSet = self._Concepts.fromint
@@ -193,6 +191,9 @@ class Lattice(object):
     def __str__(self):
         return '%r\n%s' % (self, '\n'.join('    %s' % c for c in self._concepts))
 
+    def __unicode__(self):
+        return '%r\n%s' % (self, '\n'.join(u'    %s' % c for c in self._concepts))
+
     @property
     def atoms(self):
         """Minimal non-infimum cocepts."""
@@ -234,11 +235,10 @@ class Lattice(object):
 class Concept(object):
     """Formal concept as pair of extent and intent."""
 
-    def __init__(self, lattice, extent, intent, minimal):
+    def __init__(self, lattice, extent, intent):
         self.lattice = lattice
         self._extent = extent
         self._intent = intent
-        self._minimal = minimal
         # these lists get replaced by bitsets in Lattice._link
         self._upper_neighbors = []
         self._lower_neighbors = []
@@ -258,10 +258,6 @@ class Concept(object):
         """Properties implied by the concept."""
         return self._intent.members()
 
-    @property
-    def minimal(self):
-        """Shortlex minimal properties generating the concept."""
-        return self._minimal.members()
 
     @property
     def upper_neighbors(self):
@@ -293,6 +289,11 @@ class Concept(object):
         """Shortlex ordered properties generating the concept."""
         minimize = self.lattice._context._minimize(self._extent, self._intent)
         return [i.members() for i in minimize]
+
+    @property
+    def minimal(self):
+        """Shortlex minimal properties generating the concept."""
+        return self.lattice._context._minimal(self._extent, self._intent).members()
 
     def implies(self, other):
         """Implication."""
@@ -353,6 +354,13 @@ class Concept(object):
             (self._extent | other._extent) == self.lattice.supremum._extent)
 
     def __str__(self):
+        extent = ', '.join(self._extent.members()).encode('unicode_escape')
+        intent = ' '.join(self._intent.members()).encode('unicode_escape')
+        objects = ' <=> %s' % ' '.join(self.objects).encode('unicode_escape') if self.objects else ''
+        properties = ' <=> %s' % ' '.join(self.properties).encode('unicode_escape') if self.properties else ''
+        return '{%s} <-> [%s]%s%s' % (extent, intent, objects, properties)
+
+    def __unicode__(self):
         extent = ', '.join(self._extent.members())
         intent = ' '.join(self._intent.members())
         objects = ' <=> %s' % ' '.join(self.objects) if self.objects else ''
@@ -368,6 +376,10 @@ class Concept(object):
 
 class Infimum(Concept):
     """Contradiction with empty extent and universal intent."""
+
+    @property
+    def minimal(self):
+        return self._intent.members()
 
 
 class Atom(Concept):

@@ -7,7 +7,7 @@ except ImportError:
 
 setup(
     name='concepts',
-    version='0.4',
+    version='0.4.1-dev',
     author='Sebastian Bank',
     author_email='sebastian.bank@uni-leipzig.de',
     description='Formal Concept Analysis with Python',

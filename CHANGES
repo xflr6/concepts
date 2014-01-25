@@ -2,6 +2,17 @@ Concepts Changelog
 ==================
 
 
+Version 0.4.1
+-------------
+
+TO BE RELEASED
+
+Improved unicode support.
+
+Changed conepts' minimal generating properties to be computed on request
+instead of being precomputed during lattice build.
+
+
 Version 0.4
 -----------
 

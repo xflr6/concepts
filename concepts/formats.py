@@ -12,6 +12,7 @@ try:
 except ImportError:
     import StringIO
 
+import tools
 
 __all__ = ['Format']
 
@@ -42,38 +43,44 @@ class Format(object):
     normalize_newlines = True
 
     @classmethod
-    def load(cls, filename):
+    def load(cls, filename, encoding):
         """Load and parse serialized objects, properties, bools from file."""
-        if cls.encoding is None:
+        if encoding is None:
+            encoding = cls.encoding
+
+        if encoding is None:
             with open(filename, 'rb') as fd:
                 source = fd.read()
         else:
-           with codecs.open(filename, 'rb', cls.encoding) as fd:
-                source = fs.read()
+           with codecs.open(filename, 'rb', encoding) as fd:
+                source = fd.read()
  
         if cls.normalize_newlines:
             source = source.replace('\r\n', '\n').replace('\r', '\n')
         return cls.loads(source)
 
     @classmethod
-    def dump(cls, filename, objects, properties, bools):
+    def dump(cls, filename, objects, properties, bools, encoding):
         """Write serialized objects, properties, bools to file."""
+        if encoding is None:
+            encoding = cls.encoding
+
         source = cls.dumps(objects, properties, bools)
 
-        if cls.encoding is None:
+        if encoding is None:
             with open(filename, 'wb') as fd:
                 fd.write(source)
         else:
-            with codecs.open(filename, 'wb', cls.encoding) as fd:
+            with codecs.open(filename, 'wb', encoding) as fd:
                 fd.write(source)
     
     @staticmethod
-    def loads(source):
+    def loads(source, **kwargs):
         """Parse source string and return objects, properties, bools."""
         raise NotImplementedError
 
     @staticmethod
-    def dumps(objects, properties, bools):
+    def dumps(objects, properties, bools, **kwargs):
         """Serialize objects, properties, bools and return string."""
         raise NotImplementedError
 
@@ -129,6 +136,10 @@ class Table(Format):
     """
 
     @staticmethod
+    def escape(item):
+        return unicode(item).encode('unicode_escape')
+
+    @staticmethod
     def loads(source):
         lines = (l.partition('#')[0].strip() for l in source.splitlines())
         lines = filter(None, lines)
@@ -141,7 +152,10 @@ class Table(Format):
         return objects, properties, bools
 
     @staticmethod
-    def dumps(objects, properties, bools, indent=0):
+    def dumps(objects, properties, bools, escape=False, indent=0):
+        if escape:
+            objects = map(Table.escape, objects)
+            properties = map(Table.escape, properties)
         wd = [max(len(o) for o in objects)] + map(len, properties)
         tmpl = ' ' * indent + '|'.join('%%-%ds' % w for w in wd) + '|'
         result = [tmpl % (('',) + tuple(properties))]
@@ -161,31 +175,37 @@ class Csv(Format):
     <BLANKLINE>
     """
 
-    dialect = 'excel'
+    dialect = csv.excel
 
     @classmethod
-    def load(cls, filename, dialect=None):
+    def load(cls, filename, encoding, dialect=None):
+        if encoding is None:
+            encoding = cls.encoding
+
         if dialect is None:
             dialect = cls.dialect
 
         with open(filename, 'rb') as fd:
-            return cls._load(fd, dialect, cls.encoding)
+            return cls._load(fd, dialect, encoding)
 
     @classmethod
-    def dump(cls, filename, objects, properties, bools, dialect=None):
+    def dump(cls, filename, objects, properties, bools, encoding, dialect=None):
+        if encoding is None:
+            encoding = cls.encoding
+
         if dialect is None:
             dialect = cls.dialect
 
         with open(filename, 'wb') as fd:
-            cls._dump(fd, objects, properties, bools, dialect, cls.encofing)
+            cls._dump(fd, objects, properties, bools, dialect, encoding)
 
     @classmethod
     def loads(cls, source, dialect=None):
         if dialect is None:
             dialect = cls.dialect
 
-        with contextlib.closing(StringIO.StringIO(source)) as fd:
-            return cls._load(fd, dialect, cls.encoding)
+        with contextlib.closing(StringIO.StringIO(source.encode('utf8'))) as fd:
+            return cls._load(fd, dialect, 'utf8')
 
     @classmethod
     def dumps(cls, objects, properties, bools, dialect=None):
@@ -193,37 +213,35 @@ class Csv(Format):
             dialect = cls.dialect
 
         with contextlib.closing(StringIO.StringIO()) as fd:
-            cls._dump(fd, objects, properties, bools, dialect, cls.encoding)
-            return fd.getvalue()
+            cls._dump(fd, objects, properties, bools, dialect, 'utf8')
+            return fd.getvalue().decode('utf8')
 
     @staticmethod
     def _load(fd, dialect, encoding):
         objects, bools = [], []
-        reader = csv.reader(fd, dialect)
         if encoding is None:
-            properties = next(reader)[1:]
-            for cols in reader:
-                objects.append(cols[0])
-                bools.append(tuple(c == 'X' for c in cols[1:]))
+            reader = csv.reader(fd, dialect)
         else:
-            properties = [col.decode(encoding) for col in next(reader)[1:]]
-            for cols in reader:
-                objects.append(cols[0].decode(encoding))
-                bools.append(tuple(c == 'X' for c in cols[1:]))
+            reader = tools.UnicodeReader(fd, dialect, encoding)
+        
+        properties = next(reader)[1:]
+        for cols in reader:
+            objects.append(cols[0])
+            bools.append(tuple(c == 'X' for c in cols[1:]))
+
         return objects, properties, bools
     
     @staticmethod
     def _dump(fd, objects, properties, bools, dialect, encoding):
-        symbool = ('', 'X').__getitem__
-        writer = csv.writer(fd, dialect)
         if encoding is None:
-            writer.writerow([''] + list(properties))
-            writer.writerows([o] + map(symbool, bs)
-                for o, bs in izip(objects, bools))
+            writer = csv.writer(fd, dialect)
         else:
-            writer.writerow([''] + [p.encode(encoding) for p in properties])
-            writer.writerows([o.encode(encoding)] + map(symbool, bs)
-                for o, bs in izip(objects, bools))
+            writer = tools.UnicodeWriter(fd, dialect, encoding)
+
+        symbool = ('', 'X').__getitem__
+        writer.writerow([''] + list(properties))
+        writer.writerows([o] + map(symbool, bs)
+            for o, bs in izip(objects, bools))
 
 
 class WikiTable(Format):

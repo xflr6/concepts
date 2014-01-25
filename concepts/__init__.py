@@ -3,14 +3,18 @@
 """Formal Concept Analysis (FCA) with Python."""
 
 __title__ = 'concepts'
-__version__ = '0.4'
+__version__ = '0.4.1-dev'
 __author__ = 'Sebastian Bank <sebastian.bank@uni-leipzig.de>'
 __license__ = 'MIT, see LICENSE'
 __copyright__ = 'Copyright (c) 2013-2014 Sebastian Bank'
 
 from contexts import Context
 
-__all__ = ['Context']
+__all__ = ['Context','load_csv']
+
+
+def load_csv(filename, dialect='excel', encoding='utf8'):
+    return Context.fromfile(filename, 'csv', encoding, dialect=dialect)
 
 
 def _test():
