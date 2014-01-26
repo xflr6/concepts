@@ -23,6 +23,8 @@ def lattice(lattice, filename, directory, render, view):
         edge_attr=dict(dir='none', labeldistance='1.5', minlen='2')
     )
 
+    sortkey = lambda c: c.index
+
     for concept in lattice._concepts:
         name = node_name(concept)
         dot.node(name)
@@ -37,7 +39,8 @@ def lattice(lattice, filename, directory, render, view):
                 taillabel=' '.join(concept.properties),
                 labelangle='90', color='transparent')
 
-        dot.edges((name, node_name(c)) for c in concept.lower_neighbors)
+        dot.edges((name, node_name(c))
+            for c in sorted(concept.lower_neighbors, key=sortkey))
 
     if render or view:
         dot.render(view=view)

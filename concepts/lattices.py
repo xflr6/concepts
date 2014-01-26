@@ -2,12 +2,9 @@
 
 """Formal Concept Analysis concept lattices."""
 
-from itertools import izip
 import heapq
-import collections
 
-import bitsets
-
+import tools
 import visualize
 
 __all__ = ['Lattice']
@@ -44,8 +41,8 @@ class Lattice(object):
         infimum = Infimum(self, extent, intent)
 
         self._concepts, self._map = self._build(context, infimum)
-        self._Concepts = self._link(self._concepts)
-        self._annotate(context, self._concepts)
+        self._link(self._concepts)
+        self._annotate(context, self._map)
 
         self.infimum = self._concepts[0]
         self.supremum = self._concepts[-1]
@@ -76,81 +73,63 @@ class Lattice(object):
                     neighbor = Concept(self, extent, intent)
                     mapping[extent] = neighbor
                     push(heap, (extent.shortlex(), neighbor))
-                concept._upper_neighbors.append(neighbor)
-                neighbor._lower_neighbors.append(concept)
+                concept.upper_neighbors.append(neighbor)
+                neighbor.lower_neighbors.append(concept)
         return concepts, mapping
 
     @staticmethod
     def _link(concepts):
         """Connect each concept with its neighbors and indirect neighbors."""
-        Concepts = bitsets.bitset('Concepts', tuple(concepts),
-            base=bitsets.bases.MemberBits)
-        BitSet = Concepts.frommembers
-        Atoms = Concepts.frombitset
+        shortlex = lambda c: c._extent.shortlex()
+        longlex = lambda c: c._extent.longlex()
 
-        for i, c in enumerate(concepts):
-            c._upper_neighbors = BitSet(c._upper_neighbors)
-            c._lower_neighbors = BitSet(c._lower_neighbors)
+        atoms = concepts[0].upper_neighbors
+        for i, c in enumerate(sorted(concepts, key=longlex)):  # downward
+            c.dindex = i
+            c.upper_neighbors = tuple(sorted(c.upper_neighbors, key=shortlex))
+            c.lower_neighbors = tuple(sorted(c.lower_neighbors, key=longlex))
             e = c._extent
-            c._upset = BitSet(u for u in concepts[i:] if e & u._extent == e)
-
-        atoms = concepts[0]._upper_neighbors
-        downward = sorted(concepts, key=lambda c: c._extent.longlex())
-        for i, c in enumerate(downward):
-            e = c._extent
-            c._downset = BitSet(d for d in downward[i:] if e | d._extent == e)
-            c._atoms = Atoms(c._downset & atoms)
-
-        return Concepts
+            c.atoms = tuple(a for a in atoms if e | a._extent == e)
 
     @staticmethod
-    def _annotate(context, concepts):
+    def _annotate(context, mapping):
         """Annotate object/attribute concepts with their objects/properties."""
-        labels = collections.defaultdict(lambda: ([], []))
-
         Extent = context._Extent.frommembers
+        touched = set()
         for o in context.objects:
-            labels[Extent([o]).double()][0].append(o)
+            c = mapping[Extent([o]).double()]
+            if c.objects:
+                c.objects.append(o)
+            else:
+                c.objects = [o]
+                touched.add(c)
+
+        for c in touched:
+            c.objects = tuple(c.objects)
 
         Intent = context._Intent.frommembers
+        touched = set()
         for p in context.properties:
-            labels[Intent([p]).prime()][1].append(p)
-
-        for c in concepts:
-            if c._extent in labels:
-                c.objects, c.properties = (tuple(l) for l in labels.pop(c._extent))
+            c = mapping[Intent([p]).prime()]
+            if c.properties:
+                c.properties.append(p)
             else:
-                c.objects = c.properties = ()
+                c.properties = [p]
+                touched.add(c)
+
+        for c in touched:
+            c.properties = tuple(c.properties)
 
     def __getstate__(self):
-        """Pickle as (context, concept_states) tuple."""
-        concepts = [(c._extent, c._intent,
-            c._upper_neighbors.int, c._lower_neighbors.int,
-            c._upset.int, c._downset.int,
-            c._atoms.int) for c in self._concepts]
-        return self._context, concepts
+        """Pickle as (context, concepts) tuple."""
+        return self._context, self._concepts
 
     def __setstate__(self, state):
-        """Unpickle from (context, concept_states) tuple."""
-        self._context, state = state
-        self._concepts = [Concept(self, *s[:2]) for s in state]
-        self._Concepts = bitsets.bitset('Concepts', tuple(self._concepts),
-            base=bitsets.bases.MemberBits)
-        BitSet = self._Concepts.fromint
-        self._map = mapping = {}
-        for c, s in izip(self._concepts, state):
-            mapping[c._extent] = c
-            (c._upper_neighbors, c._lower_neighbors,
-             c._upset, c._downset, c._atoms) = (BitSet(x) for x in s[3:])
-
-        self._annotate(self._context, self._concepts)
-
+        """Unpickle from (context, concepts) tuple."""
+        self._context, self._concepts = state
+        self._map = {c._extent: c for c in self._concepts}
         self.infimum = self._concepts[0]
-        self.infimum.__class__ = Infimum
         self.supremum = self._concepts[-1]
-        self.supremum.__class__ = Supremum
-        for a in self.infimum.upper_neighbors:
-            a.__class__ = Atom
 
     def __getitem__(self, key):
         """Return concept by index, intension, or extension.
@@ -227,6 +206,36 @@ class Lattice(object):
         extent = self._context._extents.double(meet)
         return self._map[extent]
 
+    def upset_union(self, concepts):
+        """Yield all concepts that subsume any of the given ones."""
+        heap = [(c.index, c) for c in tools.maximal(concepts,
+            comparison=Concept.properly_subsumes)]
+        heapq.heapify(heap)
+        push, pop = heapq.heappush, heapq.heappop
+        seen = - 1
+        while heap:
+            index, concept = pop(heap)
+            if index > seen:
+                seen = index
+                yield concept
+                for c in concept.upper_neighbors:
+                    push(heap, (c.index, c))
+
+    def downset_union(self, concepts):
+        """Yield all concepts that imply any of the given ones."""
+        heap = [(c.dindex, c) for c in tools.maximal(concepts,
+            comparison=Concept.properly_implies)]
+        heapq.heapify(heap)
+        push, pop = heapq.heappush, heapq.heappop
+        seen = - 1
+        while heap:
+            index, concept = pop(heap)
+            if index > seen:
+                seen = index
+                yield concept
+                for c in concept.lower_neighbors:
+                    push(heap, (c.dindex, c))
+
     def graphviz(self, filename=None, directory=None, render=False, view=False):
         """Return graphviz source for visualizing the lattice graph."""
         return visualize.lattice(self, filename, directory, render, view)
@@ -235,13 +244,17 @@ class Lattice(object):
 class Concept(object):
     """Formal concept as pair of extent and intent."""
 
+    objects = ()
+    properties = ()
+
     def __init__(self, lattice, extent, intent):
         self.lattice = lattice
         self._extent = extent
         self._intent = intent
-        # these lists get replaced by bitsets in Lattice._link
-        self._upper_neighbors = []
-        self._lower_neighbors = []
+        # these lists are replaced by tuples in Lattice._link
+        self.upper_neighbors = []
+        self.lower_neighbors = []
+        # which also sets dindex and atoms
 
     def __iter__(self):
         """Pair of extent and intent."""
@@ -258,42 +271,40 @@ class Concept(object):
         """Properties implied by the concept."""
         return self._intent.members()
 
+    def minimal(self):
+        """Shortlex minimal properties generating the concept."""
+        return self.lattice._context._minimal(self._extent, self._intent).members()
 
-    @property
-    def upper_neighbors(self):
-        """Immediately subsuming concepts."""
-        return self._upper_neighbors.members()
-
-    @property
-    def lower_neighbors(self):
-        """Immediately implying concepts."""
-        return self._lower_neighbors.members()
-
-    @property
-    def upset(self):
-        """Subsuming concepts."""
-        return self._upset.members()
-
-    @property
-    def downset(self):
-        """Implying concepts."""
-        return self._downset.members()
-
-    @property
-    def atoms(self):
-        """Subsumed minimal non-infimum concepts."""
-        return self._atoms.members()
-
-    @property
     def attributes(self):
         """Shortlex ordered properties generating the concept."""
         minimize = self.lattice._context._minimize(self._extent, self._intent)
         return [i.members() for i in minimize]
 
-    @property
-    def minimal(self):
-        """Shortlex minimal properties generating the concept."""
-        return self.lattice._context._minimal(self._extent, self._intent).members()
+    def upset(self):
+        """Subsuming concepts."""
+        heap = [(self.index, self)]
+        push, pop = heapq.heappush, heapq.heappop
+        seen = self.index - 1
+        while heap:
+            index, concept = pop(heap)
+            if index > seen:
+                seen = index
+                yield concept
+                for c in concept.upper_neighbors:
+                    push(heap, (c.index, c))
+
+    def downset(self):
+        """Implying concepts."""
+        heap = [(self.dindex, self)]
+        push, pop = heapq.heappush, heapq.heappop
+        seen = self.dindex - 1
+        while heap:
+            index, concept = pop(heap)
+            if index > seen:
+                seen = index
+                yield concept
+                for c in concept.lower_neighbors:
+                    push(heap, (c.dindex, c))
 
     def implies(self, other):
         """Implication."""
@@ -370,14 +381,10 @@ class Concept(object):
     def __repr__(self):
         return '<%s %s>' % (self.__class__.__name__, self)
 
-    def __reduce__(self):
-        return self.lattice, (self.intent,)
-
 
 class Infimum(Concept):
     """Contradiction with empty extent and universal intent."""
 
-    @property
     def minimal(self):
         return self._intent.members()
 

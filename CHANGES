@@ -2,15 +2,21 @@ Concepts Changelog
 ==================
 
 
-Version 0.4.1
--------------
+Version 0.5
+-----------
 
-TO BE RELEASED
+Upset and downset of concept object now are iterable-returning methods instead
+of properties (backwards incompatible). 
+
+Changed concept object minimal generating properties to be computed on request
+instead of being precomputed during lattice build; changed minimal and
+attributes from properties to methods (backwards incompatible). 
 
 Improved unicode support.
 
-Changed conepts' minimal generating properties to be computed on request
-instead of being precomputed during lattice build.
+Changed pickling of lattice and concepts.
+
+Changed ordering of downset and lower_neighbors to longlex.
 
 
 Version 0.4

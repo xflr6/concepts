@@ -95,8 +95,8 @@ class Context(object):
             if it.prime() == extent:
                 yield it
 
-    def _neighbors(self, objects):  # TODO: verify order
-        """Yield upper neighbors from extent.
+    def _neighbors(self, objects):
+        """Yield upper neighbors from extent (in colex order?).
 
         cf. C. Lindig. 2000. Fast Concept Analysis.
         """

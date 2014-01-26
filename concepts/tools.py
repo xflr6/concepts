@@ -2,6 +2,8 @@
 
 import csv
 import codecs
+from itertools import permutations, groupby, starmap
+import operator
 
 try:
     import cStringIO as StringIO
@@ -10,6 +12,22 @@ except ImportError:
 
 
 __all__ = ['lazyproperty', 'UnicodeReader', 'UnicodeWriter']
+
+
+def maximal(iterable, comparison=operator.lt, _groupkey=operator.itemgetter(0)):
+    """Yield the unique maximal elements from iterable using comparison.
+
+    >>> list(maximal([1, 2, 3, 3]))
+    [3]
+    >>> list(maximal([1]))
+    [1]
+    """
+    iterable = set(iterable)
+    if len(iterable) < 2:
+        return iterable
+    return (item for item, pairs
+        in groupby(permutations(iterable, 2), key=_groupkey)
+        if not any(starmap(comparison, pairs)))
 
 
 class lazyproperty(object):
