@@ -252,7 +252,7 @@ For example:
 .. image:: https://raw.github.com/xflr6/concepts/master/docs/liveinwater.png
     :align: center
 
-For details on the resulting objects intercase, check the documentation of
+For details on the resulting objects interface, check the documentation of
 `this package`__.
 
 .. __: http://pypi.python.org/pypi/graphviz

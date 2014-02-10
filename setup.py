@@ -7,7 +7,7 @@ except ImportError:
 
 setup(
     name='concepts',
-    version='0.5',
+    version='0.6',
     author='Sebastian Bank',
     author_email='sebastian.bank@uni-leipzig.de',
     description='Formal Concept Analysis with Python',
@@ -16,7 +16,7 @@ setup(
     url='http://github.com/xflr6/concepts',
     packages=['concepts'],
     install_requires=[
-        'bitsets==0.5.1',
+        'bitsets==0.6',
         'graphviz==0.2',
     ],
     platforms='any',

@@ -10,8 +10,7 @@ try:
 except ImportError:
     import StringIO
 
-
-__all__ = ['lazyproperty', 'UnicodeReader', 'UnicodeWriter']
+__all__ = ['maximal', 'lazyproperty', 'UnicodeReader', 'UnicodeWriter']
 
 
 def maximal(iterable, comparison=operator.lt, _groupkey=operator.itemgetter(0)):
@@ -19,6 +18,7 @@ def maximal(iterable, comparison=operator.lt, _groupkey=operator.itemgetter(0)):
 
     >>> list(maximal([1, 2, 3, 3]))
     [3]
+
     >>> list(maximal([1]))
     [1]
     """
@@ -111,11 +111,3 @@ class UnicodeWriter(object):
     def writerows(self, rows):
         for row in rows:
             self.writerow(row)
-
-
-def _test(verbose=False):
-    import doctest
-    doctest.testmod(verbose=verbose)
-
-if __name__ == '__main__':
-    _test()

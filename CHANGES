@@ -2,6 +2,16 @@ Concepts Changelog
 ==================
 
 
+Version 0.6
+-----------
+
+Added orthogonal_to.
+
+Changed attributes to return a generator instead of a list.
+
+Improved doctests.
+
+
 Version 0.5
 -----------
 

@@ -14,6 +14,7 @@ class Lattice(object):
     """Formal concept lattice as directed acyclic graph of concepts.
 
     >>> import contexts
+
     >>> l = contexts.Context.fromstring('''
     ...    |+1|-1|+2|-2|+3|-3|+sg|+pl|-sg|-pl|
     ... 1sg| X|  |  | X|  | X|  X|   |   |  X|
@@ -24,17 +25,91 @@ class Lattice(object):
     ... 3pl|  | X|  | X| X|  |   |  X|  X|   |
     ... ''').lattice
 
+    >>> print l  # doctest: +ELLIPSIS
+    <Lattice object of 6 atoms 22 concepts 5 coatoms at 0x...>
+        {} <-> [+1 -1 +2 -2 +3 -3 +sg +pl -sg -pl]
+        {1sg} <-> [+1 -2 -3 +sg -pl] <=> 1sg
+        {1pl} <-> [+1 -2 -3 +pl -sg] <=> 1pl
+        {2sg} <-> [-1 +2 -3 +sg -pl] <=> 2sg
+        {2pl} <-> [-1 +2 -3 +pl -sg] <=> 2pl
+        {3sg} <-> [-1 -2 +3 +sg -pl] <=> 3sg
+        {3pl} <-> [-1 -2 +3 +pl -sg] <=> 3pl
+        {1sg, 1pl} <-> [+1 -2 -3] <=> +1
+        {1sg, 2sg} <-> [-3 +sg -pl]
+        {1sg, 3sg} <-> [-2 +sg -pl]
+        {1pl, 2pl} <-> [-3 +pl -sg]
+        {1pl, 3pl} <-> [-2 +pl -sg]
+        {2sg, 2pl} <-> [-1 +2 -3] <=> +2
+        {2sg, 3sg} <-> [-1 +sg -pl]
+        {2pl, 3pl} <-> [-1 +pl -sg]
+        {3sg, 3pl} <-> [-1 -2 +3] <=> +3
+        {1sg, 2sg, 3sg} <-> [+sg -pl] <=> +sg -pl
+        {1pl, 2pl, 3pl} <-> [+pl -sg] <=> +pl -sg
+        {1sg, 1pl, 2sg, 2pl} <-> [-3] <=> -3
+        {1sg, 1pl, 3sg, 3pl} <-> [-2] <=> -2
+        {2sg, 2pl, 3sg, 3pl} <-> [-1] <=> -1
+        {1sg, 1pl, 2sg, 2pl, 3sg, 3pl} <-> []
+
+
     >>> l.infimum
     <Infimum {} <-> [+1 -1 +2 -2 +3 -3 +sg +pl -sg -pl]>
 
     >>> l.supremum
     <Supremum {1sg, 1pl, 2sg, 2pl, 3sg, 3pl} <-> []>
 
-    >>> l.atoms[0]
-    <Atom {1sg} <-> [+1 -2 -3 +sg -pl] <=> 1sg>
+    >>> l.atoms  # doctest: +NORMALIZE_WHITESPACE
+    (<Atom {1sg} <-> [+1 -2 -3 +sg -pl] <=> 1sg>,
+     <Atom {1pl} <-> [+1 -2 -3 +pl -sg] <=> 1pl>,
+     <Atom {2sg} <-> [-1 +2 -3 +sg -pl] <=> 2sg>,
+     <Atom {2pl} <-> [-1 +2 -3 +pl -sg] <=> 2pl>,
+     <Atom {3sg} <-> [-1 -2 +3 +sg -pl] <=> 3sg>,
+     <Atom {3pl} <-> [-1 -2 +3 +pl -sg] <=> 3pl>)
+
+
+    >>> l[('1sg', '1pl', '2pl')]
+    <Concept {1sg, 1pl, 2sg, 2pl} <-> [-3] <=> -3>
+
+    >>> l[('-1', '-sg')]
+    <Concept {2pl, 3pl} <-> [-1 +pl -sg]>
+
+    >>> l(['+1', '-sg'])
+    <Atom {1pl} <-> [+1 -2 -3 +pl -sg] <=> 1pl>
+
+
+    >>> l.join([l[('1sg',)], l[('1pl',)], l[('2sg',)]])
+    <Concept {1sg, 1pl, 2sg, 2pl} <-> [-3] <=> -3>
+
+    >>> l.join([])
+    <Infimum {} <-> [+1 -1 +2 -2 +3 -3 +sg +pl -sg -pl]>
+
+    >>> l.meet([l[('-1',)], l[('-2',)], l[('-pl',)]])
+    <Atom {3sg} <-> [-1 -2 +3 +sg -pl] <=> 3sg>
+
+    >>> l.meet([])
+    <Supremum {1sg, 1pl, 2sg, 2pl, 3sg, 3pl} <-> []>
+
+
+    >>> l = contexts.Context.fromstring('''
+    ...    |+1|-1|+2|-2|+3|-3|+sg|+du|+pl|-sg|-du|-pl|
+    ... 1s | X|  |  | X|  | X|  X|   |   |   |  X|  X|
+    ... 1de| X|  |  | X|  | X|   |  X|   |  X|   |  X|
+    ... 1pe| X|  |  | X|  | X|   |   |  X|  X|  X|   |
+    ... 1di| X|  | X|  |  | X|   |  X|   |  X|   |  X|
+    ... 1pi| X|  | X|  |  | X|   |   |  X|  X|  X|   |
+    ... 2s |  | X| X|  |  | X|  X|   |   |   |  X|  X|
+    ... 2d |  | X| X|  |  | X|   |  X|   |  X|   |  X|
+    ... 2p |  | X| X|  |  | X|   |   |  X|  X|  X|   |
+    ... 3s |  | X|  | X| X|  |  X|   |   |   |  X|  X|
+    ... 3d |  | X|  | X| X|  |   |  X|   |  X|   |  X|
+    ... 3p |  | X|  | X| X|  |   |   |  X|  X|  X|   |
+    ... ''').lattice
+
+    >>> l  # doctest: +ELLIPSIS
+    <Lattice object of 11 atoms 65 concepts 6 coatoms at 0x...>
     """
 
     def __init__(self, context, infimum=()):
+        """Create lattice from context."""
         self._context = context
 
         extent, intent = context.__getitem__(infimum, raw=True)
@@ -51,7 +126,7 @@ class Lattice(object):
             a.__class__ = Atom
 
     def _build(self, context, concept):
-        """Return the list of concept in short lexicographic order.
+        """Return list and map of concept in short lexicographic order.
 
         cf. C. Lindig. 2000. Fast Concept Analysis.
         """
@@ -121,39 +196,28 @@ class Lattice(object):
             c.properties = tuple(c.properties)
 
     def __getstate__(self):
-        """Pickle as (context, concepts) tuple."""
+        """Pickle lattice as (context, concepts) tuple."""
         return self._context, self._concepts
 
     def __setstate__(self, state):
-        """Unpickle from (context, concepts) tuple."""
+        """Unpickle lattice from (context, concepts) tuple."""
         self._context, self._concepts = state
         self._map = {c._extent: c for c in self._concepts}
         self.infimum = self._concepts[0]
         self.supremum = self._concepts[-1]
 
+    def __call__(self, properties):
+        """Return concept having all given properties as intension."""
+        extent = self._context._Intent.frommembers(properties).prime()
+        return self._map[extent]
+
     def __getitem__(self, key):
-        """Return concept by index, intension, or extension.
-
-        >>> l[('1sg', '1pl', '2pl')]
-        <Concept {1sg, 1pl, 2sg, 2pl} <-> [-3] <=> -3>
-
-        >>> l[('-1', '-sg')]
-        <Concept {2pl, 3pl} <-> [-1 +pl -sg]>
-        """
+        """Return concept by index, intension, or extension."""
         if isinstance(key, (int, slice)):
             return self._concepts[key]
         if not key:
             return self.supremum
         extent, intent = self._context.__getitem__(key, raw=True)
-        return self._map[extent]
-
-    def __call__(self, properties):
-        """Return concept having all given properties as intension.
-
-        >>> l(['+1', '-sg'])
-        <Atom {1pl} <-> [+1 -2 -3 +pl -sg] <=> 1pl>
-        """
-        extent = self._context._Intent.frommembers(properties).prime()
         return self._map[extent]
 
     def __iter__(self):
@@ -162,16 +226,16 @@ class Lattice(object):
     def __len__(self):
         return len(self._concepts)
 
-    def __repr__(self):
-        return '<%s object of %d atoms %d concepts %d coatoms at %#x>' % (
-            self.__class__.__name__, len(self.infimum.upper_neighbors),
-            len(self._concepts), len(self.supremum.lower_neighbors), id(self))
-
     def __str__(self):
         return '%r\n%s' % (self, '\n'.join('    %s' % c for c in self._concepts))
 
     def __unicode__(self):
         return '%r\n%s' % (self, '\n'.join(u'    %s' % c for c in self._concepts))
+
+    def __repr__(self):
+        return '<%s object of %d atoms %d concepts %d coatoms at %#x>' % (
+            self.__class__.__name__, len(self.infimum.upper_neighbors),
+            len(self._concepts), len(self.supremum.lower_neighbors), id(self))
 
     @property
     def atoms(self):
@@ -179,13 +243,7 @@ class Lattice(object):
         return self.infimum.upper_neighbors
 
     def join(self, concepts):
-        """Return the nearest concept that subsumes all given concepts.
-
-        >>> l.join([l[('1sg',)], l[('1pl',)], l[('2sg',)]])
-        <Concept {1sg, 1pl, 2sg, 2pl} <-> [-3] <=> -3>
-        >>> l.join([])
-        <Infimum {} <-> [+1 -1 +2 -2 +3 -3 +sg +pl -sg -pl]>
-        """
+        """Return the nearest concept that subsumes all given concepts."""
         join = self._context._Extent.frombitset(self.infimum._extent)
         for c in concepts:
             join |= c._extent
@@ -193,13 +251,7 @@ class Lattice(object):
         return self._map[extent]
 
     def meet(self, concepts):
-        """Return the nearest concept that implies all given concepts.
-
-        >>> l.meet([l[('-1',)], l[('-2',)], l[('-pl',)]])
-        <Atom {3sg} <-> [-1 -2 +3 +sg -pl] <=> 3sg>
-        >>> l.meet([])
-        <Supremum {1sg, 1pl, 2sg, 2pl, 3sg, 3pl} <-> []>
-        """
+        """Return the nearest concept that implies all given concepts."""
         meet = self._context._Extent.frombitset(self.supremum._extent)
         for c in concepts:
             meet &= c._extent
@@ -212,7 +264,7 @@ class Lattice(object):
             comparison=Concept.properly_subsumes)]
         heapq.heapify(heap)
         push, pop = heapq.heappush, heapq.heappop
-        seen = - 1
+        seen = -1
         while heap:
             index, concept = pop(heap)
             if index > seen:
@@ -227,7 +279,7 @@ class Lattice(object):
             comparison=Concept.properly_implies)]
         heapq.heapify(heap)
         push, pop = heapq.heappush, heapq.heappop
-        seen = - 1
+        seen = -1
         while heap:
             index, concept = pop(heap)
             if index > seen:
@@ -236,15 +288,152 @@ class Lattice(object):
                 for c in concept.lower_neighbors:
                     push(heap, (c.dindex, c))
 
+    def upset_generalization(self, concepts):  # EXPERIMENTAL
+        """Yield all concepts that subsume only the given ones."""
+        heap = [(c.index, c) for c in tools.maximal(concepts,
+            comparison=Concept.properly_subsumes)]
+        heapq.heapify(heap)
+        push, pop = heapq.heappush, heapq.heappop
+        target = self._context._Extent.reduce_or(c._extent for i, c in heap)
+        seen = -1
+        while heap:
+            index, concept = pop(heap)
+            if index > seen:
+                seen = index
+                if concept._extent | target == target:
+                    yield concept
+                    if concept._extent == target:
+                        return
+                    for c in concept.upper_neighbors:
+                        push(heap, (c.index, c))
+
     def graphviz(self, filename=None, directory=None, render=False, view=False):
         """Return graphviz source for visualizing the lattice graph."""
         return visualize.lattice(self, filename, directory, render, view)
 
 
 class Concept(object):
-    """Formal concept as pair of extent and intent."""
+    """Formal concept as pair of extent and intent.
+
+    >>> import contexts
+
+    >>> l = contexts.Context.fromstring('''
+    ...    |+1|-1|+2|-2|+3|-3|+sg|+pl|-sg|-pl|
+    ... 1sg| X|  |  | X|  | X|  X|   |   |  X|
+    ... 1pl| X|  |  | X|  | X|   |  X|  X|   |
+    ... 2sg|  | X| X|  |  | X|  X|   |   |  X|
+    ... 2pl|  | X| X|  |  | X|   |  X|  X|   |
+    ... 3sg|  | X|  | X| X|  |  X|   |   |  X|
+    ... 3pl|  | X|  | X| X|  |   |  X|  X|   |
+    ... ''').lattice
+
+    >>> c = l[('+1',)]
+
+    >>> c
+    <Concept {1sg, 1pl} <-> [+1 -2 -3] <=> +1>
+
+
+    >>> c.index, c.dindex
+    (7, 6)
+
+    >>> c.extent
+    ('1sg', '1pl')
+
+    >>> c.intent
+    ('+1', '-2', '-3')
+
+    >>> c.objects
+    ()
+
+    >>> c.properties
+    ('+1',)
+
+
+    >>> c.atoms  # doctest: +NORMALIZE_WHITESPACE
+    (<Atom {1sg} <-> [+1 -2 -3 +sg -pl] <=> 1sg>,
+     <Atom {1pl} <-> [+1 -2 -3 +pl -sg] <=> 1pl>)
+
+    >>> c.minimal()
+    ('+1',)
+
+    >>> list(c.attributes())
+    [('+1',), ('+1', '-2'), ('+1', '-3'), ('-2', '-3'), ('+1', '-2', '-3')]
+
+
+    >>> c.upper_neighbors  # doctest: +NORMALIZE_WHITESPACE
+    (<Concept {1sg, 1pl, 2sg, 2pl} <-> [-3] <=> -3>,
+     <Concept {1sg, 1pl, 3sg, 3pl} <-> [-2] <=> -2>)
+
+    >>> c.lower_neighbors  # doctest: +NORMALIZE_WHITESPACE
+    (<Atom {1sg} <-> [+1 -2 -3 +sg -pl] <=> 1sg>,
+     <Atom {1pl} <-> [+1 -2 -3 +pl -sg] <=> 1pl>)
+
+    >>> list(c.upset())  # doctest: +NORMALIZE_WHITESPACE
+    [<Concept {1sg, 1pl} <-> [+1 -2 -3] <=> +1>,
+     <Concept {1sg, 1pl, 2sg, 2pl} <-> [-3] <=> -3>,
+     <Concept {1sg, 1pl, 3sg, 3pl} <-> [-2] <=> -2>,
+     <Supremum {1sg, 1pl, 2sg, 2pl, 3sg, 3pl} <-> []>]
+
+    >>> list(c.downset())  # doctest: +NORMALIZE_WHITESPACE
+    [<Concept {1sg, 1pl} <-> [+1 -2 -3] <=> +1>,
+     <Atom {1sg} <-> [+1 -2 -3 +sg -pl] <=> 1sg>,
+     <Atom {1pl} <-> [+1 -2 -3 +pl -sg] <=> 1pl>,
+     <Infimum {} <-> [+1 -1 +2 -2 +3 -3 +sg +pl -sg -pl]>]
+
+
+    >>> l[('+1',)] <= l[('-3',)] <= l[('-3',)] <= l[()]
+    True
+
+    >>> l[('+1',)] <= l[('+sg',)] or l[('+sg',)] <= l[('+1',)]
+    False
+
+    >>> l[('+1',)] >= l[('+1', '+sg')] >= l[('+1', '+sg')] >= l[('+1', '-1')]
+    True
+
+    >>> l[('+1',)] >= l[('+sg',)] or l[('+sg',)] >= l[('+1',)]
+    False
+
+    >>> l[('+1',)] < l[('-3',)] < l[()]
+    True
+
+    >>> l[('+1',)] > l[('+1', '+sg')] > l[('+1', '-1')]
+    True
+
+
+    >>> l[('+1',)] | l[('+2',)]
+    <Concept {1sg, 1pl, 2sg, 2pl} <-> [-3] <=> -3>
+
+    >>> l[('-1', '-2')] & l[('-pl',)]
+    <Atom {3sg} <-> [-1 -2 +3 +sg -pl] <=> 3sg>
+
+
+    >>> l[('+1',)].incompatible_with(l[('+3',)]) 
+    True
+
+    >>> l[('+1',)].incompatible_with(l[('+sg',)])
+    False
+
+    >>> l[('+1',)].complement_of(l[('-1',)])
+    True
+
+    >>> l[('+1',)].complement_of(l[('+3',)])
+    False
+
+    >>> l[('-1',)].subcontrary_with(l[('-3',)]) 
+    True
+
+    >>> l[('-1',)].subcontrary_with(l[('+sg',)]) 
+    False
+
+    >>> l[('+1',)].orthogonal_to(l[('+sg',)])
+    True
+
+    >>> l[('+1',)].orthogonal_to(l[('+3',)])
+    False
+    """
 
     objects = ()
+
     properties = ()
 
     def __init__(self, lattice, extent, intent):
@@ -278,13 +467,12 @@ class Concept(object):
     def attributes(self):
         """Shortlex ordered properties generating the concept."""
         minimize = self.lattice._context._minimize(self._extent, self._intent)
-        return [i.members() for i in minimize]
+        return (i.members() for i in minimize)
 
     def upset(self):
         """Subsuming concepts."""
-        heap = [(self.index, self)]
-        push, pop = heapq.heappush, heapq.heappop
-        seen = self.index - 1
+        heap, push, pop = [(self.index, self)], heapq.heappush, heapq.heappop
+        seen = -1
         while heap:
             index, concept = pop(heap)
             if index > seen:
@@ -295,9 +483,8 @@ class Concept(object):
 
     def downset(self):
         """Implying concepts."""
-        heap = [(self.dindex, self)]
-        push, pop = heapq.heappush, heapq.heappop
-        seen = self.dindex - 1
+        heap, push, pop = [(self.dindex, self)], heapq.heappush, heapq.heappop
+        seen = -1
         while heap:
             index, concept = pop(heap)
             if index > seen:
@@ -314,6 +501,9 @@ class Concept(object):
         """Subsumption."""
         return self._extent | other._extent == self._extent
 
+    __le__ = implies
+    __ge__ = subsumes
+
     def properly_implies(self, other):
         """Proper implication."""
         return self._extent & other._extent == self._extent != other._extent
@@ -322,27 +512,17 @@ class Concept(object):
         """Proper subsumption."""
         return self._extent | other._extent == self._extent != other._extent
 
-    __le__ = implies
-    __ge__ = subsumes
     __lt__ = properly_implies
     __gt__ = properly_subsumes
 
     def join(self, other):
-        """Least upper bound, supremum, or, intersection.
-
-        >>> l[('+1',)] | l[('+2',)]
-        <Concept {1sg, 1pl, 2sg, 2pl} <-> [-3] <=> -3>
-        """
+        """Least upper bound, supremum, or, generalization."""
         common = self._extent | other._extent
         extent = self.lattice._context._extents.double(common)
         return self.lattice._map[extent]
 
     def meet(self, other):
-        """Greatest lower bound, infimum, and, unification.
-
-        >>> l[('-1', '-2')] & l[('-pl',)]
-        <Atom {3sg} <-> [-1 -2 +3 +sg -pl] <=> 3sg>
-        """
+        """Greatest lower bound, infimum, and, unification."""
         common = self._extent & other._extent
         extent = self.lattice._context._extents.double(common)
         return self.lattice._map[extent]
@@ -363,6 +543,12 @@ class Concept(object):
         """Non-infimum meet and supremum join."""
         return (self._extent & other._extent and
             (self._extent | other._extent) == self.lattice.supremum._extent)
+
+    def orthogonal_to(self, other):
+        """Non-infimum meet, incomparable, and non-supremum join."""
+        meet = self._extent & other._extent
+        return (not not meet and meet != self._extent and meet != other._extent
+            and (self._extent | other._extent) != self.lattice.supremum._extent)
 
     def __str__(self):
         extent = ', '.join(self._extent.members()).encode('unicode_escape')
@@ -395,23 +581,3 @@ class Atom(Concept):
 
 class Supremum(Concept):
     """Tautology with universal extent and empty intent."""
-
-
-def _test(verbose=False):
-    import contexts
-    global l
-    l = contexts.Context.fromstring('''
-       |+1|-1|+2|-2|+3|-3|+sg|+pl|-sg|-pl|
-    1sg| X|  |  | X|  | X|  X|   |   |  X|
-    1pl| X|  |  | X|  | X|   |  X|  X|   |
-    2sg|  | X| X|  |  | X|  X|   |   |  X|
-    2pl|  | X| X|  |  | X|   |  X|  X|   |
-    3sg|  | X|  | X| X|  |  X|   |   |  X|
-    3pl|  | X|  | X| X|  |   |  X|  X|   |
-    ''').lattice
-
-    import doctest
-    doctest.testmod(verbose=verbose, extraglobs=locals())
-
-if __name__ == '__main__':
-    _test()

@@ -271,11 +271,3 @@ class WikiTable(Format):
                     for w, b in izip(wp, intent))]
         result.append('|}')
         return '\n'.join(result)
-
-
-def _test(verbose=False):
-    import doctest
-    doctest.testmod(verbose=verbose)
-
-if __name__ == '__main__':
-    _test()

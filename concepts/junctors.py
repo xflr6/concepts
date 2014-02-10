@@ -1,6 +1,10 @@
 # junctors.py - logical relations between contingent boolean vectors
 
-"""Logical relations between sequences of truth conditions."""
+"""Logical relations between sequences of truth conditions.
+
+http://commons.wikimedia.org/wiki/File:Logical_connectives_Hasse_diagram.svg
+http://en.wikiversity.org/wiki/File:Logic_matrix;_operations.svg
+"""
 
 from itertools import izip, combinations
 
@@ -65,13 +69,15 @@ class RelationMeta(type):
         else:
             def get_prop(fg):
                 return flags[fg.strip()]
+
         properties = [get_prop(fg) for fg in table[0].strip('|').split('|')]
         obj_flags = [(obj.split(), [bool(p.strip()) for p in props.split('|')])
             for obj, props in (l.strip('|').partition('|')[::2] for l in table[1:])]
+
         for index, ((name, symbol, order), flags) in enumerate(obj_flags):
             pattern = frozenset(p for p, f in izip(properties,flags) if f)
-            ns = {'index': index, 'order': int(order), 'kind': name.lower(),
-                'symbol': symbol, 'pattern': pattern}
+            ns = {'index': index, 'order': int(order),
+                'kind': name.lower(), 'symbol': symbol, 'pattern': pattern}
             cls = type(name, (self,), ns)
             globals()[cls.__name__] = self.__map[pattern] = cls
             __all__.append(cls.__name__)
@@ -140,11 +146,3 @@ class Binary(Relation):
 
     def __repr__(self):
         return '<%r %s %r>' % (self.left, self.__class__.__name__, self.right)
-
-
-def _test(verbose=False):
-    import doctest
-    doctest.testmod(verbose=verbose)
-
-if __name__ == '__main__':
-    _test()

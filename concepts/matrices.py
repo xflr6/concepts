@@ -89,11 +89,3 @@ class relation(tuple):
         ids = (X._id, Y._id)
         args = (X.__name__, Y.__name__, X._members, Y._members, bools, ids)
         return relation, args
-        
-
-def _test(verbose=False):
-    import doctest
-    doctest.testmod(verbose=verbose)
-
-if __name__ == '__main__':
-    _test()

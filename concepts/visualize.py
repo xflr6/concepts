@@ -7,9 +7,9 @@ import graphviz
 
 __all__ = ['lattice', 'render_all']
 
+SORTKEYS = [lambda c: c.index]
 
-def node_name(concept):
-    return 'c%d' % concept.index
+NAME_GETTERS = [lambda c: 'c%d' % c.index]
 
 
 def lattice(lattice, filename, directory, render, view):
@@ -23,7 +23,9 @@ def lattice(lattice, filename, directory, render, view):
         edge_attr=dict(dir='none', labeldistance='1.5', minlen='2')
     )
 
-    sortkey = lambda c: c.index
+    sortkey = SORTKEYS[0]
+
+    node_name = NAME_GETTERS[0]
 
     for concept in lattice._concepts:
         name = node_name(concept)
@@ -47,12 +49,12 @@ def lattice(lattice, filename, directory, render, view):
     return dot
 
 
-def render_all(filepattern, frmat='cxt'):
+def render_all(filepattern='*.cxt', frmat='cxt'):
     from concepts import Context
 
-    for filename in glob.glob(filepattern):
-        c = Context.fromfile(filename, frmat)
-        name, ext = os.path.splitext(filename)
+    for cxtfile in glob.glob(filepattern):
+        c = Context.fromfile(cxtfile, frmat)
+        name, ext = os.path.splitext(cxtfile)
         filename = '%s.gv' % name
 
         lattice(c.lattice, filename, None, True, False)
