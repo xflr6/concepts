@@ -7,10 +7,10 @@ Concepts is a simple Python implementation of **Formal Concept Analysis**
 (FCA_).
 
 FCA provides a mathematical model for describing a set of **objects** (e.g. King
-Arthur, Sir Robin, and the holy grail) with a set of **properties** or features
-(e.g. human, knight, king, and mysterious) which each of the objects either has
-or not. A table called *formal context* defines which objects have a given
-property and vice versa which properties a given object has.
+Arthur, Sir Robin, and the holy grail) with a set of **properties** (e.g. human,
+knight, king, and mysterious) which each of the objects either has or not. A
+table called *formal context* defines which objects have a given property and
+vice versa which properties a given object has.
 
 
 Installation
@@ -24,11 +24,13 @@ Installation
 Formal contexts
 ---------------
 
-With Concepts, context objects can be created from a string with an ASCII-art
-style **table**. The objects and properties will simply be represented by
-strings. Separate the property columns with *pipe* symbols (`|`), create one
-row for each objects and indicate the presence of a property with the character
-`X`. Note that the object and property names need to be *disjoint* to uniquely
+With Concepts, formal contexts can be created from a string with an ASCII-art
+style **cross-table**. The objects and properties will simply be represented by
+strings. Separate the property columns with *pipe* symbols (`|`), create one row
+for each objects, one column for each property, and indicate the presence of a
+property with the character `X`.
+
+Note that the object and property names need to be *disjoint* to uniquely
 identify them.
 
 .. code:: python
@@ -228,6 +230,40 @@ For example:
 
 .. code:: python
 
+    >>> h = Context.fromstring('''
+    ...      |male|female|adult|child|
+    ... man  |  X |      |  X  |     |
+    ... woman|    |   X  |  X  |     |
+    ... boy  |  X |      |     |  X  |
+    ... girl |    |   X  |     |  X  |
+    ... ''')
+    >>> dot = h.lattice.graphviz()
+
+    >>> print dot.source  # doctest: +ELLIPSIS, +NORMALIZE_WHITESPACE
+    // <Lattice object of 4 atoms 10 concepts 4 coatoms at 0x...>
+    digraph Lattice {
+    node [width=.25 style=filled shape=circle label=""]
+    edge [labeldistance=1.5 dir=none minlen=2]
+    	c0
+    	c1
+    		c1 -> c1 [color=transparent headlabel=man labelangle=270]
+    		c1 -> c0
+    	c2
+    		c2 -> c2 [color=transparent headlabel=woman labelangle=270]
+    		c2 -> c0
+    	c3
+    		c3 -> c3 [color=transparent headlabel=boy labelangle=270]
+    		c3 -> c0
+    ...
+
+.. image:: https://raw.github.com/xflr6/concepts/master/docs/human.png
+    :align: center
+
+
+A more complex example:
+
+.. code:: python
+
     >>> w = Context.fromfile('examples/liveinwater.cxt')
     >>> dot = w.lattice.graphviz()
 
@@ -261,7 +297,7 @@ For details on the resulting objects interface, check the documentation of
 Persistence
 -----------
 
-Contexts can be loaded from and saved to files in CXT, ASCII-art table, and CSV
+Contexts can be loaded from and saved to files in CXT, CSV, and ASCII-art table
 format:
 
 .. code:: python
@@ -270,11 +306,11 @@ format:
     >>> c1  # doctest: +ELLIPSIS
     <Context object mapping 8 objects to 9 properties at 0x...>
 
-    >>> c2 = Context.fromfile('examples/liveinwater.txt', frmat='table')
+    >>> c2 = Context.fromfile('examples/liveinwater.csv', frmat='csv')
     >>> c2  # doctest: +ELLIPSIS
     <Context object mapping 8 objects to 9 properties at 0x...>
 
-    >>> c3 = Context.fromfile('examples/liveinwater.csv', frmat='csv')
+    >>> c3 = Context.fromfile('examples/liveinwater.txt', frmat='table')
     >>> c3  # doctest: +ELLIPSIS
     <Context object mapping 8 objects to 9 properties at 0x...>
 
