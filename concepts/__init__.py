@@ -3,7 +3,7 @@
 """Formal Concept Analysis (FCA) with Python."""
 
 __title__ = 'concepts'
-__version__ = '0.6.1'
+__version__ = '0.6.2'
 __author__ = 'Sebastian Bank <sebastian.bank@uni-leipzig.de>'
 __license__ = 'MIT, see LICENSE'
 __copyright__ = 'Copyright (c) 2013-2014 Sebastian Bank'
