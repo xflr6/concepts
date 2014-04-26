@@ -4,16 +4,16 @@
 
 import heapq
 
-import tools
-import visualize
+from . import _compat, tools, visualize
 
 __all__ = ['Lattice']
 
 
+@_compat.python3_unicode_to_str
 class Lattice(object):
     """Formal concept lattice as directed acyclic graph of concepts.
 
-    >>> import contexts
+    >>> from concepts import contexts
 
     >>> l = contexts.Context.fromstring('''
     ...    |+1|-1|+2|-2|+3|-3|+sg|+pl|-sg|-pl|
@@ -25,7 +25,7 @@ class Lattice(object):
     ... 3pl|  | X|  | X| X|  |   |  X|  X|   |
     ... ''').lattice
 
-    >>> print l  # doctest: +ELLIPSIS
+    >>> print(l)  # doctest: +ELLIPSIS
     <Lattice object of 6 atoms 22 concepts 5 coatoms at 0x...>
         {} <-> [+1 -1 +2 -2 +3 -3 +sg +pl -sg -pl]
         {1sg} <-> [+1 -2 -3 +sg -pl] <=> 1sg
@@ -312,10 +312,11 @@ class Lattice(object):
         return visualize.lattice(self, filename, directory, render, view)
 
 
+@_compat.python3_unicode_to_str
 class Concept(object):
     """Formal concept as pair of extent and intent.
 
-    >>> import contexts
+    >>> from concepts import contexts
 
     >>> l = contexts.Context.fromstring('''
     ...    |+1|-1|+2|-2|+3|-3|+sg|+pl|-sg|-pl|

@@ -2,15 +2,12 @@
 
 import csv
 import codecs
-from itertools import permutations, groupby, starmap
 import operator
+from itertools import permutations, groupby, starmap
 
-try:
-    import cStringIO as StringIO
-except ImportError:
-    import StringIO
+from ._compat import StringIO
 
-__all__ = ['maximal', 'lazyproperty', 'UnicodeReader', 'UnicodeWriter']
+__all__ = ['maximal', 'lazyproperty', 'unicode_csv_reader', 'UnicodeWriter']
 
 
 def maximal(iterable, comparison=operator.lt, _groupkey=operator.itemgetter(0)):
@@ -62,36 +59,22 @@ class lazyproperty(object):
 
 # from stdlib recipe
 
-class UTF8Recoder(object):
 
-    def __init__(self, f, encoding):
-        self.reader = codecs.getreader(encoding)(f)
-
-    def __iter__(self):
-        return self
-
-    def next(self):
-        return self.reader.next().encode('utf8')
+def unicode_csv_reader(unicode_csv_data, dialect=csv.excel, **kwargs):
+    csv_reader = csv.reader(utf_8_encoder(unicode_csv_data), dialect=dialect, **kwargs)
+    for row in csv_reader:
+        yield [unicode(cell, 'utf-8') for cell in row]
 
 
-class UnicodeReader(object):
-
-    def __init__(self, f, dialect=csv.excel, encoding='utf8', **kwargs):
-        f = UTF8Recoder(f, encoding)
-        self.reader = csv.reader(f, dialect=dialect, **kwargs)
-
-    def next(self):
-        row = self.reader.next()
-        return [unicode(s, 'utf8') for s in row]
-
-    def __iter__(self):
-        return self
+def utf_8_encoder(unicode_csv_data):
+    for line in unicode_csv_data:
+        yield line.encode('utf-8')
 
 
 class UnicodeWriter(object):
 
     def __init__(self, f, dialect=csv.excel, encoding='utf-8', **kwargs):
-        self.queue = StringIO.StringIO()
+        self.queue = StringIO()
         self.writer = csv.writer(self.queue, dialect=dialect, **kwargs)
         self.stream = f
         self.encoder = codecs.getincrementalencoder(encoding)()

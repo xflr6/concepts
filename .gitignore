@@ -1,7 +1,11 @@
-*.py[cod]
+*.py[co]
+__pycache__/
 MANIFEST
+build/
 dist/
 *.egg-info/
-examples/*.gv
-examples/*.gv.pdf
+.coverage
+
 Thumbs.db
+
+visualize-output/

@@ -6,7 +6,9 @@ http://commons.wikimedia.org/wiki/File:Logical_connectives_Hasse_diagram.svg
 http://en.wikiversity.org/wiki/File:Logic_matrix;_operations.svg
 """
 
-from itertools import izip, combinations
+from itertools import combinations
+
+from ._compat import zip, with_metaclass
 
 __all__ = ['relations']
 
@@ -36,10 +38,10 @@ class relations(list):
     def __init__(self, items, booleans):
         """Filter out items with tautological or contradictory booleans."""
         unary = [Relation(i, None, bools)
-            for i, bools in izip(items, booleans)]
+            for i, bools in zip(items, booleans)]
         combos = combinations(((u.left, u.bools)
             for u in unary if u.__class__ is Contingency), 2)
-        binary = (Relation(l, r, izip(lbools, rbools))
+        binary = (Relation(l, r, zip(lbools, rbools))
             for (l, lbools), (r, rbools) in combos)
 
         super(relations, self).__init__(binary)
@@ -53,7 +55,7 @@ class relations(list):
 
 
 class RelationMeta(type):
-    """Build and retrieve conrete relation subclasses from docstring tables."""
+    """Build and retrieve conrete Relation subclasses from docstring tables."""
 
     __map = {}
 
@@ -75,7 +77,7 @@ class RelationMeta(type):
             for obj, props in (l.strip('|').partition('|')[::2] for l in table[1:])]
 
         for index, ((name, symbol, order), flags) in enumerate(obj_flags):
-            pattern = frozenset(p for p, f in izip(properties,flags) if f)
+            pattern = frozenset(p for p, f in zip(properties,flags) if f)
             ns = {'index': index, 'order': int(order),
                 'kind': name.lower(), 'symbol': symbol, 'pattern': pattern}
             cls = type(name, (self,), ns)
@@ -92,10 +94,8 @@ class RelationMeta(type):
         return super(RelationMeta, self).__call__(left, right)
 
 
-class Relation(object):
+class Relation(with_metaclass(RelationMeta, object)):
     """Logical characteristics of truth condition sequences."""
-
-    __metaclass__ = RelationMeta
 
 
 class Unary(Relation):

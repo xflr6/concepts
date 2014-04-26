@@ -1,5 +1,9 @@
+#!/usr/bin/env python
 # visualize-examples.py
 
 import concepts.visualize
 
-concepts.visualize.render_all('examples/*.cxt')
+DIRECTORY = 'visualize-output'
+
+
+concepts.visualize.render_all('examples/*.cxt', DIRECTORY)

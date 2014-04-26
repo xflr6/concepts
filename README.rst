@@ -16,6 +16,8 @@ vice versa which properties a given object has.
 Installation
 ------------
 
+This package runs under Python 2.7 and 3.3+, use pip_ to install:
+
 .. code:: bash
 
     $ pip install concepts
@@ -152,7 +154,7 @@ properties** (*formal concepts*) that can be retrieved from a formal context:
     <Lattice object of 2 atoms 5 concepts 2 coatoms at 0x...>
 
     >>> for extent, intent in l:
-    ...     print extent, intent
+    ...     print('%r %r' % (extent, intent))
     () ('human', 'knight', 'king', 'mysterious')
     ('King Arthur',) ('human', 'knight', 'king')
     ('holy grail',) ('mysterious',)
@@ -199,23 +201,23 @@ To visualize the lattice, use its ``graphviz`` method:
 
     >>> dot = l.graphviz()
 
-    >>> print dot.source  # doctest: +ELLIPSIS, +NORMALIZE_WHITESPACE
+    >>> print(dot.source)  # doctest: +ELLIPSIS, +NORMALIZE_WHITESPACE
     // <Lattice object of 2 atoms 5 concepts 2 coatoms at 0x...>
     digraph Lattice {
-    node [width=.25 style=filled shape=circle label=""]
-    edge [labeldistance=1.5 dir=none minlen=2]
+    node [label="" shape=circle style=filled width=.25]
+    edge [dir=none labeldistance=1.5 minlen=2]
     	c0
     	c1
     		c1 -> c1 [color=transparent headlabel="King Arthur" labelangle=270]
-    		c1 -> c1 [color=transparent taillabel=king labelangle=90]
+    		c1 -> c1 [color=transparent labelangle=90 taillabel=king]
     		c1 -> c0
     	c2
     		c2 -> c2 [color=transparent headlabel="holy grail" labelangle=270]
-    		c2 -> c2 [color=transparent taillabel=mysterious labelangle=90]
+    		c2 -> c2 [color=transparent labelangle=90 taillabel=mysterious]
     		c2 -> c0
     	c3
     		c3 -> c3 [color=transparent headlabel="Sir Robin" labelangle=270]
-    		c3 -> c3 [color=transparent taillabel="human knight" labelangle=90]
+    		c3 -> c3 [color=transparent labelangle=90 taillabel="human knight"]
     		c3 -> c1
     	c4
     		c4 -> c2
@@ -239,11 +241,11 @@ For example:
     ... ''')
     >>> dot = h.lattice.graphviz()
 
-    >>> print dot.source  # doctest: +ELLIPSIS, +NORMALIZE_WHITESPACE
+    >>> print(dot.source)  # doctest: +ELLIPSIS, +NORMALIZE_WHITESPACE
     // <Lattice object of 4 atoms 10 concepts 4 coatoms at 0x...>
     digraph Lattice {
-    node [width=.25 style=filled shape=circle label=""]
-    edge [labeldistance=1.5 dir=none minlen=2]
+    node [label="" shape=circle style=filled width=.25]
+    edge [dir=none labeldistance=1.5 minlen=2]
     	c0
     	c1
     		c1 -> c1 [color=transparent headlabel=man labelangle=270]
@@ -267,18 +269,18 @@ A more complex example:
     >>> w = Context.fromfile('examples/liveinwater.cxt')
     >>> dot = w.lattice.graphviz()
 
-    >>> print dot.source  # doctest: +ELLIPSIS, +NORMALIZE_WHITESPACE
+    >>> print(dot.source)  # doctest: +ELLIPSIS, +NORMALIZE_WHITESPACE
     // <Lattice object of 4 atoms 19 concepts 4 coatoms at 0x...>
     digraph Lattice {
-    node [width=.25 style=filled shape=circle label=""]
-    edge [labeldistance=1.5 dir=none minlen=2]
+    node [label="" shape=circle style=filled width=.25]
+    edge [dir=none labeldistance=1.5 minlen=2]
     	c0
     	c1
     		c1 -> c1 [color=transparent headlabel=frog labelangle=270]
     		c1 -> c0
     	c2
     		c2 -> c2 [color=transparent headlabel=dog labelangle=270]
-    		c2 -> c2 [color=transparent taillabel="breast feeds" labelangle=90]
+    		c2 -> c2 [color=transparent labelangle=90 taillabel="breast feeds"]
     		c2 -> c0
     	c3
     		c3 -> c3 [color=transparent headlabel=reed labelangle=270]
@@ -372,6 +374,8 @@ Concepts is distributed under the `MIT license`_.
 .. _FCA: http://en.wikipedia.org/wiki/Formal_concept_analysis
 .. _Fast Concept Analysis: http://www.st.cs.uni-saarland.de/~lindig/papers/lindig-fca-2000.pdf
 .. _FCA homepage: http://www.upriss.org.uk/fca/examples.html
+
+.. _pip: http://pip.readthedocs.org
 
 .. _bitsets: http://pypi.python.org/pypi/bitsets
 .. _graphviz: http://pypi.python.org/pypi/graphviz

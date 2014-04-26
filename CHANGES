@@ -2,11 +2,18 @@ Concepts Changelog
 ==================
 
 
+Version 0.7
+-----------
+
+Added Python 3.3+ support.
+
+Set default UTF-8 encoding in context tofile().
+
+
 Version 0.6.2
 -------------
 
 Switch setup.py dependencies to version ranges.
-
 
 
 Version 0.6.1

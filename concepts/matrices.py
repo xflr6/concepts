@@ -2,9 +2,9 @@
 
 """Boolean matrices as collections of row and column vectors."""
 
-from itertools import imap, izip
-
 import bitsets
+
+from ._compat import zip
 
 __all__ = ['relation']
 
@@ -69,7 +69,7 @@ class relation(tuple):
             Y = bitsets.bitset(yname, ymembers, Vector, tuple=Vectors)
 
         x = X.Tuple.frombools(xbools)
-        y = Y.Tuple.frombools(izip(*x.bools()))
+        y = Y.Tuple.frombools(zip(*x.bools()))
 
         self = super(relation, cls).__new__(cls, (x, y))
 

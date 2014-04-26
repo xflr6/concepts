@@ -49,12 +49,23 @@ def lattice(lattice, filename, directory, render, view):
     return dot
 
 
-def render_all(filepattern='*.cxt', frmat='cxt'):
+def render_all(filepattern='*.cxt', directory=None, frmat=None):
     from concepts import Context
 
-    for cxtfile in glob.glob(filepattern):
-        c = Context.fromfile(cxtfile, frmat)
-        name, ext = os.path.splitext(cxtfile)
-        filename = '%s.gv' % name
+    if directory is not None:
+        get_name = lambda filename: os.path.basename(filename)
+    else:
+        get_name = lambda filename: filename
 
-        lattice(c.lattice, filename, None, True, False)
+    if frmat is None:
+        from concepts.formats import Format
+        get_frmat = Format.by_extension.get
+    else:
+        get_frmat = lambda filename: frmat
+
+    for cxtfile in glob.glob(filepattern):
+        name, ext = os.path.splitext(cxtfile)
+        filename = '%s.gv' % get_name(name)
+        c = Context.fromfile(cxtfile, get_frmat(ext))
+
+        lattice(c.lattice, filename, directory, True, False)

@@ -2,15 +2,12 @@
 
 """Formal Concept Analysis contexts."""
 
-import formats
-import matrices
-import junctors
-import tools
-import lattices
+from . import _compat, formats, matrices, junctors, tools, lattices
 
 __all__ = ['Context']
 
 
+@_compat.python3_unicode_to_str
 class Context(object):
     """Formal context defining a relation between objects and properties.
 
@@ -24,7 +21,7 @@ class Context(object):
     ... 3pl|  | X|  | X| X|  |   |  X|  X|   |
     ... ''')
 
-    >>> print c  # doctest: +ELLIPSIS
+    >>> print(c)  # doctest: +ELLIPSIS
     <Context object mapping 6 objects to 10 properties at 0x...>
            |+1|-1|+2|-2|+3|-3|+sg|+pl|-sg|-pl|
         1sg|X |  |  |X |  |X |X  |   |   |X  |
@@ -120,7 +117,7 @@ class Context(object):
         self._Extent = self._extents.BitSet
 
     def __eq__(self, other):
-        if not isinstance(other, self.__class__):
+        if not isinstance(other, Context):
             raise NotImplementedError
         return (self.objects == other.objects and self.properties == other.properties
             and self.bools == other.bools)
@@ -203,7 +200,7 @@ class Context(object):
         return frmat.dumps(self._Extent._members, self._Intent._members,
             self._intents.bools(), **kwargs)
 
-    def tofile(self, filename, frmat='cxt', encoding=None, **kwargs):
+    def tofile(self, filename, frmat='cxt', encoding='utf8', **kwargs):
         """Save the context serialized to file in the given format."""
         frmat = formats.Format[frmat]
         return frmat.dump(filename, self._Extent._members, self._Intent._members,

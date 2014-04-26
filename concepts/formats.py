@@ -2,29 +2,30 @@
 
 """Parse and serialize formal contexts in different formats."""
 
-from itertools import izip
-import contextlib
-import codecs
+import io
 import csv
+import contextlib
 
-try:
-    import cStringIO as StringIO
-except ImportError:
-    import StringIO
+from ._compat import PY2, text_type, zip, with_metaclass, StringIO
 
-import tools
+from . import tools
 
 __all__ = ['Format']
 
 
 class FormatMeta(type):
+    """Collect and retrieve concrete Format subclasses by name."""
 
     _map = {}
 
+    by_extension = {}
+
     def __init__(self, name, bases, dct):
-        if '__metaclass__' not in dct:
+        if not dct.get('__abstract__'):
             if 'name' not in dct:
                 self.name = name.lower()
+            if 'extension' in dct:
+                self.by_extension[self.extension] = self.name
             self._map[self.name] = self
 
     def __getitem__(self, name):
@@ -33,10 +34,10 @@ class FormatMeta(type):
         return self._map[name]
 
 
-class Format(object):
+class Format(with_metaclass(FormatMeta, object)):
     """Parse and serialize formal contexts in a specific string format."""
 
-    __metaclass__ = FormatMeta
+    __abstract__ = True
 
     encoding = None
 
@@ -48,12 +49,8 @@ class Format(object):
         if encoding is None:
             encoding = cls.encoding
 
-        if encoding is None:
-            with open(filename, 'rb') as fd:
-                source = fd.read()
-        else:
-           with codecs.open(filename, 'rb', encoding) as fd:
-                source = fd.read()
+        with io.open(filename, 'r', encoding=encoding) as fd:
+            source = fd.read()
  
         if cls.normalize_newlines:
             source = source.replace('\r\n', '\n').replace('\r', '\n')
@@ -67,12 +64,8 @@ class Format(object):
 
         source = cls.dumps(objects, properties, bools)
 
-        if encoding is None:
-            with open(filename, 'wb') as fd:
-                fd.write(source)
-        else:
-            with codecs.open(filename, 'wb', encoding) as fd:
-                fd.write(source)
+        with io.open(filename, 'w', encoding=encoding) as fd:
+            fd.write(source)
     
     @staticmethod
     def loads(source, **kwargs):
@@ -88,8 +81,8 @@ class Format(object):
 class Cxt(Format):
     """Formal context in the classic CXT format.
 
-    >>> print Cxt.dumps(['Cheddar', 'Limburger'], ['in_stock', 'sold_out'],
-    ... [(False, True), (False, True)])
+    >>> print(Cxt.dumps(['Cheddar', 'Limburger'], ['in_stock', 'sold_out'],
+    ... [(False, True), (False, True)]))
     B
     <BLANKLINE>
     2
@@ -103,6 +96,8 @@ class Cxt(Format):
     .X
     <BLANKLINE>
     """
+
+    extension = '.cxt'
 
     @staticmethod
     def loads(source):
@@ -128,21 +123,23 @@ class Cxt(Format):
 class Table(Format):
     """Formal context as ASCII-art style table.
 
-    >>> print Table.dumps(['Cheddar', 'Limburger'], ['in_stock', 'sold_out'],
-    ... [(False, True), (False, True)])
+    >>> print(Table.dumps(['Cheddar', 'Limburger'], ['in_stock', 'sold_out'],
+    ... [(False, True), (False, True)]))
              |in_stock|sold_out|
     Cheddar  |        |X       |
     Limburger|        |X       |
     """
 
+    extension = '.txt'
+
     @staticmethod
     def escape(item):
-        return unicode(item).encode('unicode_escape')
+        return text_type(item).encode('ascii', 'backslashreplace')
 
     @staticmethod
     def loads(source):
         lines = (l.partition('#')[0].strip() for l in source.splitlines())
-        lines = filter(None, lines)
+        lines = list(filter(None, lines))
         properties = [p.strip() for p in lines[0].strip('|').split('|')]
         table = [(obj.strip(),
             [bool(f.strip()) for f in flags.strip('|').split('|')])
@@ -154,27 +151,29 @@ class Table(Format):
     @staticmethod
     def dumps(objects, properties, bools, escape=False, indent=0):
         if escape:
-            objects = map(Table.escape, objects)
-            properties = map(Table.escape, properties)
-        wd = [max(len(o) for o in objects)] + map(len, properties)
+            objects = list(map(Table.escape, objects))
+            properties = list(map(Table.escape, properties))
+        wd = [max(len(o) for o in objects)] + list(map(len, properties))
         tmpl = ' ' * indent + '|'.join('%%-%ds' % w for w in wd) + '|'
         result = [tmpl % (('',) + tuple(properties))]
         result.extend(tmpl % ((o,) + tuple('X' if b else '' for b in intent))
-            for o, intent in izip(objects, bools))
+            for o, intent in zip(objects, bools))
         return '\n'.join(result)
 
 
 class Csv(Format):
     """Formal context as CSV table.
 
-    >>> print Csv.dumps(['Cheddar', 'Limburger'], ['in_stock', 'sold_out'],
-    ... [(False, True), (False, True)])  # doctest: +NORMALIZE_WHITESPACE
+    >>> print(Csv.dumps(['Cheddar', 'Limburger'], ['in_stock', 'sold_out'],
+    ... [(False, True), (False, True)]))  # doctest: +NORMALIZE_WHITESPACE
     ,in_stock,sold_out
     Cheddar,,X
     Limburger,,X
     <BLANKLINE>
     """
 
+    extension = '.csv'
+    
     dialect = csv.excel
 
     @classmethod
@@ -185,8 +184,19 @@ class Csv(Format):
         if dialect is None:
             dialect = cls.dialect
 
-        with open(filename, 'rb') as fd:
-            return cls._load(fd, dialect, encoding)
+        if PY2:
+            if encoding is None:
+                with open(filename, 'rb') as fd:
+                    reader = csv.reader(fd, dialect)
+                    return cls._load(reader)
+
+            with io.open(filename, 'r', encoding=encoding, newline='') as fd:
+                reader = tools.unicode_csv_reader(fd, dialect)
+                return cls._load(reader)
+
+        with io.open(filename, 'r', encoding=encoding, newline='') as fd:
+            reader = csv.reader(fd, dialect)
+            return cls._load(reader)
 
     @classmethod
     def dump(cls, filename, objects, properties, bools, encoding, dialect=None):
@@ -196,34 +206,55 @@ class Csv(Format):
         if dialect is None:
             dialect = cls.dialect
 
-        with open(filename, 'wb') as fd:
-            cls._dump(fd, objects, properties, bools, dialect, encoding)
+        if PY2:
+            with open(filename, 'wb') as fd:
+                if encoding is None:
+                    writer = csv.writer(fd, dialect)
+                else:
+                    writer = tools.UnicodeWriter(fd, dialect, encoding)
+                return cls._dump(writer, objects, properties, bools)
+
+        with io.open(filename, 'w', encoding=encoding, newline='') as fd:
+            writer = csv.writer(fd, dialect, **kwargs)
+            return cls._dump(writer, objects, properties, bools)
 
     @classmethod
     def loads(cls, source, dialect=None):
         if dialect is None:
             dialect = cls.dialect
 
-        with contextlib.closing(StringIO.StringIO(source.encode('utf8'))) as fd:
-            return cls._load(fd, dialect, 'utf8')
+        with contextlib.closing(StringIO(source)) as fd:
+            if not PY2 or isinstance(source, str):
+                reader = csv.reader(fd, dialect)
+            else:
+                reader = tools.unicode_csv_reader(fd, dialect)
+            return cls._load(reader)
 
     @classmethod
     def dumps(cls, objects, properties, bools, dialect=None):
         if dialect is None:
             dialect = cls.dialect
 
-        with contextlib.closing(StringIO.StringIO()) as fd:
-            cls._dump(fd, objects, properties, bools, dialect, 'utf8')
-            return fd.getvalue().decode('utf8')
+        if PY2:
+            if all(isinstance(s, str) for s in objects + properties):
+                with contextlib.closing(StringIO()) as fd:
+                    writer = csv.writer(fd, dialect)
+                    cls._dump(writer, objects, properties, bools)
+                    return fd.getvalue()
+
+            with contextlib.closing(StringIO()) as fd:
+                writer = tools.UnicodeWriter(fd, dialect, 'utf8')
+                cls._dump(writer, objects, properties, bools)
+                return fd.getvalue().decode('utf8')
+
+        with contextlib.closing(StringIO()) as fd:
+            writer = csv.writer(fd, dialect)
+            cls._dump(writer, objects, properties, bools)
+            return fd.getvalue()
 
     @staticmethod
-    def _load(fd, dialect, encoding):
+    def _load(reader):
         objects, bools = [], []
-        if encoding is None:
-            reader = csv.reader(fd, dialect)
-        else:
-            reader = tools.UnicodeReader(fd, dialect, encoding)
-        
         properties = next(reader)[1:]
         for cols in reader:
             objects.append(cols[0])
@@ -232,23 +263,18 @@ class Csv(Format):
         return objects, properties, bools
     
     @staticmethod
-    def _dump(fd, objects, properties, bools, dialect, encoding):
-        if encoding is None:
-            writer = csv.writer(fd, dialect)
-        else:
-            writer = tools.UnicodeWriter(fd, dialect, encoding)
-
+    def _dump(writer, objects, properties, bools):
         symbool = ('', 'X').__getitem__
         writer.writerow([''] + list(properties))
-        writer.writerows([o] + map(symbool, bs)
-            for o, bs in izip(objects, bools))
+        writer.writerows([o] + list(map(symbool, bs))
+            for o, bs in zip(objects, bools))
 
 
 class WikiTable(Format):
     """Formal context as MediaWiki markup table.
 
-    >>> print WikiTable.dumps(['Cheddar', 'Limburger'], ['in_stock', 'sold_out'],
-    ... [(False, True), (False, True)])
+    >>> print(WikiTable.dumps(['Cheddar', 'Limburger'], ['in_stock', 'sold_out'],
+    ... [(False, True), (False, True)]))
     {| class="featuresystem"
     !
     !in_stock!!sold_out
@@ -264,10 +290,10 @@ class WikiTable(Format):
     @staticmethod
     def dumps(objects, properties, bools):
         result = ['{| class="featuresystem"', '!', '!%s' % '!!'.join(properties)]
-        wp = map(len, properties)
-        for o, intent in izip(objects, bools):
+        wp = list(map(len, properties))
+        for o, intent in zip(objects, bools):
             result += ['|-', '!%s' % o,
                 '|%s' % '||'.join(('X' if b else '').ljust(w)
-                    for w, b in izip(wp, intent))]
+                    for w, b in zip(wp, intent))]
         result.append('|}')
         return '\n'.join(result)
