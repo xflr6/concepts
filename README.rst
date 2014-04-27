@@ -22,6 +22,12 @@ This package runs under Python 2.7 and 3.3+, use pip_ to install:
 
     $ pip install concepts
 
+This will also install the bitsets_ and graphviz_ packages from PyPI as
+required dependencies.
+
+Rendering lattice graphs depends on the `Graphviz software`_. Make sure its
+``dot`` executable is on your systems' path.
+
 
 Formal contexts
 ---------------
@@ -376,6 +382,7 @@ Concepts is distributed under the `MIT license`_.
 .. _FCA homepage: http://www.upriss.org.uk/fca/examples.html
 
 .. _pip: http://pip.readthedocs.org
+.. _`Graphviz software`: http://www.graphviz.org
 
 .. _bitsets: http://pypi.python.org/pypi/bitsets
 .. _graphviz: http://pypi.python.org/pypi/graphviz

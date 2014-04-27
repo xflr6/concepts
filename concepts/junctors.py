@@ -77,7 +77,7 @@ class RelationMeta(type):
             for obj, props in (l.strip('|').partition('|')[::2] for l in table[1:])]
 
         for index, ((name, symbol, order), flags) in enumerate(obj_flags):
-            pattern = frozenset(p for p, f in zip(properties,flags) if f)
+            pattern = frozenset(p for p, f in zip(properties, flags) if f)
             ns = {'index': index, 'order': int(order),
                 'kind': name.lower(), 'symbol': symbol, 'pattern': pattern}
             cls = type(name, (self,), ns)

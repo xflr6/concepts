@@ -408,7 +408,7 @@ class Concept(object):
     <Atom {3sg} <-> [-1 -2 +3 +sg -pl] <=> 3sg>
 
 
-    >>> l[('+1',)].incompatible_with(l[('+3',)]) 
+    >>> l[('+1',)].incompatible_with(l[('+3',)])
     True
 
     >>> l[('+1',)].incompatible_with(l[('+sg',)])
@@ -420,10 +420,10 @@ class Concept(object):
     >>> l[('+1',)].complement_of(l[('+3',)])
     False
 
-    >>> l[('-1',)].subcontrary_with(l[('-3',)]) 
+    >>> l[('-1',)].subcontrary_with(l[('-3',)])
     True
 
-    >>> l[('-1',)].subcontrary_with(l[('+sg',)]) 
+    >>> l[('-1',)].subcontrary_with(l[('+sg',)])
     False
 
     >>> l[('+1',)].orthogonal_to(l[('+sg',)])

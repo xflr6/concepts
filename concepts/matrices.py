@@ -40,7 +40,7 @@ class Vectors(bitsets.series.Tuple):
 
     def __reduce__(self):
         return self.relation, (self.relation_index,)
-    
+
 
 class relation(tuple):
     """Binary relation as interconnected pair of bitset collections.
@@ -54,7 +54,7 @@ class relation(tuple):
 
     >>> br[1].BitSet.frommembers(('->', '<-')).prime().members()
     ('TT', 'FF')
-    """ 
+    """
 
     __slots__ = ()
 

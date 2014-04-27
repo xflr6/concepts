@@ -51,7 +51,7 @@ class Format(with_metaclass(FormatMeta, object)):
 
         with io.open(filename, 'r', encoding=encoding) as fd:
             source = fd.read()
- 
+
         if cls.normalize_newlines:
             source = source.replace('\r\n', '\n').replace('\r', '\n')
         return cls.loads(source)
@@ -66,7 +66,7 @@ class Format(with_metaclass(FormatMeta, object)):
 
         with io.open(filename, 'w', encoding=encoding) as fd:
             fd.write(source)
-    
+
     @staticmethod
     def loads(source, **kwargs):
         """Parse source string and return objects, properties, bools."""
@@ -173,7 +173,7 @@ class Csv(Format):
     """
 
     extension = '.csv'
-    
+
     dialect = csv.excel
 
     @classmethod
@@ -215,7 +215,7 @@ class Csv(Format):
                 return cls._dump(writer, objects, properties, bools)
 
         with io.open(filename, 'w', encoding=encoding, newline='') as fd:
-            writer = csv.writer(fd, dialect, **kwargs)
+            writer = csv.writer(fd, dialect)
             return cls._dump(writer, objects, properties, bools)
 
     @classmethod
@@ -261,7 +261,7 @@ class Csv(Format):
             bools.append(tuple(c == 'X' for c in cols[1:]))
 
         return objects, properties, bools
-    
+
     @staticmethod
     def _dump(writer, objects, properties, bools):
         symbool = ('', 'X').__getitem__
