@@ -4,12 +4,14 @@
 
 import heapq
 
-from . import _compat, tools, visualize
+from ._compat import py3_unicode_to_str
+
+from . import tools, visualize
 
 __all__ = ['Lattice']
 
 
-@_compat.python3_unicode_to_str
+@py3_unicode_to_str
 class Lattice(object):
     """Formal concept lattice as directed acyclic graph of concepts.
 
@@ -312,7 +314,7 @@ class Lattice(object):
         return visualize.lattice(self, filename, directory, render, view)
 
 
-@_compat.python3_unicode_to_str
+@py3_unicode_to_str
 class Concept(object):
     """Formal concept as pair of extent and intent.
 
@@ -554,8 +556,10 @@ class Concept(object):
     def __str__(self):
         extent = ', '.join(self._extent.members()).encode('unicode_escape')
         intent = ' '.join(self._intent.members()).encode('unicode_escape')
-        objects = ' <=> %s' % ' '.join(self.objects).encode('unicode_escape') if self.objects else ''
-        properties = ' <=> %s' % ' '.join(self.properties).encode('unicode_escape') if self.properties else ''
+        objects = (' <=> %s' % ' '.join(self.objects).encode('unicode_escape')
+            if self.objects else '')
+        properties = (' <=> %s' % ' '.join(self.properties).encode('unicode_escape')
+            if self.properties else '')
         return '{%s} <-> [%s]%s%s' % (extent, intent, objects, properties)
 
     def __unicode__(self):

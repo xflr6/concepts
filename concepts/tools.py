@@ -43,6 +43,9 @@ class lazyproperty(object):
 
     >>> Spam().eggs
     'spamspamspam'
+
+    >>> Spam.eggs  # doctest: +ELLIPSIS
+    <...lazyproperty object at 0x...>
     """
 
     def __init__(self, fget):

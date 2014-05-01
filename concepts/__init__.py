@@ -3,7 +3,7 @@
 """Formal Concept Analysis (FCA) with Python."""
 
 __title__ = 'concepts'
-__version__ = '0.7.1'
+__version__ = '0.7.2'
 __author__ = 'Sebastian Bank <sebastian.bank@uni-leipzig.de>'
 __license__ = 'MIT, see LICENSE'
 __copyright__ = 'Copyright (c) 2013-2014 Sebastian Bank'
@@ -14,12 +14,20 @@ __all__ = ['Context', 'load_cxt', 'load_csv', 'make_context']
 
 
 def load_cxt(filename, encoding=None):
-    """Load and return formal context from cxt file."""
+    """Load and return formal context from CXT file.
+
+    >>> load_cxt('examples/digits.cxt')  # doctest: +ELLIPSIS
+    <Context object mapping 10 objects to 7 properties at 0x...>
+    """
     return Context.fromfile(filename, 'cxt', encoding)
 
 
 def load_csv(filename, dialect='excel', encoding='utf8'):
-    """Load and return formal context from csv file."""
+    """Load and return formal context from CSV file.
+
+    >>> load_csv('examples/vowels.csv')  # doctest: +ELLIPSIS
+    <Context object mapping 12 objects to 8 properties at 0x...>
+    """
     return Context.fromfile(filename, 'csv', encoding, dialect=dialect)
 
 

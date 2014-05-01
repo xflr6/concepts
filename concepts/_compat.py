@@ -5,7 +5,7 @@ import sys
 PY2 = sys.version_info[0] == 2
 
 
-if PY2:
+if PY2:  # pragma: no cover
     text_type = unicode
 
     from itertools import imap as map
@@ -13,7 +13,7 @@ if PY2:
     from itertools import ifilter as filter
     from itertools import ifilterfalse as filterfalse
 
-    def python3_unicode_to_str(cls):
+    def py3_unicode_to_str(cls):
         return cls
 
     try:
@@ -23,7 +23,8 @@ if PY2:
 
     import copy_reg as copyreg
 
-else:
+
+else:  # pragma: no cover
     text_type = str
 
     map = map
@@ -31,7 +32,7 @@ else:
     filter = filter
     from itertools import filterfalse
 
-    def python3_unicode_to_str(cls):
+    def py3_unicode_to_str(cls):
         cls.__str__ = cls.__unicode__
         del cls.__unicode__
         return cls

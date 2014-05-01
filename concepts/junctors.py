@@ -10,28 +10,28 @@ from itertools import combinations
 
 from ._compat import zip, with_metaclass
 
-__all__ = ['relations']
+__all__ = ['Relations']
 
 
-class relations(list):
+class Relations(list):
     """Logical relations between items from their contingent truth condition sequences.
 
-    >>> relations(['+1', '-2 -3'], [(True, False, False), (True, False, False)])
+    >>> Relations(['+1', '-2 -3'], [(True, False, False), (True, False, False)])
     [<'+1' Equivalent '-2 -3'>]
 
-    >>> relations(['+1', '-1'], [(True, False, False), (False, True, True)])
+    >>> Relations(['+1', '-1'], [(True, False, False), (False, True, True)])
     [<'+1' Complement '-1'>]
 
-    >>> relations(['+1', '+3'], [(True, False, False), (False, False, True)])
+    >>> Relations(['+1', '+3'], [(True, False, False), (False, False, True)])
     [<'+1' Incompatible '+3'>]
 
-    >>> relations(['+1', '-3'], [(True, False, False), (True, True, False)])
+    >>> Relations(['+1', '-3'], [(True, False, False), (True, True, False)])
     [<'+1' Implication '-3'>]
 
-    >>> relations(['-1', '-3'], [(False, True, True), (True, True, False)])
+    >>> Relations(['-1', '-3'], [(False, True, True), (True, True, False)])
     [<'-1' Subcontrary '-3'>]
 
-    >>> relations(['+1', 'sg'], [(True, True, False, False), (True, False, True, False)])
+    >>> Relations(['+1', 'sg'], [(True, True, False, False), (True, False, True, False)])
     [<'+1' Orthogonal 'sg'>]
     """
 
@@ -44,12 +44,12 @@ class relations(list):
         binary = (Relation(l, r, zip(lbools, rbools))
             for (l, lbools), (r, rbools) in combos)
 
-        super(relations, self).__init__(binary)
+        super(Relations, self).__init__(binary)
         self.sort(key=lambda r: r.order)
 
-    def __str__(self, full=True):
+    def __str__(self, exclude_orthogonal=True):
         tmpl = '%%-%ds %%-12s %%s' % max(len(str(r.left)) for r in self)
-        if not full:
+        if exclude_orthogonal:
             self = (r for r in self if r.__class__ is not Orthogonal)
         return '\n'.join(tmpl % (r.left, r.kind, r.right) for r in self)
 

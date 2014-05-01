@@ -6,7 +6,7 @@ import bitsets
 
 from ._compat import zip
 
-__all__ = ['relation']
+__all__ = ['Relation']
 
 
 Vector = bitsets.bases.MemberBits
@@ -18,7 +18,7 @@ class Vectors(bitsets.series.Tuple):
 
     def _pair_with(self, relation, index, other):
         if hasattr(self, 'prime'):
-            raise RuntimeError('%r attempt _pair_with' % self)
+            raise RuntimeError('%r attempt _pair_with %r' % (self, other))
 
         self.relation = relation
         self.relation_index = index
@@ -42,15 +42,15 @@ class Vectors(bitsets.series.Tuple):
         return self.relation, (self.relation_index,)
 
 
-class relation(tuple):
+class Relation(tuple):
     """Binary relation as interconnected pair of bitset collections.
 
-    >>> br = relation('Condition', 'Symbol',
+    >>> br = Relation('Condition', 'Symbol',
     ... ('TT', 'TF', 'FT', 'FF'), ('->', '<-'),
     ... [(True, False, True, True), (True, True, False, True)])
 
     >>> br
-    <relation(ConditionVectors('1011', '1101'), SymbolVectors('11', '01', '10', '11'))>
+    <Relation(ConditionVectors('1011', '1101'), SymbolVectors('11', '01', '10', '11'))>
 
     >>> br[1].BitSet.frommembers(('->', '<-')).prime().members()
     ('TT', 'FF')
@@ -71,7 +71,7 @@ class relation(tuple):
         x = X.Tuple.frombools(xbools)
         y = Y.Tuple.frombools(zip(*x.bools()))
 
-        self = super(relation, cls).__new__(cls, (x, y))
+        self = super(Relation, cls).__new__(cls, (x, y))
 
         x._pair_with(self, 0, y)
         y._pair_with(self, 1, x)
@@ -88,4 +88,4 @@ class relation(tuple):
         bools = self[0].bools()
         ids = (X._id, Y._id)
         args = (X.__name__, Y.__name__, X._members, Y._members, bools, ids)
-        return relation, args
+        return self.__class__, args

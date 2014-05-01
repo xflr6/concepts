@@ -1,1 +1,5 @@
+wheel
 nose
+coverage
+flake8
+pep8-naming

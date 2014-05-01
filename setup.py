@@ -4,7 +4,7 @@ from setuptools import setup
 
 setup(
     name='concepts',
-    version='0.7.1',
+    version='0.7.2',
     author='Sebastian Bank',
     author_email='sebastian.bank@uni-leipzig.de',
     description='Formal Concept Analysis with Python',

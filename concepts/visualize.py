@@ -45,11 +45,11 @@ def lattice(lattice, filename, directory, render, view):
             for c in sorted(concept.lower_neighbors, key=sortkey))
 
     if render or view:
-        dot.render(view=view)
+        dot.render(view=view)  # pragma: no cover
     return dot
 
 
-def render_all(filepattern='*.cxt', directory=None, frmat=None):
+def render_all(filepattern='*.cxt', frmat=None, directory=None, out_format=None):
     from concepts import Context
 
     if directory is not None:
@@ -66,6 +66,11 @@ def render_all(filepattern='*.cxt', directory=None, frmat=None):
     for cxtfile in glob.glob(filepattern):
         name, ext = os.path.splitext(cxtfile)
         filename = '%s.gv' % get_name(name)
-        c = Context.fromfile(cxtfile, get_frmat(ext))
 
-        lattice(c.lattice, filename, directory, True, False)
+        c = Context.fromfile(cxtfile, get_frmat(ext))
+        l = c.lattice
+        dot = l.graphviz(filename, directory)
+
+        if out_format is not None:
+            dot.format = out_format
+        dot.render()

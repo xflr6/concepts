@@ -70,32 +70,16 @@ class Format(with_metaclass(FormatMeta, object)):
     @staticmethod
     def loads(source, **kwargs):
         """Parse source string and return objects, properties, bools."""
-        raise NotImplementedError
+        raise NotImplementedError  # pragma: no cover
 
     @staticmethod
     def dumps(objects, properties, bools, **kwargs):
         """Serialize objects, properties, bools and return string."""
-        raise NotImplementedError
+        raise NotImplementedError  # pragma: no cover
 
 
 class Cxt(Format):
-    """Formal context in the classic CXT format.
-
-    >>> print(Cxt.dumps(['Cheddar', 'Limburger'], ['in_stock', 'sold_out'],
-    ... [(False, True), (False, True)]))
-    B
-    <BLANKLINE>
-    2
-    2
-    <BLANKLINE>
-    Cheddar
-    Limburger
-    in_stock
-    sold_out
-    .X
-    .X
-    <BLANKLINE>
-    """
+    """Formal context in the classic CXT format."""
 
     extension = '.cxt'
 
@@ -106,7 +90,7 @@ class Cxt(Format):
         lines = [l.strip() for l in table.strip().split('\n')]
         objects = lines[:y]
         properties = lines[y:y + x]
-        bools = [[f == 'X' for f in l] for l in lines[y + x:]]
+        bools = [tuple(f == 'X' for f in l) for l in lines[y + x:]]
         return objects, properties, bools
 
     @staticmethod
@@ -121,14 +105,7 @@ class Cxt(Format):
 
 
 class Table(Format):
-    """Formal context as ASCII-art style table.
-
-    >>> print(Table.dumps(['Cheddar', 'Limburger'], ['in_stock', 'sold_out'],
-    ... [(False, True), (False, True)]))
-             |in_stock|sold_out|
-    Cheddar  |        |X       |
-    Limburger|        |X       |
-    """
+    """Formal context as ASCII-art style table."""
 
     extension = '.txt'
 
@@ -142,7 +119,7 @@ class Table(Format):
         lines = list(filter(None, lines))
         properties = [p.strip() for p in lines[0].strip('|').split('|')]
         table = [(obj.strip(),
-            [bool(f.strip()) for f in flags.strip('|').split('|')])
+            tuple(bool(f.strip()) for f in flags.strip('|').split('|')))
             for obj, flags in
                 (objflags.partition('|')[::2] for objflags in lines[1:])]
         objects, bools = zip(*table)
@@ -162,15 +139,7 @@ class Table(Format):
 
 
 class Csv(Format):
-    """Formal context as CSV table.
-
-    >>> print(Csv.dumps(['Cheddar', 'Limburger'], ['in_stock', 'sold_out'],
-    ... [(False, True), (False, True)]))  # doctest: +NORMALIZE_WHITESPACE
-    ,in_stock,sold_out
-    Cheddar,,X
-    Limburger,,X
-    <BLANKLINE>
-    """
+    """Formal context as CSV table."""
 
     extension = '.csv'
 
@@ -271,21 +240,7 @@ class Csv(Format):
 
 
 class WikiTable(Format):
-    """Formal context as MediaWiki markup table.
-
-    >>> print(WikiTable.dumps(['Cheddar', 'Limburger'], ['in_stock', 'sold_out'],
-    ... [(False, True), (False, True)]))
-    {| class="featuresystem"
-    !
-    !in_stock!!sold_out
-    |-
-    !Cheddar
-    |        ||X       
-    |-
-    !Limburger
-    |        ||X       
-    |}
-    """
+    """Formal context as MediaWiki markup table."""
 
     @staticmethod
     def dumps(objects, properties, bools):

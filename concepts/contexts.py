@@ -2,12 +2,14 @@
 
 """Formal Concept Analysis contexts."""
 
-from . import _compat, formats, matrices, junctors, tools, lattices
+from ._compat import py3_unicode_to_str
+
+from . import formats, matrices, junctors, tools, lattices
 
 __all__ = ['Context']
 
 
-@_compat.python3_unicode_to_str
+@py3_unicode_to_str
 class Context(object):
     """Formal context defining a relation between objects and properties.
 
@@ -63,6 +65,30 @@ class Context(object):
 
     >>> c[('-1', '-sg')]
     (('2pl', '3pl'), ('-1', '+pl', '-sg'))
+
+
+    >>> print(c.relations())
+    +sg equivalent   -pl
+    +pl equivalent   -sg
+    +1  complement   -1
+    +2  complement   -2
+    +3  complement   -3
+    +sg complement   +pl
+    +sg complement   -sg
+    +pl complement   -pl
+    -sg complement   -pl
+    +1  incompatible +2
+    +1  incompatible +3
+    +2  incompatible +3
+    +1  implication  -2
+    +1  implication  -3
+    +2  implication  -1
+    +3  implication  -1
+    +2  implication  -3
+    +3  implication  -2
+    -1  subcontrary  -2
+    -1  subcontrary  -3
+    -2  subcontrary  -3
     """
 
     Lattice = lattices.Lattice
@@ -100,7 +126,7 @@ class Context(object):
             raise ValueError('%r bools is not %d items of length %d' % (
                 self.__class__, len(objects), len(properties)))
 
-        self._intents, self._extents = matrices.relation('Intent', 'Extent',
+        self._intents, self._extents = matrices.Relation('Intent', 'Extent',
             properties, objects, bools)
 
         self._Intent = self._intents.BitSet
@@ -223,7 +249,7 @@ class Context(object):
 
     def relations(self):
         """Return the logical relations between the context properties."""
-        return junctors.relations(self.properties, self._extents.bools())
+        return junctors.Relations(self.properties, self._extents.bools())
 
     @tools.lazyproperty
     def lattice(self):

@@ -1,2 +1,2 @@
-bitsets==0.7
-graphviz==0.3.1
+bitsets==0.7.1
+graphviz==0.3.2

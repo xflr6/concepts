@@ -1,4 +1,6 @@
 include README.rst LICENSE CHANGES
+include dev-requirements.txt requirements.txt .gitignore
 include run-tests.py visualize-examples.py
-recursive-include docs *.png
+recursive-include tests *.py
+recursive-include docs *.png *.svg
 recursive-include examples *.cxt *.txt *.csv

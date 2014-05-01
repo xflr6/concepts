@@ -210,24 +210,24 @@ To visualize the lattice, use its ``graphviz`` method:
     >>> print(dot.source)  # doctest: +ELLIPSIS, +NORMALIZE_WHITESPACE
     // <Lattice object of 2 atoms 5 concepts 2 coatoms at 0x...>
     digraph Lattice {
-    node [label="" shape=circle style=filled width=.25]
-    edge [dir=none labeldistance=1.5 minlen=2]
-    	c0
-    	c1
-    		c1 -> c1 [color=transparent headlabel="King Arthur" labelangle=270]
-    		c1 -> c1 [color=transparent labelangle=90 taillabel=king]
-    		c1 -> c0
-    	c2
-    		c2 -> c2 [color=transparent headlabel="holy grail" labelangle=270]
-    		c2 -> c2 [color=transparent labelangle=90 taillabel=mysterious]
-    		c2 -> c0
-    	c3
-    		c3 -> c3 [color=transparent headlabel="Sir Robin" labelangle=270]
-    		c3 -> c3 [color=transparent labelangle=90 taillabel="human knight"]
-    		c3 -> c1
-    	c4
-    		c4 -> c2
-    		c4 -> c3
+    	node [label="" shape=circle style=filled width=.25]
+    	edge [dir=none labeldistance=1.5 minlen=2]
+    		c0
+    		c1
+    			c1 -> c1 [color=transparent headlabel="King Arthur" labelangle=270]
+    			c1 -> c1 [color=transparent labelangle=90 taillabel=king]
+    			c1 -> c0
+    		c2
+    			c2 -> c2 [color=transparent headlabel="holy grail" labelangle=270]
+    			c2 -> c2 [color=transparent labelangle=90 taillabel=mysterious]
+    			c2 -> c0
+    		c3
+    			c3 -> c3 [color=transparent headlabel="Sir Robin" labelangle=270]
+    			c3 -> c3 [color=transparent labelangle=90 taillabel="human knight"]
+    			c3 -> c1
+    		c4
+    			c4 -> c2
+    			c4 -> c3
     }
 
 .. image:: https://raw.github.com/xflr6/concepts/master/docs/holy-grail.png
@@ -250,18 +250,18 @@ For example:
     >>> print(dot.source)  # doctest: +ELLIPSIS, +NORMALIZE_WHITESPACE
     // <Lattice object of 4 atoms 10 concepts 4 coatoms at 0x...>
     digraph Lattice {
-    node [label="" shape=circle style=filled width=.25]
-    edge [dir=none labeldistance=1.5 minlen=2]
-    	c0
-    	c1
-    		c1 -> c1 [color=transparent headlabel=man labelangle=270]
-    		c1 -> c0
-    	c2
-    		c2 -> c2 [color=transparent headlabel=woman labelangle=270]
-    		c2 -> c0
-    	c3
-    		c3 -> c3 [color=transparent headlabel=boy labelangle=270]
-    		c3 -> c0
+    	node [label="" shape=circle style=filled width=.25]
+    	edge [dir=none labeldistance=1.5 minlen=2]
+    		c0
+    		c1
+    			c1 -> c1 [color=transparent headlabel=man labelangle=270]
+    			c1 -> c0
+    		c2
+    			c2 -> c2 [color=transparent headlabel=woman labelangle=270]
+    			c2 -> c0
+    		c3
+    			c3 -> c3 [color=transparent headlabel=boy labelangle=270]
+    			c3 -> c0
     ...
 
 .. image:: https://raw.github.com/xflr6/concepts/master/docs/human.png
@@ -278,19 +278,19 @@ A more complex example:
     >>> print(dot.source)  # doctest: +ELLIPSIS, +NORMALIZE_WHITESPACE
     // <Lattice object of 4 atoms 19 concepts 4 coatoms at 0x...>
     digraph Lattice {
-    node [label="" shape=circle style=filled width=.25]
-    edge [dir=none labeldistance=1.5 minlen=2]
-    	c0
-    	c1
-    		c1 -> c1 [color=transparent headlabel=frog labelangle=270]
-    		c1 -> c0
-    	c2
-    		c2 -> c2 [color=transparent headlabel=dog labelangle=270]
-    		c2 -> c2 [color=transparent labelangle=90 taillabel="breast feeds"]
-    		c2 -> c0
-    	c3
-    		c3 -> c3 [color=transparent headlabel=reed labelangle=270]
-    		c3 -> c0
+    	node [label="" shape=circle style=filled width=.25]
+    	edge [dir=none labeldistance=1.5 minlen=2]
+    		c0
+    		c1
+    			c1 -> c1 [color=transparent headlabel=frog labelangle=270]
+    			c1 -> c0
+    		c2
+    			c2 -> c2 [color=transparent headlabel=dog labelangle=270]
+    			c2 -> c2 [color=transparent labelangle=90 taillabel="breast feeds"]
+    			c2 -> c0
+    		c3
+    			c3 -> c3 [color=transparent headlabel=reed labelangle=270]
+    			c3 -> c0
     ...
 
 .. image:: https://raw.github.com/xflr6/concepts/master/docs/liveinwater.png
@@ -326,7 +326,7 @@ format:
     True
 
 
-Context objects are picklable:
+Context objects are pickleable:
 
 .. code:: python
 
