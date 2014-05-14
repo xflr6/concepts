@@ -5,42 +5,6 @@ import unittest
 from concepts.formats import Format, Cxt, Table, Csv, WikiTable
 
 
-class LoadsDumpsAscii(object):
-
-    input_ascii = (('Cheddar', 'Limburger'), ('in_stock', 'sold_out'),
-        [(False, True), (False, True)])
-
-    def test_loads_ascii(self):
-        o, p, b = self.format.loads(self.result_ascii)
-        objects, properties, bools = self.input_ascii
-        self.assertSequenceEqual(o, objects)
-        self.assertSequenceEqual(p, properties)
-        self.assertSequenceEqual(b, bools)
-
-    def test_dumps_ascii(self):
-        objects, properties, bools = self.input_ascii
-        r = self.format.dumps(objects, properties, bools)
-        self.assertEqual(r, self.result_ascii)
-
-
-class LoadsDumpsUnicode(object):
-
-    input_unicode = ((u'M\xf8\xf8se', 'Llama'), ('majestic', 'bites'),
-        [(True, True), (False, False)])
-
-    def test_loads_unicode(self):
-        o, p, b = self.format.loads(self.result_unicode)
-        objects, properties, bools = self.input_unicode
-        self.assertSequenceEqual(o, objects)
-        self.assertSequenceEqual(p, properties)
-        self.assertSequenceEqual(b, bools)
-
-    def test_dumps_unicode(self):
-        objects, properties, bools = self.input_unicode
-        r = self.format.dumps(objects, properties, bools)
-        self.assertEqual(r, self.result_unicode)
-
-
 class TestFormat(unittest.TestCase):
 
     def test_getitem(self):
@@ -52,54 +16,89 @@ class TestFormat(unittest.TestCase):
             Format['spam']
 
 
-class TestCxt(unittest.TestCase, LoadsDumpsAscii, LoadsDumpsUnicode):
+class LoadsDumps(object):
+
+    def test_loads(self):
+        objects, properties, bools = self.format.loads(self.result)
+        self.assertSequenceEqual(objects, self.objects)
+        self.assertSequenceEqual(properties, self.properties)
+        self.assertSequenceEqual(bools, self.bools)
+
+    def test_dumps(self):
+        result = self.format.dumps(self.objects, self.properties, self.bools)
+        self.assertEqual(result, self.result)
+
+
+class Ascii(LoadsDumps):
+
+    objects = ('Cheddar', 'Limburger')
+    properties = ('in_stock', 'sold_out')
+    bools = [(False, True), (False, True)]
+
+
+class Unicode(LoadsDumps):
+
+    objects = (u'M\xf8\xf8se', 'Llama')
+    properties = ('majestic', 'bites')
+    bools = [(True, True), (False, False)]
+
+
+class TestCxtAscii(unittest.TestCase, Ascii):
 
     format = Cxt
-
-    result_ascii = 'B\n\n2\n2\n\nCheddar\nLimburger\nin_stock\nsold_out\n.X\n.X\n'
-
-    result_unicode = u'B\n\n2\n2\n\nM\xf8\xf8se\nLlama\nmajestic\nbites\nXX\n..\n'
+    result = 'B\n\n2\n2\n\nCheddar\nLimburger\nin_stock\nsold_out\n.X\n.X\n'
 
 
-class TestTable(unittest.TestCase, LoadsDumpsAscii, LoadsDumpsUnicode):
+class TextCxtUnicode(unittest.TestCase, Unicode):
+
+    format = Cxt
+    result = u'B\n\n2\n2\n\nM\xf8\xf8se\nLlama\nmajestic\nbites\nXX\n..\n'
+
+
+class TestTableAscii(unittest.TestCase, Ascii):
 
     format = Table
-
-    result_ascii = (
+    result = (
         '         |in_stock|sold_out|\n'
         'Cheddar  |        |X       |\n'
         'Limburger|        |X       |')
 
-    result_unicode = (
+
+class TestTableUnicode(unittest.TestCase, Unicode):
+
+    format = Table
+    result = (
         u'     |majestic|bites|\n'
         u'M\xf8\xf8se|X       |X    |\n'
         u'Llama|        |     |')
 
 
-class TestCsv(unittest.TestCase, LoadsDumpsAscii, LoadsDumpsUnicode):
+class TestCsvAscii(unittest.TestCase, Ascii):
 
     format = Csv
-
-    result_ascii = (
+    result = (
         ',in_stock,sold_out\r\n'
         'Cheddar,,X\r\n'
         'Limburger,,X\r\n')
 
-    result_unicode = (
+
+class TestCsvUnicode(unittest.TestCase, Unicode):
+
+    format = Csv
+    result = (
         u',majestic,bites\r\n'
         u'M\xf8\xf8se,X,X\r\n'
         u'Llama,,\r\n')
 
     @unittest.skip('TODO')
-    def test_loads_unicode(self):
+    def test_loads(self):
         pass
 
 
-class TestWikitable(unittest.TestCase, LoadsDumpsAscii, LoadsDumpsUnicode):
+class TestWikitableAscii(unittest.TestCase, Ascii):
 
     format = WikiTable
-
-    result_ascii = (
+    result = (
         '{| class="featuresystem"\n'
         '!\n'
         '!in_stock!!sold_out\n'
@@ -111,7 +110,14 @@ class TestWikitable(unittest.TestCase, LoadsDumpsAscii, LoadsDumpsUnicode):
         '|        ||X       \n'
         '|}')
 
-    result_unicode = (
+    def test_loads(self):
+        pass
+
+
+class TestWikitableUnicode(unittest.TestCase, Unicode):
+
+    format = WikiTable
+    result = (
         u'{| class="featuresystem"\n'
         u'!\n'
         u'!majestic!!bites\n'
@@ -122,8 +128,5 @@ class TestWikitable(unittest.TestCase, LoadsDumpsAscii, LoadsDumpsUnicode):
         u'|        ||     \n'
         '|}')
 
-    def test_loads_ascii(self):
-        pass
-
-    def test_loads_unicode(self):
+    def test_loads(self):
         pass

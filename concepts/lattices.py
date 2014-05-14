@@ -112,69 +112,44 @@ class Lattice(object):
 
     def __init__(self, context, infimum=()):
         """Create lattice from context."""
+        concepts = [Concept(self, *args) for args in context._lattice(infimum)]
+        mapping = {c._extent: c for c in concepts}
+
+        shortlex = lambda c: c._extent.shortlex()
+        for index, c in enumerate(concepts):
+            c.index = index
+            upper = (mapping[u] for u in c.upper_neighbors)
+            c.upper_neighbors = tuple(sorted(upper, key=shortlex))
+
+        longlex = lambda c: c._extent.longlex()
+        atoms = concepts[0].upper_neighbors
+        for dindex, c in enumerate(sorted(concepts, key=longlex)):  # downward
+            c.dindex = dindex
+            lower = (mapping[l] for l in c.lower_neighbors)
+            c.lower_neighbors = tuple(sorted(lower, key=longlex))
+            e = c._extent
+            c.atoms = tuple(a for a in atoms if e | a._extent == e)
+
+        self._annotate(context, mapping)
+
         self._context = context
-
-        extent, intent = context.__getitem__(infimum, raw=True)
-        infimum = Infimum(self, extent, intent)
-
-        self._concepts, self._map = self._build(context, infimum)
-        self._link(self._concepts)
-        self._annotate(context, self._map)
+        self._concepts = concepts
+        self._map = mapping
 
         self.infimum = self._concepts[0]
+        self.infimum.__class__ = Infimum
         self.supremum = self._concepts[-1]
         self.supremum.__class__ = Supremum
         for a in self.infimum.upper_neighbors:
             a.__class__ = Atom
 
-    def _build(self, context, concept):
-        """Return list and map of concept in short lexicographic order.
-
-        cf. C. Lindig. 2000. Fast Concept Analysis.
-        """
-        concepts = []
-        mapping = {concept._extent: concept}
-        heap = [(concept._extent.shortlex(), concept)]
-        push, pop = heapq.heappush, heapq.heappop
-        get_neighbors = context._neighbors
-        index = 0
-        while heap:
-            concept = pop(heap)[1]
-            concepts.append(concept)
-            concept.index = index
-            index += 1
-            for extent, intent in get_neighbors(concept._extent):
-                if extent in mapping:
-                    neighbor = mapping[extent]
-                else:
-                    neighbor = Concept(self, extent, intent)
-                    mapping[extent] = neighbor
-                    push(heap, (extent.shortlex(), neighbor))
-                concept.upper_neighbors.append(neighbor)
-                neighbor.lower_neighbors.append(concept)
-        return concepts, mapping
-
-    @staticmethod
-    def _link(concepts):
-        """Connect each concept with its neighbors and indirect neighbors."""
-        shortlex = lambda c: c._extent.shortlex()
-        longlex = lambda c: c._extent.longlex()
-
-        atoms = concepts[0].upper_neighbors
-        for i, c in enumerate(sorted(concepts, key=longlex)):  # downward
-            c.dindex = i
-            c.upper_neighbors = tuple(sorted(c.upper_neighbors, key=shortlex))
-            c.lower_neighbors = tuple(sorted(c.lower_neighbors, key=longlex))
-            e = c._extent
-            c.atoms = tuple(a for a in atoms if e | a._extent == e)
-
     @staticmethod
     def _annotate(context, mapping):
         """Annotate object/attribute concepts with their objects/properties."""
-        Extent = context._Extent.frommembers
         touched = set()
         for o in context.objects:
-            c = mapping[Extent([o]).double()]
+            extent = context.extension(context.intension([o]), raw=True)
+            c = mapping[extent]
             if c.objects:
                 c.objects.append(o)
             else:
@@ -184,10 +159,10 @@ class Lattice(object):
         for c in touched:
             c.objects = tuple(c.objects)
 
-        Intent = context._Intent.frommembers
         touched = set()
         for p in context.properties:
-            c = mapping[Intent([p]).prime()]
+            extent = context.extension([p], raw=True)
+            c = mapping[extent]
             if c.properties:
                 c.properties.append(p)
             else:
@@ -210,7 +185,7 @@ class Lattice(object):
 
     def __call__(self, properties):
         """Return concept having all given properties as intension."""
-        extent = self._context._Intent.frommembers(properties).prime()
+        extent = self._context.extension(properties, raw=True)
         return self._map[extent]
 
     def __getitem__(self, key):
@@ -246,19 +221,15 @@ class Lattice(object):
 
     def join(self, concepts):
         """Return the nearest concept that subsumes all given concepts."""
-        join = self._context._Extent.frombitset(self.infimum._extent)
-        for c in concepts:
-            join |= c._extent
-        extent = self._context._extents.double(join)
-        return self._map[extent]
+        extents = (c._extent for c in concepts)
+        join = self._context._Extent.reduce_or(extents)
+        return self._map[join.double()]
 
     def meet(self, concepts):
         """Return the nearest concept that implies all given concepts."""
-        meet = self._context._Extent.frombitset(self.supremum._extent)
-        for c in concepts:
-            meet &= c._extent
-        extent = self._context._extents.double(meet)
-        return self._map[extent]
+        extents = (c._extent for c in concepts)
+        meet = self._context._Extent.reduce_and(extents)
+        return self._map[meet.double()]
 
     def upset_union(self, concepts):
         """Yield all concepts that subsume any of the given ones."""
@@ -296,7 +267,8 @@ class Lattice(object):
             comparison=Concept.properly_subsumes)]
         heapq.heapify(heap)
         push, pop = heapq.heappush, heapq.heappop
-        target = self._context._Extent.reduce_or(c._extent for i, c in heap)
+        extents = (c._extent for i, c in heap)
+        target = self._context._Extent.reduce_or(extents)
         seen = -1
         while heap:
             index, concept = pop(heap)
@@ -439,14 +411,12 @@ class Concept(object):
 
     properties = ()
 
-    def __init__(self, lattice, extent, intent):
+    def __init__(self, lattice, extent, intent, upper, lower):
         self.lattice = lattice
         self._extent = extent
         self._intent = intent
-        # these lists are replaced by tuples in Lattice._link
-        self.upper_neighbors = []
-        self.lower_neighbors = []
-        # which also sets dindex and atoms
+        self.upper_neighbors = upper
+        self.lower_neighbors = lower
 
     def __iter__(self):
         """Pair of extent and intent."""

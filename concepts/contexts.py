@@ -2,6 +2,8 @@
 
 """Formal Concept Analysis contexts."""
 
+import heapq
+
 from ._compat import py3_unicode_to_str
 
 from . import formats, matrices, junctors, tools, lattices
@@ -144,7 +146,7 @@ class Context(object):
 
     def __eq__(self, other):
         if not isinstance(other, Context):
-            raise NotImplementedError
+            raise TypeError('can only compare to a context.')
         return (self.objects == other.objects and self.properties == other.properties
             and self.bools == other.bools)
 
@@ -169,28 +171,59 @@ class Context(object):
 
         cf. C. Lindig. 2000. Fast Concept Analysis.
         """
-        prime = self._extents.prime
+        doubleprime = self._extents.doubleprime
         minimal = ~objects
         for add in self._Extent.atomic(minimal):
             objects_ = objects | add
-            intent = prime(objects_)
-            extent = intent.prime()
+            extent, intent = doubleprime(objects_)
             if minimal & extent & ~objects_:
                 minimal &= ~add
             else:
                 yield extent, intent
 
-    def intension(self, objects):
+    def _lattice(self, infimum=()):
+        """Return list of (extent, indent, upper, lower) in short lexicographic order.
+
+        cf. C. Lindig. 2000. Fast Concept Analysis.
+        """
+        extent, intent = self._Extent.frommembers(infimum).doubleprime()
+        concept = (extent, intent, [], [])
+        result = []
+        heap = [(extent.shortlex(), concept)]
+        mapping = {extent: concept}
+        push, pop = heapq.heappush, heapq.heappop
+        while heap:
+            concept = pop(heap)[1]
+            result.append(concept)
+            for extent, intent in self._neighbors(concept[0]):
+                if extent in mapping:
+                    neighbor = mapping[extent]
+                else:
+                    neighbor = mapping[extent] = (extent, intent, [], [])
+                    push(heap, (extent.shortlex(), neighbor))
+                concept[2].append(neighbor[0])
+                neighbor[3].append(concept[0])
+        return result
+
+    def intension(self, objects, raw=False):
         """Return all properties shared by the given objects."""
-        return self._Extent.frommembers(objects).prime().members()
+        intent = self._Extent.frommembers(objects).prime()
+        if raw:
+            return intent
+        return intent.members()
 
-    def extension(self, properties):
+    def extension(self, properties, raw=False):
         """Return all objects sharing the given properties."""
-        return self._Intent.frommembers(properties).prime().members()
+        extent = self._Intent.frommembers(properties).prime()
+        if raw:
+            return extent
+        return extent.members()
 
-    def neighbors(self, objects):
+    def neighbors(self, objects, raw=False):
         """Return the upper neighbors of the concept having all given objects."""
         objects = self._Extent.frommembers(objects).double()
+        if raw:
+            return list(self._neighbors(objects))
         return [(extent.members(), intent.members())
             for extent, intent in self._neighbors(objects)]
 
@@ -200,11 +233,9 @@ class Context(object):
             extent = self._Extent.frommembers(items)
         except KeyError:
             intent = self._Intent.frommembers(items)
-            extent = intent.prime()
-            intent = extent.prime()
+            intent, extent = intent.doubleprime()
         else:
-            intent = extent.prime()
-            extent = intent.prime()
+            extent, intent = extent.doubleprime()
         if raw:
             return extent, intent
         return extent.members(), intent.members()

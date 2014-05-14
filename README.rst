@@ -1,7 +1,7 @@
 Concepts
 ========
 
-|PyPI version| |License| |Downloads|
+|PyPI version| |License| |Wheel| |Downloads|
 
 Concepts is a simple Python implementation of **Formal Concept Analysis**
 (FCA_).
@@ -378,7 +378,7 @@ Concepts is distributed under the `MIT license`_.
 
 
 .. _FCA: http://en.wikipedia.org/wiki/Formal_concept_analysis
-.. _Fast Concept Analysis: http://www.st.cs.uni-saarland.de/~lindig/papers/lindig-fca-2000.pdf
+.. _Fast Concept Analysis: http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.143.948
 .. _FCA homepage: http://www.upriss.org.uk/fca/examples.html
 
 .. _pip: http://pip.readthedocs.org
@@ -394,12 +394,15 @@ Concepts is distributed under the `MIT license`_.
 .. |--| unicode:: U+2013
 
 
-.. |PyPI version| image:: https://pypip.in/v/concepts/badge.png
+.. |PyPI version| image:: https://pypip.in/v/concepts/badge.svg
     :target: https://pypi.python.org/pypi/concepts
     :alt: Latest PyPI Version
-.. |License| image:: https://pypip.in/license/concepts/badge.png
+.. |License| image:: https://pypip.in/license/concepts/badge.svg
     :target: https://pypi.python.org/pypi/concepts
     :alt: License
-.. |Downloads| image:: https://pypip.in/d/concepts/badge.png
+.. |Wheel| image:: https://pypip.in/wheel/concepts/badge.svg
+    :target: https://pypi.python.org/pypi/concepts
+    :alt: Wheel Status
+.. |Downloads| image:: https://pypip.in/d/concepts/badge.svg
     :target: https://pypi.python.org/pypi/concepts
     :alt: Downloads

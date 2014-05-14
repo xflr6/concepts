@@ -35,8 +35,15 @@ class Vectors(bitsets.series.Tuple):
             prime = _prime(bitset & b == bitset for b in self)
             return _double(prime & b == prime for b in other)
 
+        def doubleprime(bitset):
+            """FCA single and double derivation (extent->extent+intent, intent->intent+extent)."""
+            prime = _prime(bitset & b == bitset for b in self)
+            double = _double(prime & b == prime for b in other)
+            return double, prime
+
         self.prime = self.BitSet.prime = prime
         self.double = self.BitSet.double = double
+        self.doubleprime = self.BitSet.doubleprime = doubleprime
 
     def __reduce__(self):
         return self.relation, (self.relation_index,)

@@ -1,21 +1,25 @@
 # setup.py
 
-from setuptools import setup
+from setuptools import setup, find_packages
 
 setup(
     name='concepts',
-    version='0.7.2',
+    version='0.7.3',
     author='Sebastian Bank',
     author_email='sebastian.bank@uni-leipzig.de',
     description='Formal Concept Analysis with Python',
     keywords='fca complete lattice graph join meet galois',
     license='MIT',
     url='http://github.com/xflr6/concepts',
-    packages=['concepts'],
+    packages=find_packages(),
     install_requires=[
         'bitsets>=0.7, <0.8',
         'graphviz>=0.3, <0.4',
     ],
+    extras_require={
+        'dev': ['wheel'],
+        'test': ['nose', 'coverage', 'flake8', 'pep8-naming'],
+    },
     platforms='any',
     long_description=open('README.rst').read(),
     classifiers=[

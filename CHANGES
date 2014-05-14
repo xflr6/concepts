@@ -2,6 +2,20 @@ Concepts Changelog
 ==================
 
 
+Version 0.7.3
+-------------
+
+Improved context/lattice division of labour: context now computes all concepts
+with their covering relation, while lattice only builds/decorates the object-
+based representation.
+
+Improved context and bitset interface used by lattice (reduce_and, reduce_or).
+Added doubleprime method to extents and intents.
+Added raw option to intension, extension, and neighbors method of context.
+
+Added EXAMPLE context for repl experiments.
+
+
 Version 0.7.2
 -------------
 

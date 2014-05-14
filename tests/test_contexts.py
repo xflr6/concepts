@@ -5,24 +5,24 @@ import unittest
 from concepts.contexts import Context
 
 
-class TestContextConstruction(unittest.TestCase):
+class TestContextInit(unittest.TestCase):
 
-    def test_init_duplicate_object(self):
+    def test_duplicate_object(self):
         with self.assertRaises(ValueError):
             Context(('spam', 'spam'), ('ham', 'eggs'),
                 [(True, False), (False, True)])
 
-    def test_init_duplicate_property(self):
+    def test_duplicate_property(self):
         with self.assertRaises(ValueError):
             Context(('spam', 'eggs'), ('ham', 'ham'),
                 [(True, False), (False, True)])
 
-    def test_init_object_property_overlap(self):
+    def test_object_property_overlap(self):
         with self.assertRaises(ValueError):
             Context(('spam', 'eggs'), ('eggs', 'ham'),
                 [(True, False), (False, True)])
 
-    def test_init_invalid_bools(self):
+    def test_invalid_bools(self):
         with self.assertRaises(ValueError):
             Context(('spam', 'eggs'), ('camelot', 'launcelot'),
                 [(True, False)])
@@ -66,7 +66,7 @@ class TestContext(unittest.TestCase):
                 self.context.bools))
 
     def test_eq_invalid(self):
-        with self.assertRaises(NotImplementedError):
+        with self.assertRaises(TypeError):
             self.context == object()
 
     def test_ne(self):

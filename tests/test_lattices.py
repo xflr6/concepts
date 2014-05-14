@@ -6,66 +6,65 @@ import pickle
 
 from concepts.contexts import Context
 
-CONTEXT = '''
-   |+1|-1|+2|-2|+3|-3|+sg|+pl|-sg|-pl|
-1sg| X|  |  | X|  | X|  X|   |   |  X|
-1pl| X|  |  | X|  | X|   |  X|  X|   |
-2sg|  | X| X|  |  | X|  X|   |   |  X|
-2pl|  | X| X|  |  | X|   |  X|  X|   |
-3sg|  | X|  | X| X|  |  X|   |   |  X|
-3pl|  | X|  | X| X|  |   |  X|  X|   |
-'''
-
-
-def setUpModule():
-    global lattice
-    lattice = Context.fromstring(CONTEXT).lattice
-
-
-def tearDownModule():
-    global lattice
-    del lattice
-
 
 class TestLattice(unittest.TestCase):
 
+    source = '''
+       |+1|-1|+2|-2|+3|-3|+sg|+pl|-sg|-pl|
+    1sg| X|  |  | X|  | X|  X|   |   |  X|
+    1pl| X|  |  | X|  | X|   |  X|  X|   |
+    2sg|  | X| X|  |  | X|  X|   |   |  X|
+    2pl|  | X| X|  |  | X|   |  X|  X|   |
+    3sg|  | X|  | X| X|  |  X|   |   |  X|
+    3pl|  | X|  | X| X|  |   |  X|  X|   |
+    '''
+
+    @classmethod
+    def setUpClass(cls, source=None):
+        if source is None:
+            source = cls.source
+        context = Context.fromstring(source)
+        cls.lattice = context.lattice
+
+    @classmethod
+    def tearDownClass(cls):
+        del cls.lattice
+
     def test_pickling(self):
-        result = pickle.loads(pickle.dumps(lattice))
-        self.assertEqual(result._context, lattice._context)
+        result = pickle.loads(pickle.dumps(self.lattice))
+        self.assertEqual(result._context, self.lattice._context)
         self.assertEqual([tuple(c) for c in result._concepts],
-            [tuple(c) for c in lattice._concepts])
+            [tuple(c) for c in self.lattice._concepts])
 
     def test_len(self):
-        self.assertEqual(len(lattice), 22)
+        self.assertEqual(len(self.lattice), 22)
 
     def test_upset_union(self):
-        self.assertEqual(list(lattice.upset_union(
-            [lattice[('+1',)], lattice[('+2',)]])),
-            [lattice[('+1',)], lattice[('+2',)],
-             lattice[('-3',)], lattice[('-2',)], lattice[('-1',)],
-             lattice.supremum])
+        l = self.lattice
+        self.assertEqual(list(l.upset_union([l[('+1',)], l[('+2',)]])),
+            [l[('+1',)], l[('+2',)],
+             l[('-3',)], l[('-2',)], l[('-1',)],
+             l.supremum])
 
     def test_downset_union(self):
-        self.assertEqual(list(lattice.downset_union(
-            [lattice[('+1',)], lattice[('+2',)]])),
-            [lattice[('+1',)], lattice[('+2',)],
-             lattice[('+1', '+sg')], lattice[('+1', '+pl')],
-             lattice[('+2', '+sg')], lattice[('+2', '+pl')],
-             lattice.infimum])
+        l = self.lattice
+        self.assertEqual(list(l.downset_union([l[('+1',)], l[('+2',)]])),
+            [l[('+1',)], l[('+2',)],
+             l[('+1', '+sg')], l[('+1', '+pl')],
+             l[('+2', '+sg')], l[('+2', '+pl')],
+             l.infimum])
 
     def test_upset_generalization(self):
-        self.assertEqual(list(lattice.upset_generalization(
-            [lattice[('+1', '+sg')], lattice[('+2', '+sg')], lattice[('+3', '+sg')]])),
-            [lattice[('+1', '+sg')], lattice[('+2', '+sg')], lattice[('+3', '+sg')],
-             lattice[('-3', '+sg')], lattice[('-2', '+sg')], lattice[('-1', '+sg')],
-             lattice[('+sg',)]])
+        l = self.lattice
+        self.assertEqual(list(l.upset_generalization(
+            [l[('+1', '+sg')], l[('+2', '+sg')], l[('+3', '+sg')]])),
+            [l[('+1', '+sg')], l[('+2', '+sg')], l[('+3', '+sg')],
+             l[('-3', '+sg')], l[('-2', '+sg')], l[('-1', '+sg')],
+             l[('+sg',)]])
 
 
-class TestInfimum(unittest.TestCase):
-
-    def setUp(self):
-        self.infimum = lattice.infimum
+class TestInfimum(TestLattice):
 
     def test_minimal(self):
-        self.assertEqual(self.infimum.minimal(),
+        self.assertEqual(self.lattice.infimum.minimal(),
             ('+1', '-1', '+2', '-2', '+3', '-3', '+sg', '+pl', '-sg', '-pl'))
