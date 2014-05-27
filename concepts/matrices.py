@@ -66,8 +66,7 @@ class Relation(tuple):
     __slots__ = ()
 
     def __new__(cls, xname, yname, xmembers, ymembers, xbools, _ids=None):
-        if _ids is not None:
-            # unpickle reconstruction
+        if _ids is not None:  # unpickle reconstruction
             xid, yid = _ids
             X = bitsets.meta.bitset(xname, xmembers, xid, Vector, None, Vectors)
             Y = bitsets.meta.bitset(yname, ymembers, yid, Vector, None, Vectors)

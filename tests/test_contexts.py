@@ -22,6 +22,12 @@ class TestContextInit(unittest.TestCase):
             Context(('spam', 'eggs'), ('eggs', 'ham'),
                 [(True, False), (False, True)])
 
+    def test_empty_relation(self):
+        with self.assertRaises(ValueError):
+            Context((), ('spam',), [(False,)])
+        with self.assertRaises(ValueError):
+            Context(('spam',), (), [(False,)])
+
     def test_invalid_bools(self):
         with self.assertRaises(ValueError):
             Context(('spam', 'eggs'), ('camelot', 'launcelot'),

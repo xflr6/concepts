@@ -2,6 +2,14 @@ Concepts Changelog
 ==================
 
 
+Version 0.7.4
+-------------
+
+Changed context._lattice to a generator.
+
+Fixed failure to handle contexts with single object/property.
+
+
 Version 0.7.3
 -------------
 

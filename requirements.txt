@@ -1,3 +1,3 @@
 # exact dependency versions used in development
-bitsets==0.7.3
+bitsets==0.7.4
 graphviz==0.3.4

@@ -212,9 +212,9 @@ class Csv(Format):
                     return fd.getvalue()
 
             with contextlib.closing(StringIO()) as fd:
-                writer = tools.UnicodeWriter(fd, dialect, 'utf8')
+                writer = tools.UnicodeWriter(fd, dialect, 'utf-8')
                 cls._dump(writer, objects, properties, bools)
-                return fd.getvalue().decode('utf8')
+                return fd.getvalue().decode('utf-8')
 
         with contextlib.closing(StringIO()) as fd:
             writer = csv.writer(fd, dialect)

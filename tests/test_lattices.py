@@ -68,3 +68,18 @@ class TestInfimum(TestLattice):
     def test_minimal(self):
         self.assertEqual(self.lattice.infimum.minimal(),
             ('+1', '-1', '+2', '-2', '+3', '-3', '+sg', '+pl', '-sg', '-pl'))
+
+
+class TestSmallest(unittest.TestCase):
+
+    def test_minimum(self):
+        l = Context(('spam',), ('ham',), [(True,)]).lattice
+        self.assertEqual(len(l), 1)
+        self.assertIs(l.infimum, l.supremum)
+        self.assertEqual(l.atoms, ())
+
+    def test_minimum(self):
+        l = Context(('spam',), ('ham',), [(False,)]).lattice
+        self.assertEqual(len(l), 2)
+        self.assertIsNot(l.infimum, l.supremum)
+        self.assertEqual(l.atoms, (l.supremum,))

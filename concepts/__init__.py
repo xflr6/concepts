@@ -3,7 +3,7 @@
 """Formal Concept Analysis (FCA) with Python."""
 
 __title__ = 'concepts'
-__version__ = '0.7.3'
+__version__ = '0.7.4'
 __author__ = 'Sebastian Bank <sebastian.bank@uni-leipzig.de>'
 __license__ = 'MIT, see LICENSE'
 __copyright__ = 'Copyright (c) 2013-2014 Sebastian Bank'
@@ -32,7 +32,7 @@ def load_cxt(filename, encoding=None):
     return Context.fromfile(filename, 'cxt', encoding)
 
 
-def load_csv(filename, dialect='excel', encoding='utf8'):
+def load_csv(filename, dialect='excel', encoding='utf-8'):
     """Load and return formal context from CSV file.
 
     >>> load_csv('examples/vowels.csv')  # doctest: +ELLIPSIS
