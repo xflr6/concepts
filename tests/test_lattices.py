@@ -78,7 +78,7 @@ class TestSmallest(unittest.TestCase):
         self.assertIs(l.infimum, l.supremum)
         self.assertEqual(l.atoms, ())
 
-    def test_minimum(self):
+    def test_trivial(self):
         l = Context(('spam',), ('ham',), [(False,)]).lattice
         self.assertEqual(len(l), 2)
         self.assertIsNot(l.infimum, l.supremum)

@@ -11,7 +11,6 @@ if PY2:  # pragma: no cover
     from itertools import imap as map
     from itertools import izip as zip
     from itertools import ifilter as filter
-    from itertools import ifilterfalse as filterfalse
 
     def py3_unicode_to_str(cls):
         return cls
@@ -30,7 +29,6 @@ else:  # pragma: no cover
     map = map
     zip = zip
     filter = filter
-    from itertools import filterfalse
 
     def py3_unicode_to_str(cls):
         cls.__str__ = cls.__unicode__

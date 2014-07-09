@@ -2,6 +2,13 @@ Concepts Changelog
 ==================
 
 
+Version 0.7.5
+-------------
+
+Made derivation code more explicit. Subset test replaced by inlined
+implementation using only bitwise_and.
+
+
 Version 0.7.4
 -------------
 

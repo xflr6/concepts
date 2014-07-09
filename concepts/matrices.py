@@ -23,23 +23,59 @@ class Vectors(bitsets.series.Tuple):
         self.relation = relation
         self.relation_index = index
 
-        _prime = other.BitSet.frombools
-        _double = self.BitSet.frombools
+        Prime = other.BitSet.supremum
+        Double = self.BitSet.supremum
+
+        _prime = other.BitSet.fromint
+        _double = self.BitSet.fromint
 
         def prime(bitset):
             """FCA derivation operator (extent->intent, intent->extent)."""
-            return _prime(bitset & b == bitset for b in self)
+            prime = Prime
+            for o in other:
+                if bitset & 1:
+                    prime &= o
+                bitset >>= 1
+                if not bitset:
+                    break
+            return _prime(prime)
 
         def double(bitset):
             """FCA double derivation operator (extent->extent, intent->intent)."""
-            prime = _prime(bitset & b == bitset for b in self)
-            return _double(prime & b == prime for b in other)
+            prime = Prime
+            for o in other:
+                if bitset & 1:
+                    prime &= o
+                bitset >>= 1
+                if not bitset:
+                    break
+            double = Double
+            for s in self:
+                if prime & 1:
+                    double &= s
+                prime >>= 1
+                if not prime:
+                    break
+            return _double(double)
 
         def doubleprime(bitset):
             """FCA single and double derivation (extent->extent+intent, intent->intent+extent)."""
-            prime = _prime(bitset & b == bitset for b in self)
-            double = _double(prime & b == prime for b in other)
-            return double, prime
+            prime = Prime
+            for o in other:
+                if bitset & 1:
+                    prime &= o
+                bitset >>= 1
+                if not bitset:
+                    break
+            bitset = prime
+            double = Double
+            for s in self:
+                if bitset & 1:
+                    double &= s
+                bitset >>= 1
+                if not bitset:
+                    break
+            return _double(double), _prime(prime)
 
         self.prime = self.BitSet.prime = prime
         self.double = self.BitSet.double = double

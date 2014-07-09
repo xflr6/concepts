@@ -205,7 +205,7 @@ class Context(object):
                     push(heap, (extent.shortlex(), neighbor))
                 concept[2].append(neighbor[0])
                 neighbor[3].append(concept[0])
-            yield concept  # note lower is still appended to until exhaustion
+            yield concept  # concept[3] keeps growing until exhaustion
 
     def intension(self, objects, raw=False):
         """Return all properties shared by the given objects."""
