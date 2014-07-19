@@ -83,3 +83,18 @@ class TestContext(unittest.TestCase):
     def test_minimize_infimum(self):
         self.assertEqual(list(self.context._minimize((), self.context.properties)),
             [self.context.properties])
+
+    def test_raw(self):
+        Extent, Intent = self.context._Extent, self.context._Intent
+        self.assertEqual(self.context.intension(['1sg', '1pl'], raw=True),
+            Intent('1001010000'))
+        self.assertEqual(self.context.extension(['+1', '+sg'], raw=True),
+            Extent('100000'))
+        self.assertEqual(self.context.neighbors(['1sg'], raw=True),
+            [(Extent('110000'), Intent('1001010000')),
+             (Extent('101000'), Intent('0000011001')),
+             (Extent('100010'), Intent('0001001001'))])
+
+    def test_unicode(self):
+        assert all(ord(c) < 128 for c in str(self.context))
+        self.assertEqual(u'%s' % self.context, '%s' % self.context)

@@ -39,6 +39,10 @@ class TestLattice(unittest.TestCase):
     def test_len(self):
         self.assertEqual(len(self.lattice), 22)
 
+    def test_unicode(self):
+        assert all(ord(c) < 128 for c in str(self.lattice))
+        self.assertEqual(u'%s' % self.lattice, '%s' % self.lattice)
+
     def test_upset_union(self):
         l = self.lattice
         self.assertEqual(list(l.upset_union([l[('+1',)], l[('+2',)]])),
@@ -83,3 +87,11 @@ class TestSmallest(unittest.TestCase):
         self.assertEqual(len(l), 2)
         self.assertIsNot(l.infimum, l.supremum)
         self.assertEqual(l.atoms, (l.supremum,))
+
+    def test_nonatomic(self):
+        m = Context(('spam', 'eggs'), ('ham',), [(True,), (True,)]).lattice
+        self.assertEqual([tuple(c) for c in m],
+            [(('spam', 'eggs'), ('ham',))])
+        t = Context(('spam', 'eggs'), ('ham',), [(False,), (False,)]).lattice
+        self.assertEqual([tuple(c) for c in t],
+            [((), ('ham',)), (('spam', 'eggs'), ())])

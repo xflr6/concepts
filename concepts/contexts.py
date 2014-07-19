@@ -6,7 +6,7 @@ import heapq
 
 from ._compat import py3_unicode_to_str
 
-from . import formats, matrices, junctors, tools, lattices
+from . import formats, definitions, matrices, junctors, tools, lattices
 
 __all__ = ['Context']
 
@@ -91,6 +91,9 @@ class Context(object):
     -1  subcontrary  -2
     -1  subcontrary  -3
     -2  subcontrary  -3
+
+    >>> c.definition() == (c.objects, c.properties, c.bools)
+    True
     """
 
     Lattice = lattices.Lattice
@@ -280,9 +283,15 @@ class Context(object):
         """Row-wise boolean relation matrix between objects and properties."""
         return self._intents.bools()
 
-    def relations(self):
+    def definition(self):
+        """Return (objects, properties, bools) triple as mutable object."""
+        return definitions.Definition(self._Extent._members, self._Intent._members,
+            self._intents.bools())
+
+    def relations(self, include_unary=False):
         """Return the logical relations between the context properties."""
-        return junctors.Relations(self.properties, self._extents.bools())
+        return junctors.Relations(self.properties, self._extents.bools(),
+            include_unary)
 
     @tools.lazyproperty
     def lattice(self):

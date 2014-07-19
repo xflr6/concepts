@@ -2,6 +2,15 @@ Concepts Changelog
 ==================
 
 
+Version 0.7.6
+-------------
+
+Added context definition objects, allowing interactive building, modification,
+and combination of context creation arguments.
+
+Added include_unary option to logical connectives calculation.
+
+
 Version 0.7.5
 -------------
 

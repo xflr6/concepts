@@ -6,7 +6,7 @@ http://commons.wikimedia.org/wiki/File:Logical_connectives_Hasse_diagram.svg
 http://en.wikiversity.org/wiki/File:Logic_matrix;_operations.svg
 """
 
-from itertools import combinations
+from itertools import combinations, chain
 
 from ._compat import zip, with_metaclass
 
@@ -33,9 +33,32 @@ class Relations(list):
 
     >>> Relations(['+1', 'sg'], [(True, True, False, False), (True, False, True, False)])
     [<'+1' Orthogonal 'sg'>]
+
+
+    >>> r = Relations(['Never', 'Always', 'Possibly', 'Maybe'],
+    ...     [(False, False), (True, True), (True, False), (True, False)],
+    ...     include_unary=True)
+
+    >>> r  # doctest: +NORMALIZE_WHITESPACE
+    [<'Never' Contradiction>, <'Always' Tautology>,
+     <'Possibly' Contingency>, <'Maybe' Contingency>,
+     <'Possibly' Equivalent 'Maybe'>]
+
+    >>> print(r)
+    Never    contradiction 
+    Always   tautology    
+    Possibly contingency  
+    Maybe    contingency  
+    Possibly equivalent   Maybe
+
+    >>> print(r[0])
+    Never contradiction
+
+    >>> print(r[-1])
+    Possibly equivalent Maybe
     """
 
-    def __init__(self, items, booleans):
+    def __init__(self, items, booleans, include_unary=False):
         """Filter out items with tautological or contradictory booleans."""
         unary = [Relation(i, None, bools)
             for i, bools in zip(items, booleans)]
@@ -44,10 +67,15 @@ class Relations(list):
         binary = (Relation(l, r, zip(lbools, rbools))
             for (l, lbools), (r, rbools) in combos)
 
-        super(Relations, self).__init__(binary)
+        members = chain(unary, binary) if include_unary else binary
+
+        super(Relations, self).__init__(members)
         self.sort(key=lambda r: r.order)
 
-    def __str__(self, exclude_orthogonal=True):
+    def __str__(self):
+        return self.tostring(exclude_orthogonal=True)
+
+    def tostring(self, exclude_orthogonal=False):
         tmpl = '%%-%ds %%-12s %%s' % max(len(str(r.left)) for r in self)
         if exclude_orthogonal:
             self = (r for r in self if r.__class__ is not Orthogonal)

@@ -8,7 +8,7 @@ import contextlib
 
 from ._compat import PY2, text_type, zip, with_metaclass, StringIO
 
-from . import tools
+from . import tools, unicodecsv
 
 __all__ = ['Format']
 
@@ -130,7 +130,8 @@ class Table(Format):
         if escape:
             objects = list(map(Table.escape, objects))
             properties = list(map(Table.escape, properties))
-        wd = [max(len(o) for o in objects)] + list(map(len, properties))
+        wd = [tools.max_len(objects)]
+        wd.extend(map(len, properties))
         tmpl = ' ' * indent + '|'.join('%%-%ds' % w for w in wd) + '|'
         result = [tmpl % (('',) + tuple(properties))]
         result.extend(tmpl % ((o,) + tuple('X' if b else '' for b in intent))
@@ -160,7 +161,7 @@ class Csv(Format):
                     return cls._load(reader)
 
             with io.open(filename, 'r', encoding=encoding, newline='') as fd:
-                reader = tools.unicode_csv_reader(fd, dialect)
+                reader = unicodecsv.unicode_csv_reader(fd, dialect)
                 return cls._load(reader)
 
         with io.open(filename, 'r', encoding=encoding, newline='') as fd:
@@ -180,7 +181,7 @@ class Csv(Format):
                 if encoding is None:
                     writer = csv.writer(fd, dialect)
                 else:
-                    writer = tools.UnicodeWriter(fd, dialect, encoding)
+                    writer = unicodecsv.UnicodeWriter(fd, dialect, encoding)
                 return cls._dump(writer, objects, properties, bools)
 
         with io.open(filename, 'w', encoding=encoding, newline='') as fd:
@@ -196,7 +197,7 @@ class Csv(Format):
             if not PY2 or isinstance(source, str):
                 reader = csv.reader(fd, dialect)
             else:
-                reader = tools.unicode_csv_reader(fd, dialect)
+                reader = unicodecsv.unicode_csv_reader(fd, dialect)
             return cls._load(reader)
 
     @classmethod
@@ -212,7 +213,7 @@ class Csv(Format):
                     return fd.getvalue()
 
             with contextlib.closing(StringIO()) as fd:
-                writer = tools.UnicodeWriter(fd, dialect, 'utf-8')
+                writer = unicodecsv.UnicodeWriter(fd, dialect, 'utf-8')
                 cls._dump(writer, objects, properties, bools)
                 return fd.getvalue().decode('utf-8')
 
