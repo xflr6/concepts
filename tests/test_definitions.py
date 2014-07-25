@@ -25,11 +25,11 @@ class TestBaseDefinition(unittest.TestCase):
 class TestInit(unittest.TestCase):
 
     def test_duplicate_object(self):
-        with self.assertRaisesRegexp(ValueError, 'Duplicate objects'):
+        with self.assertRaisesRegexp(ValueError, 'duplicate objects'):
             Definition(('spam', 'spam'), (), [])
 
     def test_duplicate_property(self):
-        with self.assertRaisesRegexp(ValueError, 'Duplicate properties'):
+        with self.assertRaisesRegexp(ValueError, 'duplicate properties'):
             Definition((), ('spam', 'spam'), [])
 
 
@@ -87,6 +87,14 @@ class TestUnion(unittest.TestCase):
             Definition(('spam', 'eggs', 'ham'), ('ni', 'nini'),
                 [(True, False), (False, False), (True, True)]))
 
+    def test_augmented(self):
+        a = Definition(('spam', 'eggs'), ('ni',), [(True,), (False,)])
+        b = Definition(('ham', 'spam'), ('nini', 'ni',), [(True, True), (False, True)])
+        a |= b
+        self.assertEqual(a,
+            Definition(('spam', 'eggs', 'ham'), ('ni', 'nini'),
+                [(True, False), (False, False), (True, True)]))
+
 
 class TestIntersection(unittest.TestCase):
 
@@ -107,3 +115,11 @@ class TestIntersection(unittest.TestCase):
         b = Definition(('ham', 'spam'), ('nini', 'ni',), [(True, True), (False, False)])
         self.assertEqual(a.intersection(b, ignore_conflicts=True),
             Definition(['spam'], ['ni'], [(False,)]))
+
+    def test_augmented(self):
+        a = Definition(('spam', 'eggs'), ('ni',), [(True,), (False,)])
+        b = Definition(('ham', 'spam'), ('nini', 'ni',), [(True, True), (False, True)])
+        a &= b
+        self.assertEqual(a,
+            Definition(['spam'], ['ni'], [(True,)]))
+        

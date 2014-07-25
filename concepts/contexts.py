@@ -6,7 +6,7 @@ import heapq
 
 from ._compat import py3_unicode_to_str
 
-from . import formats, definitions, matrices, junctors, tools, lattices
+from . import formats, matrices, tools, definitions, junctors, lattices
 
 __all__ = ['Context']
 
@@ -115,25 +115,25 @@ class Context(object):
     def __init__(self, objects, properties, bools):
         """Create context from objects, properties, and correspondence."""
         objects = tuple(objects)
-        properties = tuple(properties)
-
-        if len(set(objects)) != len(objects):
-            raise ValueError('%r duplicate objects: %r' % (
-                self.__class__, objects))
-        if len(set(properties)) != len(properties):
-            raise ValueError('%r duplicate properties: %r' % (
-                self.__class__, properties))
-        if not set(objects).isdisjoint(properties):
-            raise ValueError('%r objects and properties overlap: %r' % (
-                self.__class__, set(objects) & set(properties)))
         if not objects:
-            raise ValueError('%r empty objects: %r' % (self.__class__, objects))
+            raise ValueError('empty objects')
+        if len(set(objects)) != len(objects):
+            raise ValueError('duplicate objects: %r' % (objects,))
+
+        properties = tuple(properties)
         if not properties:
-            raise ValueError('%r empty properties: %r' % (self.__class__, properties))
+            raise ValueError('empty properties')
+        if len(set(properties)) != len(properties):
+            raise ValueError('duplicate properties: %r' % (properties,))
+
+        if not set(objects).isdisjoint(properties):
+            raise ValueError('objects and properties overlap: %r' % (
+                set(objects) & set(properties)))
+
         if (len(bools) != len(objects)
             or {len(b) for b in bools} != {len(properties)}):
-            raise ValueError('%r bools is not %d items of length %d' % (
-                self.__class__, len(objects), len(properties)))
+            raise ValueError('bools is not %d items of length %d' % (
+                len(objects), len(properties)))
 
         self._intents, self._extents = matrices.Relation('Intent', 'Extent',
             properties, objects, bools)
@@ -152,10 +152,10 @@ class Context(object):
         self._Extent = self._extents.BitSet
 
     def __eq__(self, other):
-        if not isinstance(other, Context):
-            raise TypeError('can only compare to a context.')
-        return (self.objects == other.objects and self.properties == other.properties
-            and self.bools == other.bools)
+        if isinstance(other, Context):
+            return (self.objects == other.objects and
+                self.properties == other.properties and self.bools == other.bools)
+        return NotImplemented
 
     def __ne__(self, other):
         return not self == other

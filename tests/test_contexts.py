@@ -71,9 +71,8 @@ class TestContext(unittest.TestCase):
             Context(self.context.objects, self.context.properties,
                 self.context.bools))
 
-    def test_eq_invalid(self):
-        with self.assertRaises(TypeError):
-            self.context == object()
+    def test_eq_undefined(self):
+        self.assertFalse(self.context == object())
 
     def test_ne(self):
         self.assertTrue(self.context !=

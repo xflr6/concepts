@@ -2,6 +2,15 @@ Concepts Changelog
 ==================
 
 
+Version 0.7.7
+-------------
+
+Changed context __eq__ test with non-contexts from TypeError to NotImplemented.
+
+Fixed non-working augmented assignment operators on definitions.
+Simplified definition implementation.
+
+
 Version 0.7.6
 -------------
 

@@ -325,6 +325,7 @@ format:
     >>> c1 == c2 == c3
     True
 
+To save a context, use its ``tofile`` method.
 
 Context objects are pickleable:
 
