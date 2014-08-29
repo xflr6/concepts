@@ -1,8 +1,11 @@
 # test_formats.py
 
 import unittest
+import os
 
 from concepts.formats import Format, Cxt, Table, Csv, WikiTable
+
+DIRECTORY = 'test_output'
 
 
 class TestFormat(unittest.TestCase):
@@ -12,6 +15,8 @@ class TestFormat(unittest.TestCase):
         self.assertEqual(Format['table'], Table)
         self.assertEqual(Format['csv'], Csv)
         self.assertEqual(Format['wikitable'], WikiTable)
+
+    def test_getitem_invalid(self):
         with self.assertRaises(KeyError):
             Format['spam']
 
@@ -19,14 +24,37 @@ class TestFormat(unittest.TestCase):
 class LoadsDumps(object):
 
     def test_loads(self):
-        objects, properties, bools = self.format.loads(self.result)
-        self.assertSequenceEqual(objects, self.objects)
-        self.assertSequenceEqual(properties, self.properties)
-        self.assertSequenceEqual(bools, self.bools)
+        try:
+            objects, properties, bools = self.format.loads(self.result)
+        except NotImplementedError:
+            pass
+        else:
+            self.assertSequenceEqual(objects, self.objects)
+            self.assertSequenceEqual(properties, self.properties)
+            self.assertSequenceEqual(bools, self.bools)
 
     def test_dumps(self):
         result = self.format.dumps(self.objects, self.properties, self.bools)
         self.assertEqual(result, self.result)
+
+    def test_dump_load(self, outdir=DIRECTORY):
+        if not os.path.exists(outdir):
+            os.mkdir(outdir)
+
+        extension = getattr(self.format, 'extension', '.txt')
+        filepath = os.path.join(outdir, self.__class__.__name__ + extension)
+        self.format.dump(filepath,
+            self.objects, self.properties, self.bools,
+            self.encoding)
+
+        try:
+            objects, properties, bools = self.format.load(filepath, self.encoding)
+        except NotImplementedError:
+            pass
+        else:
+            self.assertSequenceEqual(objects, self.objects)
+            self.assertSequenceEqual(properties, self.properties)
+            self.assertSequenceEqual(bools, self.bools)
 
 
 class Ascii(LoadsDumps):
@@ -35,12 +63,16 @@ class Ascii(LoadsDumps):
     properties = ('in_stock', 'sold_out')
     bools = [(False, True), (False, True)]
 
+    encoding = None
+
 
 class Unicode(LoadsDumps):
 
     objects = (u'M\xf8\xf8se', 'Llama')
     properties = ('majestic', 'bites')
     bools = [(True, True), (False, False)]
+
+    encoding = 'utf8'
 
 
 class TestCxtAscii(unittest.TestCase, Ascii):
@@ -90,10 +122,6 @@ class TestCsvUnicode(unittest.TestCase, Unicode):
         u'M\xf8\xf8se,X,X\r\n'
         u'Llama,,\r\n')
 
-    @unittest.skip('TODO')
-    def test_loads(self):
-        pass
-
 
 class TestWikitableAscii(unittest.TestCase, Ascii):
 
@@ -110,9 +138,6 @@ class TestWikitableAscii(unittest.TestCase, Ascii):
         '|        ||X       \n'
         '|}')
 
-    def test_loads(self):
-        pass
-
 
 class TestWikitableUnicode(unittest.TestCase, Unicode):
 
@@ -127,6 +152,3 @@ class TestWikitableUnicode(unittest.TestCase, Unicode):
         u'!Llama\n'
         u'|        ||     \n'
         '|}')
-
-    def test_loads(self):
-        pass

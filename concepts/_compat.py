@@ -8,17 +8,21 @@ PY2 = sys.version_info[0] == 2
 if PY2:  # pragma: no cover
     text_type = unicode
 
-    from itertools import imap as map
-    from itertools import izip as zip
-    from itertools import ifilter as filter
+    from itertools import imap as map, izip as zip, ifilter as filter
 
     def py3_unicode_to_str(cls):
         return cls
 
     try:
-        from cStringIO import StringIO
+        from cStringIO import StringIO as _cStringIO
     except ImportError:
         from StringIO import StringIO
+    else:
+        from StringIO import StringIO as _PureStringIO
+        def StringIO(*args):
+            if args and isinstance(args[0], str):
+                return _cStringIO(*args)
+            return _PureStringIO(*args)
 
     import copy_reg as copyreg
 
@@ -26,9 +30,7 @@ if PY2:  # pragma: no cover
 else:  # pragma: no cover
     text_type = str
 
-    map = map
-    zip = zip
-    filter = filter
+    map, zip, filter = map, zip, filter
 
     def py3_unicode_to_str(cls):
         cls.__str__ = cls.__unicode__

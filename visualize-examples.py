@@ -3,7 +3,7 @@
 
 import concepts.visualize
 
-DIRECTORY = 'visualize-output'
-FORMAT = 'pdf'
+ARGS = {'directory': 'visualize-output', 'out_format': 'pdf'}
 
-concepts.visualize.render_all('examples/*.cxt', directory=DIRECTORY, out_format=FORMAT)
+concepts.visualize.render_all('examples/*.cxt', **ARGS)
+concepts.visualize.render_all('examples/[r-v]*.csv', encoding='utf-8', **ARGS)

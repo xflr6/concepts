@@ -118,7 +118,7 @@ def max_len(iterable, minimum=0):
         result = max(map(len, iterable))
     except ValueError:
         result = minimum
-    return minimum if result <= minimum else result
+    return minimum if result < minimum else result
 
 
 def maximal(iterable, comparison=operator.lt, _groupkey=operator.itemgetter(0)):

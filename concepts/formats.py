@@ -43,6 +43,16 @@ class Format(with_metaclass(FormatMeta, object)):
 
     normalize_newlines = True
 
+    @staticmethod
+    def loads(source, **kwargs):
+        """Parse source string and return objects, properties, bools."""
+        raise NotImplementedError  # pragma: no cover
+
+    @staticmethod
+    def dumps(objects, properties, bools, **kwargs):
+        """Serialize objects, properties, bools and return string."""
+        raise NotImplementedError  # pragma: no cover
+
     @classmethod
     def load(cls, filename, encoding):
         """Load and parse serialized objects, properties, bools from file."""
@@ -63,19 +73,11 @@ class Format(with_metaclass(FormatMeta, object)):
             encoding = cls.encoding
 
         source = cls.dumps(objects, properties, bools)
+        if PY2:
+            source = unicode(source)
 
         with io.open(filename, 'w', encoding=encoding) as fd:
             fd.write(source)
-
-    @staticmethod
-    def loads(source, **kwargs):
-        """Parse source string and return objects, properties, bools."""
-        raise NotImplementedError  # pragma: no cover
-
-    @staticmethod
-    def dumps(objects, properties, bools, **kwargs):
-        """Serialize objects, properties, bools and return string."""
-        raise NotImplementedError  # pragma: no cover
 
 
 class Cxt(Format):
@@ -146,6 +148,57 @@ class Csv(Format):
 
     dialect = csv.excel
 
+    @staticmethod
+    def _load(reader):
+        objects, bools = [], []
+        properties = next(reader)[1:]
+        for cols in reader:
+            objects.append(cols[0])
+            bools.append(tuple(c == 'X' for c in cols[1:]))
+
+        return objects, properties, bools
+
+    @staticmethod
+    def _dump(writer, objects, properties, bools):
+        symbool = ('', 'X').__getitem__
+        writer.writerow([''] + list(properties))
+        writer.writerows([o] + list(map(symbool, bs))
+            for o, bs in zip(objects, bools))
+
+    @classmethod
+    def loads(cls, source, dialect=None):
+        if dialect is None:
+            dialect = cls.dialect
+
+        with contextlib.closing(StringIO(source)) as fd:
+            if not PY2 or isinstance(source, str):
+                reader = csv.reader(fd, dialect)
+            else:
+                reader = unicodecsv.unicode_csv_reader(fd, dialect)
+            return cls._load(reader)
+
+    @classmethod
+    def dumps(cls, objects, properties, bools, dialect=None):
+        if dialect is None:
+            dialect = cls.dialect
+
+        if PY2:
+            if all(isinstance(s, str) for s in objects + properties):
+                with contextlib.closing(StringIO()) as fd:
+                    writer = csv.writer(fd, dialect)
+                    cls._dump(writer, objects, properties, bools)
+                    return fd.getvalue()
+
+            with contextlib.closing(StringIO()) as fd:
+                writer = unicodecsv.UnicodeWriter(fd, dialect, 'utf-8')
+                cls._dump(writer, objects, properties, bools)
+                return fd.getvalue().decode('utf-8')
+
+        with contextlib.closing(StringIO()) as fd:
+            writer = csv.writer(fd, dialect)
+            cls._dump(writer, objects, properties, bools)
+            return fd.getvalue()
+
     @classmethod
     def load(cls, filename, encoding, dialect=None):
         if encoding is None:
@@ -188,57 +241,6 @@ class Csv(Format):
             writer = csv.writer(fd, dialect)
             return cls._dump(writer, objects, properties, bools)
 
-    @classmethod
-    def loads(cls, source, dialect=None):
-        if dialect is None:
-            dialect = cls.dialect
-
-        with contextlib.closing(StringIO(source)) as fd:
-            if not PY2 or isinstance(source, str):
-                reader = csv.reader(fd, dialect)
-            else:
-                reader = unicodecsv.unicode_csv_reader(fd, dialect)
-            return cls._load(reader)
-
-    @classmethod
-    def dumps(cls, objects, properties, bools, dialect=None):
-        if dialect is None:
-            dialect = cls.dialect
-
-        if PY2:
-            if all(isinstance(s, str) for s in objects + properties):
-                with contextlib.closing(StringIO()) as fd:
-                    writer = csv.writer(fd, dialect)
-                    cls._dump(writer, objects, properties, bools)
-                    return fd.getvalue()
-
-            with contextlib.closing(StringIO()) as fd:
-                writer = unicodecsv.UnicodeWriter(fd, dialect, 'utf-8')
-                cls._dump(writer, objects, properties, bools)
-                return fd.getvalue().decode('utf-8')
-
-        with contextlib.closing(StringIO()) as fd:
-            writer = csv.writer(fd, dialect)
-            cls._dump(writer, objects, properties, bools)
-            return fd.getvalue()
-
-    @staticmethod
-    def _load(reader):
-        objects, bools = [], []
-        properties = next(reader)[1:]
-        for cols in reader:
-            objects.append(cols[0])
-            bools.append(tuple(c == 'X' for c in cols[1:]))
-
-        return objects, properties, bools
-
-    @staticmethod
-    def _dump(writer, objects, properties, bools):
-        symbool = ('', 'X').__getitem__
-        writer.writerow([''] + list(properties))
-        writer.writerows([o] + list(map(symbool, bs))
-            for o, bs in zip(objects, bools))
-
 
 class WikiTable(Format):
     """Formal context as MediaWiki markup table."""
@@ -248,8 +250,7 @@ class WikiTable(Format):
         result = ['{| class="featuresystem"', '!', '!%s' % '!!'.join(properties)]
         wp = list(map(len, properties))
         for o, intent in zip(objects, bools):
-            result += ['|-', '!%s' % o,
-                '|%s' % '||'.join(('X' if b else '').ljust(w)
-                    for w, b in zip(wp, intent))]
+            bcells = (('X' if b else '').ljust(w) for w, b in zip(wp, intent))
+            result += ['|-', '!%s' % o, '|%s' % '||'.join(bcells)]
         result.append('|}')
         return '\n'.join(result)

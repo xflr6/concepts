@@ -216,7 +216,7 @@ class Lattice(object):
 
     @property
     def atoms(self):
-        """Minimal non-infimum cocepts."""
+        """Minimal non-infimum concepts."""
         return self.infimum.upper_neighbors
 
     def join(self, concepts):
@@ -444,7 +444,8 @@ class Concept(object):
 
     def upset(self):
         """Subsuming concepts."""
-        heap, push, pop = [(self.index, self)], heapq.heappush, heapq.heappop
+        heap = [(self.index, self)]
+        push, pop = heapq.heappush, heapq.heappop
         seen = -1
         while heap:
             index, concept = pop(heap)
@@ -456,7 +457,8 @@ class Concept(object):
 
     def downset(self):
         """Implying concepts."""
-        heap, push, pop = [(self.dindex, self)], heapq.heappush, heapq.heappop
+        heap  = [(self.dindex, self)]
+        push, pop = heapq.heappush, heapq.heappop
         seen = -1
         while heap:
             index, concept = pop(heap)

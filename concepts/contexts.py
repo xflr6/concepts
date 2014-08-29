@@ -96,8 +96,6 @@ class Context(object):
     True
     """
 
-    Lattice = lattices.Lattice
-
     @classmethod
     def fromstring(cls, source, frmat='table', **kwargs):
         """Return a new context from string source in given format."""
@@ -196,8 +194,8 @@ class Context(object):
         extent, intent = self._Extent.frommembers(infimum).doubleprime()
         concept = (extent, intent, [], [])
         heap = [(extent.shortlex(), concept)]
-        mapping = {extent: concept}
         push, pop = heapq.heappush, heapq.heappop
+        mapping = {extent: concept}
         while heap:
             concept = pop(heap)[1]
             for extent, intent in self._neighbors(concept[0]):
@@ -296,4 +294,4 @@ class Context(object):
     @tools.lazyproperty
     def lattice(self):
         """Return the concept lattice of the formal context."""
-        return self.Lattice(self)
+        return lattices.Lattice(self)

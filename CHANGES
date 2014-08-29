@@ -2,6 +2,16 @@ Concepts Changelog
 ==================
 
 
+Version 0.7.8
+-------------
+
+Fixed a possible encoding issue with tofile().
+
+Visualize more examples.
+
+Added tests for formats dump/load file roundtrips.
+
+
 Version 0.7.7
 -------------
 

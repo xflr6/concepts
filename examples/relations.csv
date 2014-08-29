@@ -1,0 +1,11 @@
+,relation,transitive,symmetric,antisymmetric,reflexive,irreflexive,asymmetric,neg. trans.,connected,total,trichotomous
+irrefl.,X,,,,,X,,,,,
+tolerance,X,,X,,X,,,,,,
+equivalence,X,X,X,,X,,,,,,
+preorder,X,X,,,X,,,,,,
+partial order,X,X,,X,X,,,,,,
+total order,X,X,,X,X,,,X,X,X,
+strict partial order,X,X,,X,,X,X,,,,
+strict weak order,X,X,,X,,X,X,X,,,
+strict total order,X,X,,X,,X,X,X,X,,X
+R = X = {},X,X,X,X,X,X,X,X,X,X,X

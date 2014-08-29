@@ -4,7 +4,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='concepts',
-    version='0.7.7',
+    version='0.7.8',
     author='Sebastian Bank',
     author_email='sebastian.bank@uni-leipzig.de',
     description='Formal Concept Analysis with Python',
@@ -14,7 +14,7 @@ setup(
     packages=find_packages(),
     install_requires=[
         'bitsets>=0.7, <0.8',
-        'graphviz>=0.3, <0.4',
+        'graphviz>=0.3, <0.5',
     ],
     extras_require={
         'dev': ['wheel'],
@@ -23,7 +23,7 @@ setup(
     platforms='any',
     long_description=open('README.rst').read(),
     classifiers=[
-        'Development Status :: 3 - Alpha',
+        'Development Status :: 4 - Beta',
         'Environment :: Console',
         'Intended Audience :: Developers',
         'Intended Audience :: Science/Research',

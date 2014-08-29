@@ -49,7 +49,8 @@ def lattice(lattice, filename, directory, render, view):
     return dot
 
 
-def render_all(filepattern='*.cxt', frmat=None, directory=None, out_format=None):
+def render_all(filepattern='*.cxt', frmat=None, encoding=None,
+               directory=None, out_format=None):
     from concepts import Context
 
     if directory is not None:
@@ -67,7 +68,7 @@ def render_all(filepattern='*.cxt', frmat=None, directory=None, out_format=None)
         name, ext = os.path.splitext(cxtfile)
         filename = '%s.gv' % get_name(name)
 
-        c = Context.fromfile(cxtfile, get_frmat(ext))
+        c = Context.fromfile(cxtfile, get_frmat(ext), encoding=encoding)
         l = c.lattice
         dot = l.graphviz(filename, directory)
 
