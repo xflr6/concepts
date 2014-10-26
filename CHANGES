@@ -2,6 +2,17 @@ Concepts Changelog
 ==================
 
 
+Version 0.7.9
+-------------
+
+Added move_object and move_property to definitions.
+
+The take-method of definitions now supports skipping all objects or properties
+when called with empty iterables (default None means include all).
+
+Simplified __getitem__ examples.
+
+
 Version 0.7.8
 -------------
 

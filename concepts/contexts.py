@@ -4,7 +4,7 @@
 
 import heapq
 
-from ._compat import py3_unicode_to_str
+from ._compat import py3_unicode_to_str, string_types
 
 from . import formats, matrices, tools, definitions, junctors, lattices
 
@@ -62,10 +62,13 @@ class Context(object):
     [(('1sg', '1pl', '2sg', '2pl', '3sg', '3pl'), ())]
 
 
-    >>> c[('1sg', '1pl', '2pl')]
+    >>> c['1sg',]
+    (('1sg',), ('+1', '-2', '-3', '+sg', '-pl'))
+
+    >>> c['1sg', '1pl', '2pl']
     (('1sg', '1pl', '2sg', '2pl'), ('-3',))
 
-    >>> c[('-1', '-sg')]
+    >>> c['-1', '-sg']
     (('2pl', '3pl'), ('-1', '+pl', '-sg'))
 
 

@@ -113,7 +113,7 @@ class Triple(object):
         return pair in self._pairs
 
     def __eq__(self, other):
-        if isinstance(other, Triple):
+        if isinstance(other, Triple):  # order insensitive
             return (self._objects == other._objects and
                 self._properties == other._properties and
                 self._pairs == other._pairs)
@@ -150,21 +150,22 @@ class Triple(object):
     def tostring(self, frmat='table', **kwargs):
         return formats.Format[frmat].dumps(*self, **kwargs)
 
-    def take(self, objects=(), properties=(), reorder=False):
+    def take(self, objects=None, properties=None, reorder=False):
         """Return a subset with given objects/properties as new definition."""
-        if (not self._objects.issuperset(objects) or
-            not self._properties.issuperset(properties)):
-            notfound = self._objects.rsub(objects) | self._properties.rsub(properties)
+        if (objects and not self._objects.issuperset(objects) or
+            properties and not self._properties.issuperset(properties)):
+            notfound = (self._objects.rsub(objects or ())
+                | self._properties.rsub(properties or ()))
             raise KeyError(list(notfound))
         if reorder:
-            obj = tools.Unique(objects) if objects else self._objects.copy()
-            prop = tools.Unique(properties) if properties else self._properties.copy()
+            obj = tools.Unique(objects) if objects is not None else self._objects.copy()
+            prop = tools.Unique(properties) if properties is not None else self._properties.copy()
         else:
             obj = self._objects.copy()
             prop = self._properties.copy()
-            if objects:
+            if objects is not None:
                 obj &= objects
-            if properties:
+            if properties is not None:
                 prop &= properties
         pairs = self._pairs
         _pairs = {(o, p) for o in obj for p in prop if (o, p) in pairs}
@@ -244,6 +245,15 @@ class Definition(Triple):
     Sir Robin  |X    |X     |    |          |
     holy grail |     |      |    |X         |
 
+    >>> e = d.copy()
+    >>> e.move_object('holy grail', 0)
+    >>> e.move_property('mysterious', 0)
+    >>> e.move_property('king', 1)
+    >>> print(e)
+               |mysterious|king|human|knight|
+    holy grail |X         |    |     |      |
+    King Arthur|          |X   |X    |X     |
+    Sir Robin  |          |    |X    |X     |
 
     >>> e = d.copy()
     >>> e.rename_object('Sir Robin', 'Launcelot')
@@ -301,6 +311,14 @@ class Definition(Triple):
         pairs = self._pairs
         pairs |= {(o, new) for o in self._objects
             if (o, old) in pairs and not pairs.remove((o, old))}
+
+    def move_object(self, obj, index):
+        """Reorder the definition such that object is at index."""
+        self._objects.move(obj, index)
+
+    def move_property(self, prop, index):
+        """Reorder the definition such that property is at index."""
+        self._properties.move(prop, index)
 
     def __setitem__(self, pair, value):
         if isinstance(pair, int):

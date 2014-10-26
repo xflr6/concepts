@@ -80,6 +80,24 @@ class Unique(collections.MutableSet):
         self._seen.add(new_item)
         self._items[idx] = new_item
 
+    def move(self, item, new_index):
+        """Move an item to the given position.
+
+        >>> u = Unique(['spam', 'eggs'])
+        >>> u.move('spam', 1)
+        >>> u
+        Unique(['eggs', 'spam'])
+
+        >>> u.move('ham', 0)
+        Traceback (most recent call last):
+            ...
+        ValueError: 'ham' is not in list
+        """
+        idx = self._items.index(item)
+        if idx != new_index:
+            item = self._items.pop(idx)
+            self._items.insert(new_index, item)
+
     def issuperset(self, items):
         """Return whether this collection contains all items.
 

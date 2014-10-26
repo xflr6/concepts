@@ -2,8 +2,11 @@
 
 """Logical relations between sequences of truth conditions.
 
+http://en.wikipedia.org/wiki/Template:Logical_connectives_table_and_Hasse_diagram
+
 http://commons.wikimedia.org/wiki/File:Logical_connectives_Hasse_diagram.svg
-http://en.wikiversity.org/wiki/File:Logic_matrix;_operations.svg
+http://commons.wikimedia.org/wiki/File:Logical_connectives_table.svg
+http://commons.wikimedia.org/wiki/File:Logic_matrix;_operations.svg
 """
 
 from itertools import combinations, chain

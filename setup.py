@@ -4,7 +4,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='concepts',
-    version='0.7.8',
+    version='0.7.9',
     author='Sebastian Bank',
     author_email='sebastian.bank@uni-leipzig.de',
     description='Formal Concept Analysis with Python',
@@ -17,8 +17,8 @@ setup(
         'graphviz>=0.3, <0.5',
     ],
     extras_require={
-        'dev': ['wheel'],
         'test': ['nose', 'coverage', 'flake8', 'pep8-naming'],
+        'dev': ['wheel'],
     },
     platforms='any',
     long_description=open('README.rst').read(),

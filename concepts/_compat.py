@@ -7,6 +7,7 @@ PY2 = sys.version_info[0] == 2
 
 if PY2:  # pragma: no cover
     text_type = unicode
+    string_types = basestring
 
     from itertools import imap as map, izip as zip, ifilter as filter
 
@@ -28,7 +29,7 @@ if PY2:  # pragma: no cover
 
 
 else:  # pragma: no cover
-    text_type = str
+    text_type = string_types = str
 
     map, zip, filter = map, zip, filter
 

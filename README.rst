@@ -1,7 +1,7 @@
 Concepts
 ========
 
-|PyPI version| |License| |Wheel| |Downloads|
+|PyPI version| |License| |Supported Python| |Format| |Downloads|
 
 Concepts is a simple Python implementation of **Formal Concept Analysis**
 (FCA_).
@@ -110,13 +110,13 @@ of objects or properties with the ``__getitem__`` method of the concept object:
 
 .. code:: python
 
-    >>> c[('king',)]  # closest concept matching intent/extent
+    >>> c['king',]  # closest concept matching intent/extent
     (('King Arthur',), ('human', 'knight', 'king'))
 
     >>> assert c.intension(('King Arthur',)) == ('human', 'knight', 'king')
     >>> assert c.extension(('human', 'knight', 'king')) == ('King Arthur',)
 
-    >>> c[('King Arthur', 'Sir Robin')]
+    >>> c['King Arthur', 'Sir Robin']
     (('King Arthur', 'Sir Robin'), ('human', 'knight'))
 
 Within each context, there is a **maximally general concept** comprising all of
@@ -124,7 +124,7 @@ the objects as extent and having an empty intent (*supremum*).
 
 .. code:: python
 
-    >>> c[('Sir Robin', 'holy grail')]  # maximal concept, supremum
+    >>> c['Sir Robin', 'holy grail']  # maximal concept, supremum
     (('King Arthur', 'Sir Robin', 'holy grail'), ())
 
 
@@ -133,7 +133,7 @@ and having all properties as intent (*infimum*).
 
 .. code:: python
 
-    >>> c[('mysterious', 'knight')]  # minimal concept, infimum
+    >>> c['mysterious', 'knight']  # minimal concept, infimum
     ((), ('human', 'knight', 'king', 'mysterious'))
 
 The concepts of a context can be ordered by extent set-inclusion (or dually
@@ -180,7 +180,7 @@ Individual concepts can be retrieved by different means :
     >>> l[1]
     <Atom {King Arthur} <-> [human knight king] <=> King Arthur <=> king>
 
-    >>> l[('mysterious',)]
+    >>> l['mysterious',]
     <Atom {holy grail} <-> [mysterious] <=> holy grail <=> mysterious>
 
 
@@ -480,9 +480,12 @@ Concepts is distributed under the `MIT license`_.
 .. |License| image:: https://pypip.in/license/concepts/badge.svg
     :target: https://pypi.python.org/pypi/concepts
     :alt: License
-.. |Wheel| image:: https://pypip.in/wheel/concepts/badge.svg
+.. |Supported Python| image:: https://pypip.in/py_versions/concepts/badge.svg
     :target: https://pypi.python.org/pypi/concepts
-    :alt: Wheel Status
+    :alt: Supported Python Versions
+.. |Format| image:: https://pypip.in/format/concepts/badge.svg
+    :target: https://pypi.python.org/pypi/concepts
+    :alt: Format
 .. |Downloads| image:: https://pypip.in/d/concepts/badge.svg
     :target: https://pypi.python.org/pypi/concepts
     :alt: Downloads

@@ -122,4 +122,3 @@ class TestIntersection(unittest.TestCase):
         a &= b
         self.assertEqual(a,
             Definition(['spam'], ['ni'], [(True,)]))
-        

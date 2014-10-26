@@ -457,7 +457,7 @@ class Concept(object):
 
     def downset(self):
         """Implying concepts."""
-        heap  = [(self.dindex, self)]
+        heap = [(self.dindex, self)]
         push, pop = heapq.heappush, heapq.heappop
         seen = -1
         while heap:

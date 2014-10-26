@@ -5,7 +5,7 @@ import os
 
 from concepts.formats import Format, Cxt, Table, Csv, WikiTable
 
-DIRECTORY = 'test_output'
+DIRECTORY = 'test-output'
 
 
 class TestFormat(unittest.TestCase):
@@ -72,7 +72,7 @@ class Unicode(LoadsDumps):
     properties = ('majestic', 'bites')
     bools = [(True, True), (False, False)]
 
-    encoding = 'utf8'
+    encoding = 'utf-8'
 
 
 class TestCxtAscii(unittest.TestCase, Ascii):
