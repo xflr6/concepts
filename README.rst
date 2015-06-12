@@ -13,6 +13,15 @@ table called *formal context* defines which objects have a given property and
 vice versa which properties a given object has.
 
 
+Links
+-----
+
+- GitHub: http://github.com/xflr6/concepts
+- PyPI: http://pypi.python.org/pypi/concepts
+- Download: http://pypi.python.org/pypi/concepts#downloads
+- Issue Tracker: http://github.com/xflr6/concepts/issues
+
+
 Installation
 ------------
 

@@ -1,7 +1,6 @@
 # test_lattices.py
 
 import unittest
-
 import pickle
 
 from concepts.contexts import Context
