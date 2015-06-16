@@ -483,18 +483,18 @@ Concepts is distributed under the `MIT license`_.
 .. |--| unicode:: U+2013
 
 
-.. |PyPI version| image:: https://pypip.in/v/concepts/badge.svg
+.. |PyPI version| image:: https://img.shields.io/pypi/v/concepts.svg
     :target: https://pypi.python.org/pypi/concepts
     :alt: Latest PyPI Version
-.. |License| image:: https://pypip.in/license/concepts/badge.svg
+.. |License| image:: https://img.shields.io/pypi/l/concepts.svg
     :target: https://pypi.python.org/pypi/concepts
     :alt: License
-.. |Supported Python| image:: https://pypip.in/py_versions/concepts/badge.svg
+.. |Supported Python| image:: https://img.shields.io/pypi/pyversions/concepts.svg
     :target: https://pypi.python.org/pypi/concepts
     :alt: Supported Python Versions
-.. |Format| image:: https://pypip.in/format/concepts/badge.svg
+.. |Format| image:: https://img.shields.io/pypi/format/concepts.svg
     :target: https://pypi.python.org/pypi/concepts
     :alt: Format
-.. |Downloads| image:: https://pypip.in/d/concepts/badge.svg
+.. |Downloads| image:: https://img.shields.io/pypi/dm/concepts.svg
     :target: https://pypi.python.org/pypi/concepts
     :alt: Downloads
