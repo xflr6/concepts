@@ -18,8 +18,8 @@ Links
 
 - GitHub: http://github.com/xflr6/concepts
 - PyPI: http://pypi.python.org/pypi/concepts
-- Download: http://pypi.python.org/pypi/concepts#downloads
 - Issue Tracker: http://github.com/xflr6/concepts/issues
+- Download: http://pypi.python.org/pypi/concepts#downloads
 
 
 Installation

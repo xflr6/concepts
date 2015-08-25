@@ -4,7 +4,7 @@
 
 import heapq
 
-from ._compat import py3_unicode_to_str, string_types
+from ._compat import py3_unicode_to_str
 
 from . import formats, matrices, tools, definitions, junctors, lattices
 
