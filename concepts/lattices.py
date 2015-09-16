@@ -15,6 +15,8 @@ __all__ = ['Lattice']
 class Lattice(object):
     """Formal concept lattice as directed acyclic graph of concepts.
 
+    Usage:
+
     >>> from concepts import contexts
 
     >>> l = contexts.Context.fromstring('''
@@ -289,6 +291,8 @@ class Lattice(object):
 @py3_unicode_to_str
 class Concept(object):
     """Formal concept as pair of extent and intent.
+
+    Usage:
 
     >>> from concepts import contexts
 

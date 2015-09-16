@@ -15,6 +15,12 @@ __all__ = ['Context']
 class Context(object):
     """Formal context defining a relation between objects and properties.
 
+    Example:
+        >>> Context(['man', 'woman'], ['male', 'female'], [(True, False), (False, True)])  # doctest: +ELLIPSIS
+        <Context object mapping 2 objects to 2 properties at 0x...>
+
+    Usage:
+
     >>> c = Context.fromstring('''
     ...    |+1|-1|+2|-2|+3|-3|+sg|+pl|-sg|-pl|
     ... 1sg| X|  |  | X|  | X|  X|   |   |  X|
@@ -296,5 +302,5 @@ class Context(object):
 
     @tools.lazyproperty
     def lattice(self):
-        """Return the concept lattice of the formal context."""
+        """The concept lattice of the formal context."""
         return lattices.Lattice(self)

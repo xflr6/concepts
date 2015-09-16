@@ -208,6 +208,12 @@ def ensure_compatible(left, right):
 class Definition(Triple):
     """Mutable triple of (objects, properties, bools) for creating a context.
 
+    Example:
+        >>> Definition(['man', 'woman'], ['male', 'female'], [(True, False), (False, True)])
+        <Definition(['man', 'woman'], ['male', 'female'], [(True, False), (False, True)])>
+
+    Usage:
+
     >>> d = Definition()
 
     >>> d

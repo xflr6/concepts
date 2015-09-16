@@ -27,8 +27,13 @@ EXAMPLE = '''
 def load_cxt(filename, encoding=None):
     """Load and return formal context from CXT file.
 
-    >>> load_cxt('examples/digits.cxt')  # doctest: +ELLIPSIS
-    <Context object mapping 10 objects to 7 properties at 0x...>
+    Args:
+        filename: Path to the CXT file to load the context from.
+        encoding: Encoding of the file ('utf-8', 'latin1', 'ascii', ...).
+
+    Example:
+        >>> load_cxt('examples/digits.cxt')  # doctest: +ELLIPSIS
+        <Context object mapping 10 objects to 7 properties at 0x...>
     """
     return Context.fromfile(filename, 'cxt', encoding)
 
@@ -36,8 +41,14 @@ def load_cxt(filename, encoding=None):
 def load_csv(filename, dialect='excel', encoding='utf-8'):
     """Load and return formal context from CSV file.
 
-    >>> load_csv('examples/vowels.csv')  # doctest: +ELLIPSIS
-    <Context object mapping 12 objects to 8 properties at 0x...>
+    Args:
+        filename: Path to the CSV file to load the context from.
+        dialect: Syntax variant of the CSV file ('excel', 'excel-tab').
+        encoding: Encoding of the file ('utf-8', 'latin1', 'ascii', ...).
+
+    Example:
+        >>> load_csv('examples/vowels.csv')  # doctest: +ELLIPSIS
+        <Context object mapping 12 objects to 8 properties at 0x...>
     """
     return Context.fromfile(filename, 'csv', encoding, dialect=dialect)
 
@@ -45,15 +56,18 @@ def load_csv(filename, dialect='excel', encoding='utf-8'):
 def make_context(source, frmat='table'):
     """Return a new context from source string in the given format.
 
-    >>> c = make_context('''
-    ...      |male|female|adult|child|
-    ... man  |  X |      |  X  |     |
-    ... woman|    |   X  |  X  |     |
-    ... boy  |  X |      |     |  X  |
-    ... girl |    |   X  |     |  X  |
-    ... ''')
+    Args:
+        source: Formal context table as plain-text string.
+        frmat: Format of the context string ('table', 'cxt', 'csv').
 
-    >>> c  # doctest: +ELLIPSIS
-    <Context object mapping 4 objects to 4 properties at 0x...>
+    Example:
+        >>> make_context('''
+        ...      |male|female|adult|child|
+        ... man  |  X |      |  X  |     |
+        ... woman|    |   X  |  X  |     |
+        ... boy  |  X |      |     |  X  |
+        ... girl |    |   X  |     |  X  |
+        ... ''')  # doctest: +ELLIPSIS
+        <Context object mapping 4 objects to 4 properties at 0x...>
     """
     return Context.fromstring(source, frmat=frmat)
