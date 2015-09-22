@@ -12,7 +12,7 @@ SORTKEYS = [lambda c: c.index]
 NAME_GETTERS = [lambda c: 'c%d' % c.index]
 
 
-def lattice(lattice, filename, directory, render, view):
+def lattice(lattice, filename, directory, render, view, **kwargs):
     """Return graphviz source for visualizing the lattice graph."""
     dot = graphviz.Digraph(
         name=lattice.__class__.__name__,
@@ -20,7 +20,8 @@ def lattice(lattice, filename, directory, render, view):
         filename=filename,
         directory=directory,
         node_attr=dict(shape='circle', width='.25', style='filled', label=''),
-        edge_attr=dict(dir='none', labeldistance='1.5', minlen='2')
+        edge_attr=dict(dir='none', labeldistance='1.5', minlen='2'),
+        **kwargs
     )
 
     sortkey = SORTKEYS[0]

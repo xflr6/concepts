@@ -12,6 +12,24 @@ User Guide
     manual
 
 
+Advanced Usage
+==============
+
+.. toctree::
+    :maxdepth: 2
+
+    advanced
+
+
+Examples
+========
+
+.. toctree::
+    :maxdepth: 2
+
+    examples
+
+
 API Reference
 =============
 

@@ -283,9 +283,9 @@ class Lattice(object):
                     for c in concept.upper_neighbors:
                         push(heap, (c.index, c))
 
-    def graphviz(self, filename=None, directory=None, render=False, view=False):
+    def graphviz(self, filename=None, directory=None, render=False, view=False, **kwargs):
         """Return graphviz source for visualizing the lattice graph."""
-        return visualize.lattice(self, filename, directory, render, view)
+        return visualize.lattice(self, filename, directory, render, view, **kwargs)
 
 
 @py3_unicode_to_str
