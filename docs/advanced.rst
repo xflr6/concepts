@@ -13,7 +13,7 @@ can be edited and then given to ``Concept`` to construct a new context object:
 
 .. code:: python
 
-    >>> from concepts import Definition
+    >>> from concepts import Definition, Context
 
     >>> d = Definition()
 
@@ -49,6 +49,21 @@ Use definitions to combine two contexts, fill out the missing cells, and create
 the resulting context:
 
 .. code:: python
+
+    >>> c = Context.fromstring('''
+    ...            |human|knight|king |mysterious|
+    ... King Arthur|  X  |  X   |  X  |          |
+    ... Sir Robin  |  X  |  X   |     |          |
+    ... holy grail |     |      |     |     X    |
+    ... ''')
+
+    >>> h = Context.fromstring('''
+    ...      |male|female|adult|child|
+    ... man  |  X |      |  X  |     |
+    ... woman|    |   X  |  X  |     |
+    ... boy  |  X |      |     |  X  |
+    ... girl |    |   X  |     |  X  |
+    ... ''')
 
     >>> u = c.definition() | h.definition()
 

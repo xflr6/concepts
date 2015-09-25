@@ -17,7 +17,7 @@ command:
 
 For a system-wide install, this typically requires administrator access. For an
 isolated installation, you can run the same inside a virtualenv_.
-    
+
 The pip-command will automatically install the (pure-python) bitsets_ and
 graphviz_ packages from PyPI as required dependencies.
 
