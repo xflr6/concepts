@@ -7,8 +7,8 @@ User Guide
 Installation
 ------------
 
-``concepts`` is a pure-python package that runs under both Python 2.7 and 3.3+.
-It is `available from PyPI`_. To install it with pip_, run the following
+:mod:`concepts` is a pure-python package that runs under both Python 2.7 and
+3.3+. It is `available from PyPI`_. To install it with pip_, run the following
 command:
 
 .. code:: bash
@@ -16,9 +16,10 @@ command:
     $ pip install concepts
 
 For a system-wide install, this typically requires administrator access. For an
-isolated installation, you can run the same inside a virtualenv_.
+isolated installation, you can run the same inside a virtualenv_ or a venv_
+(Python 3.3+ only).
 
-The pip-command will automatically install the (pure-python) bitsets_ and
+The pip-command will automatically install the (pure-Python) bitsets_ and
 graphviz_ packages from PyPI as required dependencies.
 
 To render graph visualizations (to PDF, SVG, PNG, etc.) of concept lattices,
@@ -36,9 +37,9 @@ Formal contexts
 
 With Concepts, formal contexts can be created from a string with an ASCII-art
 style **cross-table**. The objects and properties will simply be represented by
-strings. Separate the property columns with *pipe* symbols (`|`), create one row
-for each objects, one column for each property, and indicate the presence of a
-property with the character `X`.
+strings. Separate the property columns with *pipe* symbols (``|``), create one
+row for each objects, one column for each property, and indicate the presence
+of a property with the character ``X``.
 
 Note that the object and property names need to be *disjoint* to uniquely
 identify them.
@@ -76,8 +77,9 @@ object**.
 
 
 The context object can be queried to return the **common properties** for a
-collection of objects (common *intent*, ``intension``) as well as the **common
-objects** for a collection of properties (common *extent*,  ``extension``):
+collection of objects (common *intent*, :meth:`~.Context.intension`) as well as
+the **common objects** for a collection of properties (common *extent*,
+:meth:`~.Context.extension`):
 
 .. code:: python
 
@@ -108,7 +110,8 @@ concept*. Informally, they result from maximal rectangles of ``X``-marks in the
 context table, when rows and columns can be reordered freely.
 
 You can retrieve the **closest matching concept** corresponding to a collection
-of objects or properties with the ``__getitem__`` method of the concept object:
+of objects or properties with the :meth:`~.Context.__getitem__` method of the
+concept object:
 
 .. code:: python
 
@@ -148,8 +151,9 @@ between.
 Concept lattice
 ---------------
 
-The concept ``lattice`` of a context contains **all pairs of objects and
-properties** (*formal concepts*) that can be retrieved from a formal context:
+The concept :attr:`~.Context.lattice` of a context contains **all pairs of
+objects and properties** (*formal concepts*) that can be retrieved from a formal
+context:
 
 .. code:: python
 
@@ -203,7 +207,7 @@ subconcepts):
 Visualization
 -------------
 
-To visualize the lattice, use its ``graphviz`` method:
+To visualize the lattice, use its :meth:`~.Lattice.graphviz` method:
 
 .. code:: python
 
@@ -325,7 +329,7 @@ format:
     >>> c1 == c2 == c3
     True
 
-To save a context, use its ``tofile`` method.
+To save a context, use its :meth:`~.Context.tofile` method.
 
 Context objects are pickleable:
 
@@ -341,6 +345,7 @@ Context objects are pickleable:
 
 .. _pip: http://pip.readthedocs.org
 .. _virtualenv: http://virtualenv.pypa.io
+.. _venv: http://docs.python.org/3/library/venv.html
 
 .. _bitsets: http://pypi.python.org/pypi/bitsets
 .. _graphviz: http://pypi.python.org/pypi/graphviz

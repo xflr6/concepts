@@ -7,9 +7,10 @@ Advanced Usage
 Modification
 ------------
 
-Context objects are **immutable**. However, iterative assembling, modification,
-and combination of contexts is supported by using ``Definition`` objects. They
-can be edited and then given to ``Concept`` to construct a new context object:
+:class:`.Context` objects are **immutable**. However, iterative assembling,
+modification, and combination of contexts is supported by using
+:class:`.Definition` objects. They can be edited and then given to
+:class:`.Context` to construct a new context object:
 
 .. code:: python
 
