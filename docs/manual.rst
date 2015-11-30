@@ -16,8 +16,8 @@ command:
     $ pip install concepts
 
 For a system-wide install, this typically requires administrator access. For an
-isolated installation, you can run the same inside a virtualenv_ or a venv_
-(Python 3.3+ only).
+isolated installation, you can run the same inside a virtualenv_ or a
+:mod:`py3:venv` (Python 3.3+ only).
 
 The pip-command will automatically install the (pure-Python) bitsets_ and
 graphviz_ packages from PyPI as required dependencies.
@@ -236,7 +236,7 @@ To visualize the lattice, use its :meth:`~.Lattice.graphviz` method:
     			c4 -> c3
     }
 
-.. image:: _static/holy-grail.png
+.. image:: _static/holy-grail.svg
     :align: center
 
 
@@ -270,7 +270,7 @@ For example:
     			c3 -> c0
     ...
 
-.. image:: _static/human.png
+.. image:: _static/human.svg
     :align: center
 
 
@@ -299,7 +299,7 @@ A more complex example:
     			c3 -> c0
     ...
 
-.. image:: _static/liveinwater.png
+.. image:: _static/liveinwater.svg
     :align: center
 
 For details on the resulting objects' interface, check the documentation_ of
@@ -345,7 +345,6 @@ Context objects are pickleable:
 
 .. _pip: http://pip.readthedocs.org
 .. _virtualenv: http://virtualenv.pypa.io
-.. _venv: http://docs.python.org/3/library/venv.html
 
 .. _bitsets: http://pypi.python.org/pypi/bitsets
 .. _graphviz: http://pypi.python.org/pypi/graphviz

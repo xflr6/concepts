@@ -95,6 +95,6 @@ the resulting context:
     >>> Context(*u).lattice  # doctest: +ELLIPSIS
     <Lattice object of 5 atoms 14 concepts 2 coatoms at 0x...>
 
-.. image:: _static/union.png
+.. image:: _static/union.svg
     :align: center
 
