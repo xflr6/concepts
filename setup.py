@@ -13,8 +13,8 @@ setup(
     url='http://github.com/xflr6/concepts',
     packages=find_packages(),
     install_requires=[
-        'bitsets>=0.7, <0.8',
-        'graphviz>=0.3, <0.5',
+        'bitsets>=0.7, <1.0',
+        'graphviz>=0.3, <1.0',
     ],
     extras_require={
         'test': ['nose', 'coverage', 'flake8', 'pep8-naming'],
