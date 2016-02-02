@@ -1,3 +1,9 @@
 # exact dependency versions used in development
 bitsets==0.7.9
-graphviz==0.4.8
+graphviz==0.4.9
+# dependencies for testing and building
+coverage
+flake8
+nose
+pep8-naming
+wheel
