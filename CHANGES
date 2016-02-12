@@ -2,10 +2,12 @@ Changelog
 =========
 
 
-Version 0.7.10 (in development)
--------------------------------
+Version 0.7.10
+--------------
 
 Let the graphviz-method pass kwargs to the returned graph (e.g. format='png').
+
+Relax optional graphivz dependency to < 1.0.
 
 Added extended Sphinx-based documentation.
 

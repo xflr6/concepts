@@ -3,10 +3,10 @@
 """Formal Concept Analysis (FCA) with Python."""
 
 __title__ = 'concepts'
-__version__ = '0.7.10.dev0'
+__version__ = '0.7.10'
 __author__ = 'Sebastian Bank <sebastian.bank@uni-leipzig.de>'
 __license__ = 'MIT, see LICENSE'
-__copyright__ = 'Copyright (c) 2013-2015 Sebastian Bank'
+__copyright__ = 'Copyright (c) 2013-2016 Sebastian Bank'
 
 from .contexts import Context
 from .definitions import Definition
