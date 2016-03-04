@@ -149,7 +149,7 @@ class Context(object):
         self._Extent = self._extents.BitSet
 
     def __getstate__(self):
-        """Pickle as context as (intents, extents) tuple."""
+        """Pickle context as (intents, extents) tuple."""
         return self._intents, self._extents
 
     def __setstate__(self, state):
