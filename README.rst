@@ -18,8 +18,8 @@ Links
 
 - GitHub: http://github.com/xflr6/concepts
 - PyPI: http://pypi.python.org/pypi/concepts
-- Documentation: http://concepts.readthedocs.org
-- Changelog: http://concepts.readthedocs.org/en/latest/changelog.html
+- Documentation: http://concepts.readthedocs.io
+- Changelog: http://concepts.readthedocs.io/en/latest/changelog.html
 - Issue Tracker: http://github.com/xflr6/concepts/issues
 - Download: http://pypi.python.org/pypi/concepts#downloads
 
@@ -145,7 +145,7 @@ Concepts is distributed under the `MIT license`_.
 .. _Fast Concept Analysis: http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.143.948
 .. _FCA homepage: http://www.upriss.org.uk/fca/examples.html
 
-.. _pip: http://pip.readthedocs.org
+.. _pip: http://pip.readthedocs.io
 .. _Graphviz software: http://www.graphviz.org
 
 .. _bitsets: http://pypi.python.org/pypi/bitsets
