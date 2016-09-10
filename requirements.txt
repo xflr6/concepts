@@ -1,6 +1,6 @@
 # exact dependency versions used in development
 bitsets==0.7.10
-graphviz==0.4.10
+graphviz==0.5.1
 # dependencies for testing and building
 coverage
 flake8
