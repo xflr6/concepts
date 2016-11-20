@@ -20,7 +20,6 @@ setup(
     long_description=open('README.rst').read(),
     classifiers=[
         'Development Status :: 4 - Beta',
-        'Environment :: Console',
         'Intended Audience :: Developers',
         'Intended Audience :: Science/Research',
         'License :: OSI Approved :: MIT License',
@@ -34,6 +33,5 @@ setup(
         'Topic :: Scientific/Engineering :: Information Analysis',
         'Topic :: Scientific/Engineering :: Mathematics',
         'Topic :: Scientific/Engineering :: Visualization',
-        'Topic :: Software Development :: Libraries :: Python Modules',
     ],
 )
