@@ -1,7 +1,7 @@
 Concepts
 ========
 
-|PyPI version| |License| |Supported Python| |Format| |Downloads|
+|PyPI version| |License| |Supported Python| |Format| |Docs|
 
 Concepts is a simple Python implementation of **Formal Concept Analysis**
 (FCA_).
@@ -178,3 +178,6 @@ Concepts is distributed under the `MIT license`_.
 .. |Downloads| image:: https://img.shields.io/pypi/dm/concepts.svg
     :target: https://pypi.python.org/pypi/concepts
     :alt: Downloads
+.. |Docs| image:: https://readthedocs.org/projects/concepts/badge/?version=latest
+    :target: https://concepts.readthedocs.io/en/latest/
+    :alt: Readthedocs
