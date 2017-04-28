@@ -16,12 +16,12 @@ vice versa which properties a given object has.
 Links
 -----
 
-- GitHub: http://github.com/xflr6/concepts
-- PyPI: http://pypi.python.org/pypi/concepts
-- Documentation: http://concepts.readthedocs.io
-- Changelog: http://concepts.readthedocs.io/en/latest/changelog.html
-- Issue Tracker: http://github.com/xflr6/concepts/issues
-- Download: http://pypi.python.org/pypi/concepts#downloads
+- GitHub: https://github.com/xflr6/concepts
+- PyPI: https://pypi.python.org/pypi/concepts
+- Documentation: https://concepts.readthedocs.io
+- Changelog: https://concepts.readthedocs.io/en/latest/changelog.html
+- Issue Tracker: https://github.com/xflr6/concepts/issues
+- Download: https://pypi.python.org/pypi/concepts#downloads
 
 
 Installation
@@ -108,7 +108,7 @@ directly render it and display the resulting PDF):
 Further reading
 ---------------
 
-- http://en.wikipedia.org/wiki/Formal_concept_analysis
+- https://en.wikipedia.org/wiki/Formal_concept_analysis
 - http://www.upriss.org.uk/fca/
 
 The generation of the concept lattice is based on the algorithm from C. Lindig.
@@ -141,23 +141,23 @@ License
 Concepts is distributed under the `MIT license`_.
 
 
-.. _FCA: http://en.wikipedia.org/wiki/Formal_concept_analysis
+.. _FCA: https://en.wikipedia.org/wiki/Formal_concept_analysis
 .. _Fast Concept Analysis: http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.143.948
 .. _FCA homepage: http://www.upriss.org.uk/fca/examples.html
 
-.. _pip: http://pip.readthedocs.io
+.. _pip: https://pip.readthedocs.io
 .. _Graphviz software: http://www.graphviz.org
 
-.. _bitsets: http://pypi.python.org/pypi/bitsets
-.. _graphviz: http://pypi.python.org/pypi/graphviz
-.. _features: http://pypi.python.org/pypi/features
+.. _bitsets: https://pypi.python.org/pypi/bitsets
+.. _graphviz: https://pypi.python.org/pypi/graphviz
+.. _features: https://pypi.python.org/pypi/features
 
 .. _other implementations: http://www.upriss.org.uk/fca/fcasoftware.html
 .. _more sophisticated algorithms: http://www.upriss.org.uk/fca/fcaalgorithms.html
-.. _In-Close: http://sourceforge.net/projects/inclose/
+.. _In-Close: https://sourceforge.net/projects/inclose/
 .. _Fcbo: http://fcalgs.sourceforge.net
 
-.. _MIT license: http://opensource.org/licenses/MIT
+.. _MIT license: https://opensource.org/licenses/MIT
 
 
 .. |--| unicode:: U+2013

@@ -10,7 +10,7 @@ setup(
     description='Formal Concept Analysis with Python',
     keywords='fca complete lattice graph join meet galois',
     license='MIT',
-    url='http://github.com/xflr6/concepts',
+    url='https://github.com/xflr6/concepts',
     packages=find_packages(),
     install_requires=[
         'bitsets>=0.7, <1.0',
