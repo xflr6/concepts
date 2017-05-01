@@ -154,8 +154,8 @@ class Triple(object):
         """Return a subset with given objects/properties as new definition."""
         if (objects and not self._objects.issuperset(objects) or
             properties and not self._properties.issuperset(properties)):
-            notfound = (self._objects.rsub(objects or ())
-                | self._properties.rsub(properties or ()))
+            notfound = (self._objects.rsub(objects or ()) |
+                        self._properties.rsub(properties or ()))
             raise KeyError(list(notfound))
         if reorder:
             obj = tools.Unique(objects) if objects is not None else self._objects.copy()

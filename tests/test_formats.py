@@ -1,24 +1,25 @@
 # test_formats.py
 
-import unittest
 import os
+import unittest
+
+import pytest
 
 from concepts.formats import Format, Cxt, Table, Csv, WikiTable
 
 DIRECTORY = 'test-output'
 
 
-class TestFormat(unittest.TestCase):
+def test_getitem():
+    assert Format['cxt'] == Cxt
+    assert Format['table'] == Table
+    assert Format['csv'] == Csv
+    assert Format['wikitable'] == WikiTable
 
-    def test_getitem(self):
-        self.assertEqual(Format['cxt'], Cxt)
-        self.assertEqual(Format['table'], Table)
-        self.assertEqual(Format['csv'], Csv)
-        self.assertEqual(Format['wikitable'], WikiTable)
 
-    def test_getitem_invalid(self):
-        with self.assertRaises(KeyError):
-            Format['spam']
+def test_getitem_invalid():
+    with pytest.raises(KeyError):
+        Format['spam']
 
 
 class LoadsDumps(object):

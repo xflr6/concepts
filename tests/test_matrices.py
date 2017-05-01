@@ -1,23 +1,21 @@
 # test_matrices.py
 
-import unittest
+import pytest
 
 from concepts.matrices import Relation
 
 
-class TestVectors(unittest.TestCase):
-
+@pytest.fixture(scope='module')
+def relation():
     xname = 'Condition'
     yname = 'Symbol'
     xmembers = 'TT', 'TF', 'FT', 'FF'
     ymembers = '->', '<-'
     xbools = [(True, False, True, True), (True, True, False, True)]
+    return Relation(xname, yname, xmembers, ymembers, xbools)
 
-    @classmethod
-    def setUpClass(cls):
-        cls.relation = Relation(cls.xname, cls.yname, cls.xmembers, cls.ymembers, cls.xbools)
 
-    def test_pair_with(self):
-        vx, vy = self.relation
-        with self.assertRaises(RuntimeError):
-            vx._pair_with(self.relation, 1, vy)
+def test_pair_with(relation):
+    vx, vy = relation
+    with pytest.raises(RuntimeError):
+        vx._pair_with(relation, 1, vy)

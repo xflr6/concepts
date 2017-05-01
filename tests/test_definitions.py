@@ -1,124 +1,123 @@
 # test_definitions.py
 
-import unittest
+import pytest
 
 from concepts.definitions import Definition
 
 
-class TestBaseDefinition(unittest.TestCase):
-
-    def test_fromfile(self, filename='examples/gewaesser.cxt'):
-        d = Definition.fromfile(filename)
-        self.assertEqual(d,
-            (('Fluss', 'Bach', 'Kanal', 'Graben', 'See', 'Tuempel', 'Teich', 'Becken'),
-             ('fliessend', 'stehend', 'natuerlich', 'kuenstlich', 'gross', 'klein'),
-             [(True, False, True, False, True, False),
-              (True, False, True, False, False, True),
-              (True, False, False, True, True, False),
-              (True, False, False, True, False, True),
-              (False, True, True, False, True, False),
-              (False, True, True, False, False, True),
-              (False, True, False, True, True, False),
-              (False, True, False, True, False, True)]))
+def test_fromfile(filename='examples/gewaesser.cxt'):
+    objects = ('Fluss', 'Bach', 'Kanal', 'Graben', 'See', 'Tuempel', 'Teich', 'Becken')
+    properties = ('fliessend', 'stehend', 'natuerlich', 'kuenstlich', 'gross', 'klein')
+    bools = [(True, False, True, False, True, False),
+             (True, False, True, False, False, True),
+             (True, False, False, True, True, False),
+             (True, False, False, True, False, True),
+             (False, True, True, False, True, False),
+             (False, True, True, False, False, True),
+             (False, True, False, True, True, False),
+             (False, True, False, True, False, True)]
+    assert Definition.fromfile(filename) == (objects, properties, bools)
 
 
-class TestInit(unittest.TestCase):
-
-    def test_duplicate_object(self):
-        with self.assertRaisesRegexp(ValueError, 'duplicate objects'):
-            Definition(('spam', 'spam'), (), [])
-
-    def test_duplicate_property(self):
-        with self.assertRaisesRegexp(ValueError, 'duplicate properties'):
-            Definition((), ('spam', 'spam'), [])
+def test_duplicate_object():
+    with pytest.raises(ValueError) as e:
+        Definition(('spam', 'spam'), (), [])
+    e.match(r'duplicate objects')
 
 
-class TestDefinition(unittest.TestCase):
-
-    @classmethod
-    def setUpClass(cls):
-        cls.definition = Definition(('spam', 'eggs'), ('ni',), [(True,), (False,)])
-
-    @classmethod
-    def tearDownClass(cls):
-        del cls.definition
-
-    def test_unicode(self):
-        assert all(ord(c) < 128 for c in str(self.definition))
-        self.assertEqual(u'%s' % self.definition, '%s' % self.definition)
-
-    def test_ne(self):
-        self.assertFalse(self.definition != self.definition)
-
-    def test_getitem_int(self):
-        self.assertEqual(self.definition[0], self.definition.objects)
-        self.assertEqual(self.definition[1], self.definition.properties)
-        self.assertEqual(self.definition[2], self.definition.bools)
-
-    def test_getitem(self):
-        self.assertEqual(self.definition['spam', 'ni'], True)
-        with self.assertRaises(KeyError):
-            self.definition['ham', 'spam']
-
-    def test_setitem_int(self):
-        with self.assertRaises(ValueError):
-            self.definition[0] = ('spam',)
+def test_duplicate_property():
+    with pytest.raises(ValueError) as e:
+        Definition((), ('spam', 'spam'), [])
+    e.match(r'duplicate properties')
 
 
-class TestUnion(unittest.TestCase):
-
-    def test_compatible(self):
-        a = Definition(('spam', 'eggs'), ('ni',), [(True,), (False,)])
-        b = Definition(('ham', 'spam'), ('nini', 'ni',), [(True, True), (False, True)])
-        self.assertEqual(a.union(b),
-            Definition(('spam', 'eggs', 'ham'), ('ni', 'nini'),
-                [(True, False), (False, False), (True, True)]))
-
-    def test_conflicting(self):
-        a = Definition(('spam', 'eggs'), ('ni',), [(True,), (False,)])
-        b = Definition(('ham', 'spam'), ('nini', 'ni',), [(True, True), (False, False)])
-        with self.assertRaisesRegexp(ValueError, "\[\('spam', 'ni'\)\]"):
-            a.union(b)
-
-    def test_ignoring(self):
-        a = Definition(('spam', 'eggs'), ('ni',), [(True,), (False,)])
-        b = Definition(('ham', 'spam'), ('nini', 'ni',), [(True, True), (False, False)])
-        self.assertEqual(a.union(b, ignore_conflicts=True),
-            Definition(('spam', 'eggs', 'ham'), ('ni', 'nini'),
-                [(True, False), (False, False), (True, True)]))
-
-    def test_augmented(self):
-        a = Definition(('spam', 'eggs'), ('ni',), [(True,), (False,)])
-        b = Definition(('ham', 'spam'), ('nini', 'ni',), [(True, True), (False, True)])
-        a |= b
-        self.assertEqual(a,
-            Definition(('spam', 'eggs', 'ham'), ('ni', 'nini'),
-                [(True, False), (False, False), (True, True)]))
+@pytest.fixture(scope='module')
+def definition():
+    return Definition(('spam', 'eggs'), ('ni',), [(True,), (False,)])
 
 
-class TestIntersection(unittest.TestCase):
+def test_unicode(definition):
+    assert all(ord(c) < 128 for c in str(definition))
+    assert u'%s' % definition == '%s' % definition
 
-    def test_compatible(self):
-        a = Definition(('spam', 'eggs'), ('ni',), [(True,), (False,)])
-        b = Definition(('ham', 'spam'), ('nini', 'ni',), [(True, True), (False, True)])
-        self.assertEqual(a.intersection(b),
-            Definition(['spam'], ['ni'], [(True,)]))
 
-    def test_conflicting(self):
-        a = Definition(('spam', 'eggs'), ('ni',), [(True,), (False,)])
-        b = Definition(('ham', 'spam'), ('nini', 'ni',), [(True, True), (False, False)])
-        with self.assertRaisesRegexp(ValueError, "\[\('spam', 'ni'\)\]"):
-            a.intersection(b)
+def test_ne(definition):
+    assert not (definition != definition)
 
-    def test_ignoring(self):
-        a = Definition(('spam', 'eggs'), ('ni',), [(True,), (False,)])
-        b = Definition(('ham', 'spam'), ('nini', 'ni',), [(True, True), (False, False)])
-        self.assertEqual(a.intersection(b, ignore_conflicts=True),
-            Definition(['spam'], ['ni'], [(False,)]))
 
-    def test_augmented(self):
-        a = Definition(('spam', 'eggs'), ('ni',), [(True,), (False,)])
-        b = Definition(('ham', 'spam'), ('nini', 'ni',), [(True, True), (False, True)])
-        a &= b
-        self.assertEqual(a,
-            Definition(['spam'], ['ni'], [(True,)]))
+def test_getitem_int(definition):
+    assert definition[0] == definition.objects
+    assert definition[1] == definition.properties
+    assert definition[2] == definition.bools
+
+
+def test_getitem(definition):
+    assert definition['spam', 'ni'] is True
+    with pytest.raises(KeyError):
+        definition['ham', 'spam']
+
+
+def test_setitem_int(definition):
+    with pytest.raises(ValueError):
+        definition[0] = ('spam',)
+
+
+def test_union_compatible():
+    a = Definition(('spam', 'eggs'), ('ni',), [(True,), (False,)])
+    b = Definition(('ham', 'spam'), ('nini', 'ni',), [(True, True), (False, True)])
+    assert a.union(b) == \
+           Definition(('spam', 'eggs', 'ham'), ('ni', 'nini'),
+                      [(True, False), (False, False), (True, True)])
+
+
+def test_union_conflicting():
+    a = Definition(('spam', 'eggs'), ('ni',), [(True,), (False,)])
+    b = Definition(('ham', 'spam'), ('nini', 'ni',), [(True, True), (False, False)])
+    with pytest.raises(ValueError) as e:
+        a.union(b)
+    e.match(r"\[\('spam', 'ni'\)\]")
+
+
+def test_union_ignoring():
+    a = Definition(('spam', 'eggs'), ('ni',), [(True,), (False,)])
+    b = Definition(('ham', 'spam'), ('nini', 'ni',), [(True, True), (False, False)])
+    assert a.union(b, ignore_conflicts=True) == \
+           Definition(('spam', 'eggs', 'ham'), ('ni', 'nini'),
+                      [(True, False), (False, False), (True, True)])
+
+
+def test_union_augmented():
+    a = Definition(('spam', 'eggs'), ('ni',), [(True,), (False,)])
+    b = Definition(('ham', 'spam'), ('nini', 'ni',), [(True, True), (False, True)])
+    a |= b
+    assert a == \
+           Definition(('spam', 'eggs', 'ham'), ('ni', 'nini'),
+                      [(True, False), (False, False), (True, True)])
+
+
+def test_inters_compatible():
+    a = Definition(('spam', 'eggs'), ('ni',), [(True,), (False,)])
+    b = Definition(('ham', 'spam'), ('nini', 'ni',), [(True, True), (False, True)])
+    assert a.intersection(b) == Definition(['spam'], ['ni'], [(True,)])
+
+
+def test_inters_conflicting():
+    a = Definition(('spam', 'eggs'), ('ni',), [(True,), (False,)])
+    b = Definition(('ham', 'spam'), ('nini', 'ni',), [(True, True), (False, False)])
+    with pytest.raises(ValueError) as e:
+        a.intersection(b)
+    e.match(r"\[\('spam', 'ni'\)\]")
+
+
+def test_inters_ignoring():
+    a = Definition(('spam', 'eggs'), ('ni',), [(True,), (False,)])
+    b = Definition(('ham', 'spam'), ('nini', 'ni',), [(True, True), (False, False)])
+    assert a.intersection(b, ignore_conflicts=True) == \
+           Definition(['spam'], ['ni'], [(False,)])
+
+
+def test_inters_augmented():
+    a = Definition(('spam', 'eggs'), ('ni',), [(True,), (False,)])
+    b = Definition(('ham', 'spam'), ('nini', 'ni',), [(True, True), (False, True)])
+    a &= b
+    assert a == Definition(['spam'], ['ni'], [(True,)])
