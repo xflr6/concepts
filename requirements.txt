@@ -4,7 +4,6 @@ graphviz==0.7
 # dependencies for testing and building
 pytest>=3
 pytest-cov
-coverage
 flake8
 pep8-naming
 wheel
