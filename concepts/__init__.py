@@ -8,7 +8,7 @@ from .definitions import Definition
 __all__ = ['Context', 'Definition', 'load_cxt', 'load_csv', 'make_context']
 
 __title__ = 'concepts'
-__version__ = '0.7.11'
+__version__ = '0.7.12.dev0'
 __author__ = 'Sebastian Bank <sebastian.bank@uni-leipzig.de>'
 __license__ = 'MIT, see LICENSE'
 __copyright__ = 'Copyright (c) 2013-2016 Sebastian Bank'
