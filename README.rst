@@ -180,8 +180,8 @@ Concepts is distributed under the `MIT license`_.
 .. |Downloads| image:: https://img.shields.io/pypi/dm/concepts.svg
     :target: https://pypi.python.org/pypi/concepts
     :alt: Downloads
-.. |Docs| image:: https://readthedocs.org/projects/concepts/badge/?version=latest
-    :target: https://concepts.readthedocs.io/en/latest/
+.. |Docs| image:: https://readthedocs.org/projects/concepts/badge/?version=stable
+    :target: https://concepts.readthedocs.io/en/stable/
     :alt: Readthedocs
 .. |Travis| image:: https://img.shields.io/travis/xflr6/concepts.svg
    :target: https://travis-ci.org/xflr6/concepts
