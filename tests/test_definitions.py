@@ -20,15 +20,13 @@ def test_fromfile(filename='examples/gewaesser.cxt'):
 
 
 def test_duplicate_object():
-    with pytest.raises(ValueError) as e:
+    with pytest.raises(ValueError, match=r'duplicate objects'):
         Definition(('spam', 'spam'), (), [])
-    e.match(r'duplicate objects')
 
 
 def test_duplicate_property():
-    with pytest.raises(ValueError) as e:
+    with pytest.raises(ValueError, match=r'duplicate properties'):
         Definition((), ('spam', 'spam'), [])
-    e.match(r'duplicate properties')
 
 
 @pytest.fixture(scope='module')
@@ -73,9 +71,8 @@ def test_union_compatible():
 def test_union_conflicting():
     a = Definition(('spam', 'eggs'), ('ni',), [(True,), (False,)])
     b = Definition(('ham', 'spam'), ('nini', 'ni',), [(True, True), (False, False)])
-    with pytest.raises(ValueError) as e:
+    with pytest.raises(ValueError, match=r"\[\('spam', 'ni'\)\]"):
         a.union(b)
-    e.match(r"\[\('spam', 'ni'\)\]")
 
 
 def test_union_ignoring():
@@ -104,9 +101,8 @@ def test_inters_compatible():
 def test_inters_conflicting():
     a = Definition(('spam', 'eggs'), ('ni',), [(True,), (False,)])
     b = Definition(('ham', 'spam'), ('nini', 'ni',), [(True, True), (False, False)])
-    with pytest.raises(ValueError) as e:
+    with pytest.raises(ValueError, match=r"\[\('spam', 'ni'\)\]"):
         a.intersection(b)
-    e.match(r"\[\('spam', 'ni'\)\]")
 
 
 def test_inters_ignoring():
