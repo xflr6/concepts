@@ -1,6 +1,6 @@
 # exact dependency versions used in development
 bitsets==0.7.11
-graphviz==0.7.1
+graphviz==0.8
 # dependencies for testing and building
 pytest>=3.1
 pytest-cov
