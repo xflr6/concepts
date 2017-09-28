@@ -8,7 +8,7 @@ Installation
 ------------
 
 :mod:`concepts` is a pure-python package that runs under both Python 2.7 and
-3.3+. It is `available from PyPI`_. To install it with pip_, run the following
+3.4+. It is `available from PyPI`_. To install it with pip_, run the following
 command:
 
 .. code:: bash
@@ -17,7 +17,7 @@ command:
 
 For a system-wide install, this typically requires administrator access. For an
 isolated installation, you can run the same inside a virtualenv_ or a
-:mod:`py3:venv` (Python 3.3+ only).
+:mod:`py3:venv` (Python 3 only).
 
 The pip-command will automatically install the (pure-Python) bitsets_ and
 graphviz_ packages from PyPI as required dependencies.
