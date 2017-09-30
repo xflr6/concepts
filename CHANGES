@@ -7,6 +7,8 @@ Version 0.7.12 (in development)
 
 Drop Python 3.3 support.
 
+Include license file in wheel.
+
 
 Version 0.7.11
 --------------
