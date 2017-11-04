@@ -421,8 +421,8 @@ class Concept(object):
         self.lattice = lattice  #: The lattice containing the concept.
         self._extent = extent
         self._intent = intent
-        self.upper_neighbors = upper  #: Directly implied concepts.
-        self.lower_neighbors = lower  #: Directly subsumed concepts.
+        self.upper_neighbors = upper  #: The directly implied concepts.
+        self.lower_neighbors = lower  #: The directly subsumed concepts.
 
     def __iter__(self):
         """Yield extent and intent (e.g. for pair unpacking)."""
@@ -475,22 +475,22 @@ class Concept(object):
                     push(heap, (c.dindex, c))
 
     def implies(self, other):
-        """Implication test."""
+        """Implication comparison."""
         return self._extent & other._extent == self._extent
 
     def subsumes(self, other):
-        """Subsumption test."""
+        """Subsumption comparison."""
         return self._extent | other._extent == self._extent
 
     __le__ = implies
     __ge__ = subsumes
 
     def properly_implies(self, other):
-        """Proper implication test."""
+        """Proper implication comparison."""
         return self._extent & other._extent == self._extent != other._extent
 
     def properly_subsumes(self, other):
-        """Proper subsumption test."""
+        """Proper subsumption comparison."""
         return self._extent | other._extent == self._extent != other._extent
 
     __lt__ = properly_implies
@@ -512,21 +512,21 @@ class Concept(object):
     __and__ = meet
 
     def incompatible_with(self, other):
-        """Infimum meet test."""
+        """Infimum meet comparison."""
         return not self._extent & other._extent
 
     def complement_of(self, other):
-        """Infimum meet and supremum join test."""
+        """Infimum meet and supremum join comparison."""
         return (not self._extent & other._extent and
             (self._extent | other._extent) == self.lattice.supremum._extent)
 
     def subcontrary_with(self, other):
-        """Non-infimum meet and supremum join test."""
+        """Non-infimum meet and supremum join comparison."""
         return (self._extent & other._extent and
             (self._extent | other._extent) == self.lattice.supremum._extent)
 
     def orthogonal_to(self, other):
-        """Non-infimum meet, incomparable, and non-supremum join test."""
+        """Non-infimum meet, incomparable, and non-supremum join comparison."""
         meet = self._extent & other._extent
         return (not not meet and meet != self._extent and meet != other._extent
             and (self._extent | other._extent) != self.lattice.supremum._extent)
