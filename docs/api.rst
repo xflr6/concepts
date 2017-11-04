@@ -49,6 +49,7 @@ Lattice
 
 .. autoclass:: concepts.lattices.Lattice
     :members:
+        infimum, supremum,
         __call__, __getitem__, __iter__, __len__,
         atoms,
         join, meet,
@@ -62,6 +63,8 @@ Concept
 
 .. autoclass:: concepts.lattices.Concept
     :members:
+        lattice,
+        upper_neighbors, lower_neighbors,
         objects, properties,
         __iter__,
         extent, intent,

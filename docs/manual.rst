@@ -153,7 +153,7 @@ Concept lattice
 
 The concept :attr:`~.Context.lattice` of a context contains **all pairs of
 objects and properties** (*formal concepts*) that can be retrieved from a formal
-context:
+context. You can iterate over the lattice to visit all concepts:
 
 .. code:: python
 

@@ -138,9 +138,9 @@ class Lattice(object):
         self._concepts = concepts
         self._map = mapping
 
-        self.infimum = self._concepts[0]
+        self.infimum = self._concepts[0]  #: The most specific concept of the lattice.
         self.infimum.__class__ = Infimum
-        self.supremum = self._concepts[-1]
+        self.supremum = self._concepts[-1]  #: The most general concept of the lattice.
         self.supremum.__class__ = Supremum
         for a in self.infimum.upper_neighbors:
             a.__class__ = Atom
@@ -200,9 +200,11 @@ class Lattice(object):
         return self._map[extent]
 
     def __iter__(self):
+        """Yield all concepts of the lattice."""
         return iter(self._concepts)
 
     def __len__(self):
+        """Return the number of concepts in the lattice."""
         return len(self._concepts)
 
     def __str__(self):
@@ -218,7 +220,7 @@ class Lattice(object):
 
     @property
     def atoms(self):
-        """Minimal non-infimum concepts."""
+        """The minimal non-infimum concepts of the lattice."""
         return self.infimum.upper_neighbors
 
     def join(self, concepts):
@@ -416,25 +418,25 @@ class Concept(object):
     properties = ()
 
     def __init__(self, lattice, extent, intent, upper, lower):
-        self.lattice = lattice
+        self.lattice = lattice  #: The lattice containing the concept.
         self._extent = extent
         self._intent = intent
-        self.upper_neighbors = upper
-        self.lower_neighbors = lower
+        self.upper_neighbors = upper  #: Directly implied concepts.
+        self.lower_neighbors = lower  #: Directly subsumed concepts.
 
     def __iter__(self):
-        """Pair of extent and intent."""
+        """Yield extent and intent (e.g. for pair unpacking)."""
         yield self._extent.members()
         yield self._intent.members()
 
     @property
     def extent(self):
-        """Objects subsumed by the concept."""
+        """The objects subsumed by the concept."""
         return self._extent.members()
 
     @property
     def intent(self):
-        """Properties implied by the concept."""
+        """The properties implied by the concept."""
         return self._intent.members()
 
     def minimal(self):
@@ -447,7 +449,7 @@ class Concept(object):
         return (i.members() for i in minimize)
 
     def upset(self):
-        """Subsuming concepts."""
+        """Yield implied concepts including self."""
         heap = [(self.index, self)]
         push, pop = heapq.heappush, heapq.heappop
         seen = -1
@@ -460,7 +462,7 @@ class Concept(object):
                     push(heap, (c.index, c))
 
     def downset(self):
-        """Implying concepts."""
+        """Yield subsumed concepts including self."""
         heap = [(self.dindex, self)]
         push, pop = heapq.heappush, heapq.heappop
         seen = -1
@@ -473,22 +475,22 @@ class Concept(object):
                     push(heap, (c.dindex, c))
 
     def implies(self, other):
-        """Implication."""
+        """Implication test."""
         return self._extent & other._extent == self._extent
 
     def subsumes(self, other):
-        """Subsumption."""
+        """Subsumption test."""
         return self._extent | other._extent == self._extent
 
     __le__ = implies
     __ge__ = subsumes
 
     def properly_implies(self, other):
-        """Proper implication."""
+        """Proper implication test."""
         return self._extent & other._extent == self._extent != other._extent
 
     def properly_subsumes(self, other):
-        """Proper subsumption."""
+        """Proper subsumption test."""
         return self._extent | other._extent == self._extent != other._extent
 
     __lt__ = properly_implies
@@ -510,21 +512,21 @@ class Concept(object):
     __and__ = meet
 
     def incompatible_with(self, other):
-        """Infimum meet."""
+        """Infimum meet test."""
         return not self._extent & other._extent
 
     def complement_of(self, other):
-        """Infimum meet and supremum join."""
+        """Infimum meet and supremum join test."""
         return (not self._extent & other._extent and
             (self._extent | other._extent) == self.lattice.supremum._extent)
 
     def subcontrary_with(self, other):
-        """Non-infimum meet and supremum join."""
+        """Non-infimum meet and supremum join test."""
         return (self._extent & other._extent and
             (self._extent | other._extent) == self.lattice.supremum._extent)
 
     def orthogonal_to(self, other):
-        """Non-infimum meet, incomparable, and non-supremum join."""
+        """Non-infimum meet, incomparable, and non-supremum join test."""
         meet = self._extent & other._extent
         return (not not meet and meet != self._extent and meet != other._extent
             and (self._extent | other._extent) != self.lattice.supremum._extent)

@@ -96,10 +96,12 @@ class Triple(object):
             for p, b in zip(properties, boo) if b}
 
     def copy(self):
+        """Return an independent copy of the instance."""
         return self._fromargs(self._objects.copy(), self._properties.copy(),
             self._pairs.copy())
 
     def __iter__(self):
+        """Yield objects, properties, and bools (e.g. for triple unpacking)."""
         yield self.objects
         yield self.properties
         yield self.bools
@@ -124,14 +126,17 @@ class Triple(object):
 
     @property
     def objects(self):
+        """(Names of the) objects described by the definition."""
         return tuple(self._objects)
 
     @property
     def properties(self):
+        """(Names of the) properties that describe the objects."""
         return tuple(self._properties)
 
     @property
     def bools(self):
+        """Row-major list of boolean tuples."""
         prop = self._properties
         pairs = self._pairs
         return [tuple((o, p) in pairs for p in prop)
@@ -148,6 +153,7 @@ class Triple(object):
             self._objects._items, self._properties._items, self.bools)
 
     def tostring(self, frmat='table', **kwargs):
+        """Return the definition serialized in the given string-based format."""
         return formats.Format[frmat].dumps(*self, **kwargs)
 
     def take(self, objects=None, properties=None, reorder=False):
