@@ -7,6 +7,8 @@ Version 0.7.13 (in development)
 
 Increase API docs coverage.
 
+Use compatible release version specifiers (bump graphviz to ~=0.7).
+
 
 Version 0.7.12
 --------------

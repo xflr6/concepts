@@ -13,8 +13,8 @@ setup(
     url='https://github.com/xflr6/concepts',
     packages=find_packages(),
     install_requires=[
-        'bitsets>=0.7, <1.0',
-        'graphviz>=0.3, <1.0',
+        'bitsets~=0.7',
+        'graphviz~=0.7',
     ],
     platforms='any',
     long_description=open('README.rst').read(),
