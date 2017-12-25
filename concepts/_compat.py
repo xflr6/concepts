@@ -5,7 +5,7 @@ import sys
 PY2 = sys.version_info[0] == 2
 
 
-if PY2:  # pragma: no cover
+if PY2:
     text_type = unicode
     string_types = basestring
 
@@ -28,7 +28,7 @@ if PY2:  # pragma: no cover
     import copy_reg as copyreg
 
 
-else:  # pragma: no cover
+else:
     text_type = string_types = str
 
     map, zip, filter = map, zip, filter
