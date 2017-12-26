@@ -16,7 +16,7 @@ if PY2:
 
     try:
         from cStringIO import StringIO as _cStringIO
-    except ImportError:
+    except ImportError:  # pragma: no cover
         from StringIO import StringIO
     else:
         from StringIO import StringIO as _PureStringIO

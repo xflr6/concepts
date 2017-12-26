@@ -170,11 +170,12 @@ class Csv(Format):
         if dialect is None:
             dialect = cls.dialect
 
+        csv_reader = csv.reader
+        if PY2 and not isinstance(source, str):
+            csv_reader = unicodecsv.unicode_csv_reader
+
         with contextlib.closing(StringIO(source)) as fd:
-            if not PY2 or isinstance(source, str):
-                reader = csv.reader(fd, dialect)
-            else:
-                reader = unicodecsv.unicode_csv_reader(fd, dialect)
+            reader = csv_reader(fd, dialect)
             return cls._load(reader)
 
     @classmethod
@@ -182,22 +183,17 @@ class Csv(Format):
         if dialect is None:
             dialect = cls.dialect
 
-        if PY2:
-            if all(isinstance(s, str) for s in objects + properties):
-                with contextlib.closing(StringIO()) as fd:
-                    writer = csv.writer(fd, dialect)
-                    cls._dump(writer, objects, properties, bools)
-                    return fd.getvalue()
-
-            with contextlib.closing(StringIO()) as fd:
-                writer = unicodecsv.UnicodeWriter(fd, dialect, 'utf-8')
-                cls._dump(writer, objects, properties, bools)
-                return fd.getvalue().decode('utf-8')
+        csv_writer, kwargs = csv.writer, {}
+        if PY2 and not all(isinstance(s, str) for s in objects + properties):
+            csv_writer, kwargs = unicodecsv.UnicodeWriter, {'encoding': 'utf-8'}
 
         with contextlib.closing(StringIO()) as fd:
-            writer = csv.writer(fd, dialect)
+            writer = csv_writer(fd, dialect, **kwargs)
             cls._dump(writer, objects, properties, bools)
-            return fd.getvalue()
+            result = fd.getvalue()
+        if 'encoding' in kwargs:
+            result = result.decode(kwargs['encoding'])
+        return result
 
     @classmethod
     def load(cls, filename, encoding, dialect=None):
@@ -212,14 +208,14 @@ class Csv(Format):
                 with open(filename, 'rb') as fd:
                     reader = csv.reader(fd, dialect)
                     return cls._load(reader)
-
+            else:
+                with io.open(filename, 'r', encoding=encoding, newline='') as fd:
+                    reader = unicodecsv.unicode_csv_reader(fd, dialect)
+                    return cls._load(reader)
+        else:
             with io.open(filename, 'r', encoding=encoding, newline='') as fd:
-                reader = unicodecsv.unicode_csv_reader(fd, dialect)
+                reader = csv.reader(fd, dialect)
                 return cls._load(reader)
-
-        with io.open(filename, 'r', encoding=encoding, newline='') as fd:
-            reader = csv.reader(fd, dialect)
-            return cls._load(reader)
 
     @classmethod
     def dump(cls, filename, objects, properties, bools, encoding, dialect=None):
@@ -237,9 +233,10 @@ class Csv(Format):
                     writer = unicodecsv.UnicodeWriter(fd, dialect, encoding)
                 return cls._dump(writer, objects, properties, bools)
 
-        with io.open(filename, 'w', encoding=encoding, newline='') as fd:
-            writer = csv.writer(fd, dialect)
-            return cls._dump(writer, objects, properties, bools)
+        else:
+            with io.open(filename, 'w', encoding=encoding, newline='') as fd:
+                writer = csv.writer(fd, dialect)
+                return cls._dump(writer, objects, properties, bools)
 
 
 class WikiTable(Format):

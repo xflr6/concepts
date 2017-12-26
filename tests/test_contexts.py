@@ -85,3 +85,37 @@ def test_raw(context):
 def test_unicode(context):
     assert all(ord(c) < 128 for c in str(context))
     assert u'%s' % context == '%s' % context
+
+
+def test_tofile(tmpdir, context, filename='context.cxt', encoding='utf-8'):
+    filepath = tmpdir / filename
+    context.tofile(str(filepath), encoding=encoding)
+    assert filepath.read_text(encoding=encoding) == '''\
+B
+
+6
+10
+
+1sg
+1pl
+2sg
+2pl
+3sg
+3pl
++1
+-1
++2
+-2
++3
+-3
++sg
++pl
+-sg
+-pl
+X..X.XX..X
+X..X.X.XX.
+.XX..XX..X
+.XX..X.XX.
+.X.XX.X..X
+.X.XX..XX.
+'''

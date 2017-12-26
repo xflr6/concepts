@@ -51,7 +51,7 @@ def lattice(lattice, filename, directory, render, view, **kwargs):
 
 
 def render_all(filepattern='*.cxt', frmat=None, encoding=None,
-               directory=None, out_format=None):
+               directory=None, out_format=None):  # pragma: no cover
     from concepts import Context
 
     if directory is not None:
