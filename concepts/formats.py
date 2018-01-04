@@ -173,7 +173,7 @@ class Csv(Format):
 
         csv_reader = csv.reader
         if PY2 and isinstance(source, unicode):
-            csv_reader = _compat_csv.unicode_csv_reader
+            csv_reader = _compat_csv.UnicodeCsvReader
 
         with contextlib.closing(StringIO(source)) as fd:
             reader = csv_reader(fd, dialect)
@@ -211,7 +211,7 @@ class Csv(Format):
                     return cls._load(reader)
             else:
                 with io.open(filename, 'r', encoding=encoding, newline='') as fd:
-                    reader = _compat_csv.unicode_csv_reader(fd, dialect)
+                    reader = _compat_csv.UnicodeCsvReader(fd, dialect)
                     return cls._load(reader)
         else:
             with io.open(filename, 'r', encoding=encoding, newline='') as fd:

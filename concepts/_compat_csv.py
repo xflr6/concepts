@@ -1,4 +1,4 @@
-# _compat_csv.py - from stdlib recipe
+# _compat_csv.py - python 2 uniocde csv compat from stdlib recipe
 
 import sys
 
@@ -6,20 +6,31 @@ if sys.version_info < (3,):
     import csv
     import codecs
 
-    from ._compat import StringIO
+    try:
+        from cStringIO import StringIO
+    except ImportError:  # pragma: no cover
+        from StringIO import StringIO
 
-    __all__ = ['unicode_csv_reader', 'UnicodeWriter']
-
-
-    def unicode_csv_reader(unicode_csv_data, dialect=csv.excel, **kwargs):
-        csv_reader = csv.reader(utf_8_encoder(unicode_csv_data), dialect=dialect, **kwargs)
-        for row in csv_reader:
-            yield [unicode(cell, 'utf-8') for cell in row]
+    __all__ = ['UnicodeCsvReader', 'UnicodeWriter']
 
 
-    def utf_8_encoder(unicode_csv_data):
-        for line in unicode_csv_data:
-            yield line.encode('utf-8')
+    class UnicodeCsvReader(object):
+        """Python 2 CSV reader that iterates over unicode lines."""
+
+        def __init__(self, iterlines, dialect=csv.excel, **kwargs):
+            iterbytes = (line.encode('utf-8') for line in iterlines)
+            self._reader = csv.reader(iterbytes, dialect=dialect, **kwargs)
+            self.dialect = self._reader.dialect
+
+        def __iter__(self):
+            return self
+
+        def next(self):
+            return [unicode(v, 'utf-8') for v in self._reader.next()]
+
+        @property
+        def line_num(self):
+            return self._reader.line_num
 
 
     class UnicodeWriter(object):
@@ -34,7 +45,7 @@ if sys.version_info < (3,):
             self.writer.writerow([s.encode('utf-8') for s in row])
             # Fetch UTF-8 output from the queue ...
             data = self.queue.getvalue()
-            data = data.decode('utf-8')
+            data = unicode(data, 'utf-8')
             # ... and reencode it into the target encoding
             data = self.encoder.encode(data)
             # write to the target stream
