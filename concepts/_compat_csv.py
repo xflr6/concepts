@@ -1,4 +1,4 @@
-# unicodecsv.py - from stdlib recipe
+# _compat_csv.py - from stdlib recipe
 
 import csv
 import codecs

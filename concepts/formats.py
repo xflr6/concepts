@@ -7,8 +7,9 @@ import csv
 import contextlib
 
 from ._compat import PY2, text_type, zip, with_metaclass, StringIO
+from . import _compat_csv
 
-from . import tools, unicodecsv
+from . import tools
 
 __all__ = ['Format']
 
@@ -171,8 +172,8 @@ class Csv(Format):
             dialect = cls.dialect
 
         csv_reader = csv.reader
-        if PY2 and not isinstance(source, str):
-            csv_reader = unicodecsv.unicode_csv_reader
+        if PY2 and isinstance(source, unicode):
+            csv_reader = _compat_csv.unicode_csv_reader
 
         with contextlib.closing(StringIO(source)) as fd:
             reader = csv_reader(fd, dialect)
@@ -185,7 +186,7 @@ class Csv(Format):
 
         csv_writer, kwargs = csv.writer, {}
         if PY2 and not all(isinstance(s, str) for s in objects + properties):
-            csv_writer, kwargs = unicodecsv.UnicodeWriter, {'encoding': 'utf-8'}
+            csv_writer, kwargs = _compat_csv.UnicodeWriter, {'encoding': 'utf-8'}
 
         with contextlib.closing(StringIO()) as fd:
             writer = csv_writer(fd, dialect, **kwargs)
@@ -210,7 +211,7 @@ class Csv(Format):
                     return cls._load(reader)
             else:
                 with io.open(filename, 'r', encoding=encoding, newline='') as fd:
-                    reader = unicodecsv.unicode_csv_reader(fd, dialect)
+                    reader = _compat_csv.unicode_csv_reader(fd, dialect)
                     return cls._load(reader)
         else:
             with io.open(filename, 'r', encoding=encoding, newline='') as fd:
@@ -230,7 +231,7 @@ class Csv(Format):
                 if encoding is None:
                     writer = csv.writer(fd, dialect)
                 else:
-                    writer = unicodecsv.UnicodeWriter(fd, dialect, encoding)
+                    writer = _compat_csv.UnicodeWriter(fd, dialect, encoding)
                 return cls._dump(writer, objects, properties, bools)
 
         else:
