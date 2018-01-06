@@ -2,7 +2,7 @@
 
 import sys
 
-if sys.version_info < (3,):
+if sys.version_info.major == 2:
     import csv
     import codecs
 
