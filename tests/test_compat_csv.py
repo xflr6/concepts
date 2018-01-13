@@ -1,6 +1,5 @@
 # test_compat_csv.py
 
-import csv
 import sys
 
 import pytest

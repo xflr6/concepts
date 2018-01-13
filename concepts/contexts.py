@@ -137,8 +137,8 @@ class Context(object):
             raise ValueError('objects and properties overlap: %r' % (
                 set(objects) & set(properties)))
 
-        if (len(bools) != len(objects)
-            or {len(b) for b in bools} != {len(properties)}):
+        if (len(bools) != len(objects) or
+            {len(b) for b in bools} != {len(properties)}):
             raise ValueError('bools is not %d items of length %d' % (
                 len(objects), len(properties)))
 
