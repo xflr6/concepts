@@ -107,7 +107,7 @@ class Context(object):
 
     @classmethod
     def fromstring(cls, source, frmat='table', **kwargs):
-        """Return a new context from string source in given format."""
+        """Return a new context from string ``source`` in given format."""
         frmat = formats.Format[frmat]
         objects, properties, bools = frmat.loads(source, **kwargs)
         return cls(objects, properties, bools)
@@ -120,7 +120,7 @@ class Context(object):
         return cls(objects, properties, bools)
 
     def __init__(self, objects, properties, bools):
-        """Create context from objects, properties, and correspondence."""
+        """Create context from ``objects``, ``properties``, and correspondence."""
         objects = tuple(objects)
         if not objects:
             raise ValueError('empty objects')
@@ -149,11 +149,11 @@ class Context(object):
         self._Extent = self._extents.BitSet
 
     def __getstate__(self):
-        """Pickle context as (intents, extents) tuple."""
+        """Pickle context as ``(intents, extents)`` tuple."""
         return self._intents, self._extents
 
     def __setstate__(self, state):
-        """Unpickle context from (intents, extents) tuple."""
+        """Unpickle context from ``(intents, extents)`` tuple."""
         self._intents, self._extents = state
         self._Intent = self._intents.BitSet
         self._Extent = self._extents.BitSet
@@ -196,7 +196,7 @@ class Context(object):
                 yield extent, intent
 
     def _lattice(self, infimum=()):
-        """Yield (extent, indent, upper, lower) in short lexicographic order.
+        """Yield ``(extent, indent, upper, lower)`` in short lexicographic order.
 
         cf. C. Lindig. 2000. Fast Concept Analysis.
         """
@@ -218,21 +218,21 @@ class Context(object):
             yield concept  # concept[3] keeps growing until exhaustion
 
     def intension(self, objects, raw=False):
-        """Return all properties shared by the given objects."""
+        """Return all properties shared by the given ``objects``."""
         intent = self._Extent.frommembers(objects).prime()
         if raw:
             return intent
         return intent.members()
 
     def extension(self, properties, raw=False):
-        """Return all objects sharing the given properties."""
+        """Return all objects sharing the given ``properties``."""
         extent = self._Intent.frommembers(properties).prime()
         if raw:
             return extent
         return extent.members()
 
     def neighbors(self, objects, raw=False):
-        """Return the upper neighbors of the concept having all given objects."""
+        """Return the upper neighbors of the concept having all given ``objects``."""
         objects = self._Extent.frommembers(objects).double()
         if raw:
             return list(self._neighbors(objects))
@@ -240,7 +240,7 @@ class Context(object):
             for extent, intent in self._neighbors(objects)]
 
     def __getitem__(self, items, raw=False):
-        """Return (extension, intension) pair by shared objects or properties."""
+        """Return ``(extension, intension)`` pair by shared objects or properties."""
         try:
             extent = self._Extent.frommembers(items)
         except KeyError:
@@ -291,7 +291,7 @@ class Context(object):
         return self._intents.bools()
 
     def definition(self):
-        """Return (objects, properties, bools) triple as mutable object."""
+        """Return ``(objects, properties, bools)`` triple as mutable object."""
         return definitions.Definition(self._Extent._members, self._Intent._members,
             self._intents.bools())
 

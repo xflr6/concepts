@@ -29,7 +29,7 @@ def load_cxt(filename, encoding=None):
 
     Args:
         filename: Path to the CXT file to load the context from.
-        encoding: Encoding of the file ('utf-8', 'latin1', 'ascii', ...).
+        encoding (str): Encoding of the file (``'utf-8'``, ``'latin1'``, ``'ascii'``, ...).
 
     Example:
         >>> load_cxt('examples/digits.cxt')  # doctest: +ELLIPSIS
@@ -43,8 +43,8 @@ def load_csv(filename, dialect='excel', encoding='utf-8'):
 
     Args:
         filename: Path to the CSV file to load the context from.
-        dialect: Syntax variant of the CSV file ('excel', 'excel-tab').
-        encoding: Encoding of the file ('utf-8', 'latin1', 'ascii', ...).
+        dialect: Syntax variant of the CSV file (``'excel'``, ``'excel-tab'``).
+        encoding (str): Encoding of the file (``'utf-8'``, ``'latin1'``, ``'ascii'``, ...).
 
     Example:
         >>> load_csv('examples/vowels.csv')  # doctest: +ELLIPSIS
@@ -57,8 +57,8 @@ def make_context(source, frmat='table'):
     """Return a new context from source string in the given format.
 
     Args:
-        source: Formal context table as plain-text string.
-        frmat: Format of the context string ('table', 'cxt', 'csv').
+        source (str): Formal context table as plain-text string.
+        frmat (str): Format of the context string (``'table'``, ``'cxt'``, ``'csv'``).
 
     Example:
         >>> make_context('''

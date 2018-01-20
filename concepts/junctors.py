@@ -86,7 +86,7 @@ class Relations(list):
 
 
 class RelationMeta(type):
-    """Build and retrieve conrete Relation subclasses from docstring tables."""
+    """Build and retrieve conrete ``Relation`` subclasses from docstring tables."""
 
     __map = {}
 

@@ -11,7 +11,7 @@ __all__ = ['Definition']
 
 @py3_unicode_to_str
 class Triple(object):
-    """Triple of (objects, properties, bools) for creating a context.
+    """Triple of ``(objects, properties, bools)`` for creating a context.
 
     >>> t = Triple(['Mr. Praline', 'parrot'], ['alive', 'dead'],
     ...     [(True, False), (False, True)])
@@ -101,7 +101,7 @@ class Triple(object):
             self._pairs.copy())
 
     def __iter__(self):
-        """Yield objects, properties, and bools (e.g. for triple unpacking)."""
+        """Yield ``objects``, ``properties``, and ``bools`` (e.g. for triple unpacking)."""
         yield self.objects
         yield self.properties
         yield self.bools
@@ -178,7 +178,7 @@ class Triple(object):
         return self._fromargs(obj, prop, _pairs)
 
     def transposed(self):
-        """Return a new definition swapping objects and properties."""
+        """Return a new definition swapping ``objects`` and ``properties``."""
         _pairs = {(p, o) for (o, p) in self._pairs}
         return self._fromargs(self._properties.copy(), self._objects.copy(), _pairs)
 
@@ -194,7 +194,7 @@ class Triple(object):
 
 
 def conflicting_pairs(left, right):
-    """Yield all (object, property) pairs where the two definitions disagree."""
+    """Yield all ``(object, property)`` pairs where the two definitions disagree."""
     objects = left._objects & right._objects
     properties = left._properties & right._properties
     difference = left._pairs ^ right._pairs
@@ -205,14 +205,14 @@ def conflicting_pairs(left, right):
 
 
 def ensure_compatible(left, right):
-    """Raise an informative ValueError if the two definitions disagree."""
+    """Raise an informative ``ValueError`` if the two definitions disagree."""
     conflicts = list(conflicting_pairs(left, right))
     if conflicts:
         raise ValueError('conflicting values for object/property pairs: %r' % conflicts)
 
 
 class Definition(Triple):
-    """Mutable triple of (objects, properties, bools) for creating a context.
+    """Mutable triple of ``(objects, properties, bools)`` for creating a context.
 
     Example:
         >>> Definition(['man', 'woman'], ['male', 'female'], [(True, False), (False, True)])
@@ -325,11 +325,11 @@ class Definition(Triple):
             if (o, old) in pairs and not pairs.remove((o, old))}
 
     def move_object(self, obj, index):
-        """Reorder the definition such that object is at index."""
+        """Reorder the definition such that object is at ``index``."""
         self._objects.move(obj, index)
 
     def move_property(self, prop, index):
-        """Reorder the definition such that property is at index."""
+        """Reorder the definition such that property is at ``index``."""
         self._properties.move(prop, index)
 
     def __setitem__(self, pair, value):
@@ -344,13 +344,13 @@ class Definition(Triple):
             self._pairs.discard(pair)
 
     def add_object(self, obj, properties=()):
-        """Add an object to the definition and add properties as related."""
+        """Add an object to the definition and add ``properties`` as related."""
         self._objects.add(obj)
         self._properties |= properties
         self._pairs.update((obj, p) for p in properties)
 
     def add_property(self, prop, objects=()):
-        """Add a property to the definition and add objects as related."""
+        """Add a property to the definition and add ``objects`` as related."""
         self._properties.add(prop)
         self._objects |= objects
         self._pairs.update((o, prop) for o in objects)
@@ -366,7 +366,7 @@ class Definition(Triple):
         self._pairs.difference_update((o, prop) for o in self._objects)
 
     def set_object(self, obj, properties):
-        """Add an object to the definition and set its properties."""
+        """Add an object to the definition and set its ``properties``."""
         self._objects.add(obj)
         properties = set(properties)
         self._properties |= properties
@@ -378,7 +378,7 @@ class Definition(Triple):
                 pairs.discard((obj, p))
 
     def set_property(self, prop, objects):
-        """Add a property to the definition and set its objects."""
+        """Add a property to the definition and set its ``objects``."""
         self._properties.add(prop)
         objects = set(objects)
         self._objects |= objects
@@ -390,7 +390,7 @@ class Definition(Triple):
                 pairs.discard((o, prop))
 
     def union_update(self, other, ignore_conflicts=False):
-        """Update the definition with the union of ther other."""
+        """Update the definition with the union of the ``other``."""
         if not ignore_conflicts:
             ensure_compatible(self, other)
         self._objects |= other._objects
@@ -398,7 +398,7 @@ class Definition(Triple):
         self._pairs |= other._pairs
 
     def intersection_update(self, other, ignore_conflicts=False):
-        """Update the definition with the intersection of ther other."""
+        """Update the definition with the intersection of the ``other``."""
         if not ignore_conflicts:
             ensure_compatible(self, other)
         self._objects &= other._objects

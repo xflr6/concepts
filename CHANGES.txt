@@ -7,7 +7,7 @@ Version 0.7.13 (in development)
 
 Increase API docs coverage.
 
-Use compatible release version specifiers (bump graphviz to ~=0.7).
+Use compatible release version specifiers (bump ``graphviz`` to ~=0.7).
 
 
 Version 0.7.12
@@ -15,7 +15,7 @@ Version 0.7.12
 
 Drop Python 3.3 support.
 
-Include license file in wheel.
+Include LICENSE file in wheel.
 
 
 Version 0.7.11
@@ -29,9 +29,9 @@ Update package meta data, tag python 3.6 support.
 Version 0.7.10
 --------------
 
-Let the graphviz-method pass kwargs to the returned graph (e.g. format='png').
+Let the ``.graphviz()``-method pass ``kwargs`` to the returned graph (e.g. ``format='png'``).
 
-Relax optional graphivz dependency to < 1.0.
+Relax optional ``graphivz`` dependency to < 1.0.
 
 Added extended Sphinx-based documentation.
 
@@ -39,18 +39,18 @@ Added extended Sphinx-based documentation.
 Version 0.7.9
 -------------
 
-Added move_object and move_property to definitions.
+Added ``move_object()`` and ``move_property()`` to definitions.
 
-The take-method of definitions now supports skipping all objects or properties
+The ``take()``-method of definitions now supports skipping all objects or properties
 when called with empty iterables (default None means include all).
 
-Simplified __getitem__ examples.
+Simplified ``__getitem__`` examples.
 
 
 Version 0.7.8
 -------------
 
-Fixed a possible encoding issue with tofile().
+Fixed a possible encoding issue with ``.tofile()``.
 
 Visualize more examples.
 
@@ -60,7 +60,7 @@ Added tests for formats dump/load file roundtrips.
 Version 0.7.7
 -------------
 
-Changed context __eq__ test with non-contexts from TypeError to NotImplemented.
+Changed context ``__eq__`` test with non-contexts from ``TypeError`` to ``NotImplemented``.
 
 Fixed non-working augmented assignment operators on definitions.
 Simplified definition implementation.
@@ -72,20 +72,20 @@ Version 0.7.6
 Added context definition objects, allowing interactive building, modification,
 and combination of context creation arguments.
 
-Added include_unary option to logical connectives calculation.
+Added ``include_unary`` option to logical connectives calculation.
 
 
 Version 0.7.5
 -------------
 
 Made derivation code more explicit. Subset test replaced by inlined
-implementation using only bitwise_and.
+implementation using only ``bitwise_and``.
 
 
 Version 0.7.4
 -------------
 
-Changed context._lattice to a generator.
+Changed context ``._lattice()`` to a generator.
 
 Fixed failure to handle contexts with single object/property.
 
@@ -97,17 +97,17 @@ Improved context/lattice division of labour: context now computes all concepts
 with their covering relation, while lattice only builds/decorates the object-
 based representation.
 
-Improved context and bitset interface used by lattice (reduce_and, reduce_or).
-Added doubleprime method to extents and intents.
-Added raw option to intension, extension, and neighbors method of context.
+Improved context and bitset interface used by lattice (``reduce_and()``, ``reduce_or()``).
+Added ``doubleprime()``-method to extents and intents.
+Added ``raw`` option to ``intension()``, ``extension()``, and ``neighbors()`` method of context.
 
-Added EXAMPLE context for repl experiments.
+Added ``EXAMPLE`` context for repl experiments.
 
 
 Version 0.7.2
 -------------
 
-Context relation now omits orthogonal pairs in __str__().
+Context relation now omits orthogonal pairs in ``__str__()``.
 
 
 Version 0.7.1
@@ -121,19 +121,19 @@ Version 0.7
 
 Added Python 3.3+ support.
 
-Set default UTF-8 encoding in context tofile().
+Set default UTF-8 encoding in context ``.tofile()``.
 
 
 Version 0.6.2
 -------------
 
-Switch setup.py dependencies to version ranges.
+Switch ``setup.py`` dependencies to version ranges.
 
 
 Version 0.6.1
 -------------
 
-Added make_context.
+Added ``make_context()``.
 
 Improved documentation.
 
@@ -141,7 +141,7 @@ Improved documentation.
 Version 0.6
 -----------
 
-Added orthogonal_to.
+Added ``.orthogonal_to()``.
 
 Changed attributes to return a generator instead of a list.
 
@@ -162,17 +162,17 @@ Improved unicode support.
 
 Changed pickling of lattice and concepts.
 
-Changed ordering of downset and lower_neighbors to longlex.
+Changed ordering of ``downset`` and ``lower_neighbors`` to longlex.
 
 
 Version 0.4
 -----------
 
-Add context file csv format.
+Add context file ``'csv'`` format.
 
 Added newline normalization to context file loading.
 
-Update bitset dependency to 0.5 (better neighbors).
+Update ``bitset`` dependency to 0.5 (better neighbors).
 
 Backwards incompatible: removed underscore from (from|to)_(string|file) method
 names.
@@ -181,19 +181,19 @@ names.
 Version 0.3
 -----------
 
-Update graphviz interface dependency to 0.2 (UTF-8 support) with changed api.
+Update ``graphviz`` interface dependency to 0.2 (UTF-8 support) with changed api.
 
 
 Version 0.2.3
 -------------
 
-Support empty iterables in Lattice join and meet.
+Support empty iterables in ``Lattice.join()`` and ``.meet()``.
 
 
 Version 0.2.2
 -------------
 
-Simplified graphviz quoting.
+Simplified ``graphviz`` quoting.
 
 
 Version 0.2.1
@@ -215,7 +215,7 @@ Context and lattice methods no more implicitly split string arguments.
 Version 0.1.4
 -------------
 
-Switch to standalone graphviz interface implementation.
+Switch to standalone ``graphviz`` interface implementation.
 
 
 Version 0.1.3
@@ -227,7 +227,7 @@ Refine packaging info.
 Version 0.1.2
 -------------
 
-Account for bitsets internal api change.
+Account for ``bitsets`` internal api change.
 
 Improve documentation.
 
@@ -235,7 +235,7 @@ Improve documentation.
 Version 0.1.1
 -------------
 
-Switch to standalone bitsets implementation.
+Switch to standalone ``bitsets`` implementation.
 
 
 Version 0.1

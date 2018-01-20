@@ -3,6 +3,17 @@
 API Reference
 =============
 
+.. autosummary::
+    :nosignatures:
+
+    ~concepts.load_cxt
+    ~concepts.load_csv
+    ~concepts.make_context
+    ~concepts.Context
+    ~concepts.Definition
+    concepts.lattices.Lattice
+    concepts.lattices.Concept
+
 
 Context
 -------

@@ -3,7 +3,8 @@
 Examples
 ========
 
-See the ``examples`` directory in the `source repository/distribution`__.
+The following code examples are included in the ``examples/`` directory of the
+`source repository/distribution`__.
 
 .. __: https://github.com/xflr6/concepts/tree/master/examples/
 

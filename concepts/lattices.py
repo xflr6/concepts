@@ -175,18 +175,18 @@ class Lattice(object):
             c.properties = tuple(c.properties)
 
     def __getstate__(self):
-        """Pickle lattice as (context, concepts) tuple."""
+        """Pickle lattice as ``(context, concepts)`` tuple."""
         return self._context, self._concepts
 
     def __setstate__(self, state):
-        """Unpickle lattice from (context, concepts) tuple."""
+        """Unpickle lattice from ``(context, concepts)`` tuple."""
         self._context, self._concepts = state
         self._map = {c._extent: c for c in self._concepts}
         self.infimum = self._concepts[0]
         self.supremum = self._concepts[-1]
 
     def __call__(self, properties):
-        """Return concept having all given properties as intension."""
+        """Return concept having all given ``properties`` as intension."""
         extent = self._context.extension(properties, raw=True)
         return self._map[extent]
 
@@ -425,7 +425,7 @@ class Concept(object):
         self.lower_neighbors = lower  #: The directly subsumed concepts.
 
     def __iter__(self):
-        """Yield extent and intent (e.g. for pair unpacking)."""
+        """Yield ``extent`` and ``intent`` (e.g. for pair unpacking)."""
         yield self._extent.members()
         yield self._intent.members()
 
@@ -449,7 +449,7 @@ class Concept(object):
         return (i.members() for i in minimize)
 
     def upset(self):
-        """Yield implied concepts including self."""
+        """Yield implied concepts including ``self``."""
         heap = [(self.index, self)]
         push, pop = heapq.heappush, heapq.heappop
         seen = -1
@@ -462,7 +462,7 @@ class Concept(object):
                     push(heap, (c.index, c))
 
     def downset(self):
-        """Yield subsumed concepts including self."""
+        """Yield subsumed concepts including ``self``."""
         heap = [(self.dindex, self)]
         push, pop = heapq.heappush, heapq.heappop
         seen = -1
@@ -552,7 +552,7 @@ class Concept(object):
 
 
 class Infimum(Concept):
-    """Contradiction with empty extent and universal intent."""
+    """Contradiction with empty ``extent`` and universal ``intent``."""
 
     def minimal(self):
         return self._intent.members()
@@ -563,4 +563,4 @@ class Atom(Concept):
 
 
 class Supremum(Concept):
-    """Tautology with universal extent and empty intent."""
+    """Tautology with universal ``extent`` and empty ``intent``."""

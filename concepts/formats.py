@@ -15,7 +15,7 @@ __all__ = ['Format']
 
 
 class FormatMeta(type):
-    """Collect and retrieve concrete Format subclasses by name."""
+    """Collect and retrieve concrete ``Format`` subclasses by name."""
 
     _map = {}
 
@@ -46,12 +46,12 @@ class Format(with_metaclass(FormatMeta, object)):
 
     @staticmethod
     def loads(source, **kwargs):
-        """Parse source string and return objects, properties, bools."""
+        """Parse source string and return ``(objects, properties, bools)``."""
         raise NotImplementedError  # pragma: no cover
 
     @staticmethod
     def dumps(objects, properties, bools, **kwargs):
-        """Serialize objects, properties, bools and return string."""
+        """Serialize ``(objects, properties, bools)`` and return string."""
         raise NotImplementedError  # pragma: no cover
 
     @classmethod

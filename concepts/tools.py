@@ -121,7 +121,7 @@ class Unique(collections.MutableSet):
 
 
 def max_len(iterable, minimum=0):
-    """Return the len() of the longest item in iterable or minimum.
+    """Return the len() of the longest item in ``iterable`` or ``minimum``.
 
     >>> max_len(['spam', 'ham'])
     4
@@ -140,7 +140,7 @@ def max_len(iterable, minimum=0):
 
 
 def maximal(iterable, comparison=operator.lt, _groupkey=operator.itemgetter(0)):
-    """Yield the unique maximal elements from iterable using comparison.
+    """Yield the unique maximal elements from ``iterable`` using ``comparison``.
 
     >>> list(maximal([1, 2, 3, 3]))
     [3]
