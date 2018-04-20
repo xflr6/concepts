@@ -341,13 +341,13 @@ Context objects are pickleable:
     True
 
 
-.. _available from PyPI: https://pypi.python.org/pypi/concepts
+.. _available from PyPI: https://pypi.org/project/concepts/
 
 .. _pip: https://pip.readthedocs.io
 .. _virtualenv: https://virtualenv.pypa.io
 
-.. _bitsets: https://pypi.python.org/pypi/bitsets
-.. _graphviz: https://pypi.python.org/pypi/graphviz
+.. _bitsets: https://pypi.org/project/bitsets/
+.. _graphviz: https://pypi.org/project/graphviz/
 
 .. _Graphviz software: http://www.graphviz.org
 .. _download page: http://www.graphviz.org/Download.php

@@ -19,11 +19,11 @@ Links
 -----
 
 - GitHub: https://github.com/xflr6/concepts
-- PyPI: https://pypi.python.org/pypi/concepts
+- PyPI: https://pypi.org/project/concepts/
 - Documentation: https://concepts.readthedocs.io
 - Changelog: https://concepts.readthedocs.io/en/latest/changelog.html
 - Issue Tracker: https://github.com/xflr6/concepts/issues
-- Download: https://pypi.python.org/pypi/concepts#downloads
+- Download: https://pypi.org/project/concepts/#files
 
 
 Installation
@@ -150,9 +150,9 @@ Concepts is distributed under the `MIT license`_.
 .. _pip: https://pip.readthedocs.io
 .. _Graphviz software: http://www.graphviz.org
 
-.. _bitsets: https://pypi.python.org/pypi/bitsets
-.. _graphviz: https://pypi.python.org/pypi/graphviz
-.. _features: https://pypi.python.org/pypi/features
+.. _bitsets: https://pypi.org/project/bitsets/
+.. _graphviz: https://pypi.org/project/graphviz/
+.. _features: https://pypi.org/project/features/
 
 .. _other implementations: http://www.upriss.org.uk/fca/fcasoftware.html
 .. _more sophisticated algorithms: http://www.upriss.org.uk/fca/fcaalgorithms.html
@@ -166,20 +166,17 @@ Concepts is distributed under the `MIT license`_.
 
 
 .. |PyPI version| image:: https://img.shields.io/pypi/v/concepts.svg
-    :target: https://pypi.python.org/pypi/concepts
+    :target: https://pypi.org/project/concepts/
     :alt: Latest PyPI Version
 .. |License| image:: https://img.shields.io/pypi/l/concepts.svg
-    :target: https://pypi.python.org/pypi/concepts
+    :target: https://pypi.org/project/concepts/
     :alt: License
 .. |Supported Python| image:: https://img.shields.io/pypi/pyversions/concepts.svg
-    :target: https://pypi.python.org/pypi/concepts
+    :target: https://pypi.org/project/concepts/
     :alt: Supported Python Versions
 .. |Format| image:: https://img.shields.io/pypi/format/concepts.svg
-    :target: https://pypi.python.org/pypi/concepts
+    :target: https://pypi.org/project/concepts/
     :alt: Format
-.. |Downloads| image:: https://img.shields.io/pypi/dm/concepts.svg
-    :target: https://pypi.python.org/pypi/concepts
-    :alt: Downloads
 .. |Docs| image:: https://readthedocs.org/projects/concepts/badge/?version=stable
     :target: https://concepts.readthedocs.io/en/stable/
     :alt: Readthedocs
