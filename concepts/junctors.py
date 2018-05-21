@@ -47,7 +47,7 @@ class Relations(list):
      <'Possibly' Contingency>, <'Maybe' Contingency>,
      <'Possibly' Equivalent 'Maybe'>]
 
-    >>> print(r)
+    >>> print(r)  # noqa: W291
     Never    contradiction 
     Always   tautology    
     Possibly contingency  
