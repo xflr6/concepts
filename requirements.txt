@@ -1,5 +1,5 @@
 # development environment: install in development mode
 -e .[dev,test,docs]
 # exact dependency versions used in development
-bitsets==0.7.12
+bitsets==0.7.14
 graphviz==0.8.3

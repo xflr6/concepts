@@ -2,8 +2,8 @@ Changelog
 =========
 
 
-Version 0.7.13 (in development)
--------------------------------
+Version 0.7.13
+--------------
 
 Increase API docs coverage.
 

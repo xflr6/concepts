@@ -5,7 +5,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='concepts',
-    version='0.7.13.dev0',
+    version='0.7.13',
     author='Sebastian Bank',
     author_email='sebastian.bank@uni-leipzig.de',
     description='Formal Concept Analysis with Python',
