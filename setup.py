@@ -22,7 +22,7 @@ setup(
     extras_require={
         'dev': ['flake8', 'pep8-naming', 'wheel', 'twine'],
         'test': ['pytest>=3.4', 'pytest-cov'],
-        'docs': ['sphinx>=1.3', 'sphinx-rtd-theme'],
+        'docs': ['sphinx>=1.7', 'sphinx-rtd-theme'],
     },
     long_description=io.open('README.rst', encoding='utf-8').read(),
     classifiers=[
