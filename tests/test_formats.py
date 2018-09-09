@@ -11,15 +11,31 @@ DIRECTORY = 'test-output'
 
 
 def test_getitem():
-    assert Format['cxt'] == Cxt
     assert Format['table'] == Table
+    assert Format['cxt'] == Cxt
     assert Format['csv'] == Csv
     assert Format['wikitable'] == WikiTable
+
+
+def test_getitem_case_wrongcase():
+    with pytest.raises(KeyError):
+        Format['CSV']
 
 
 def test_getitem_invalid():
     with pytest.raises(KeyError):
         Format['spam']
+
+
+def test_infer_format():
+    assert Format.infer_format('spam.TXT') == 'table'
+    assert Format.infer_format('spam.cxt') == 'cxt'
+    assert Format.infer_format('spam.spam.csv') == 'csv'
+
+
+def test_infer_format_invalid():
+    with pytest.raises(ValueError, match=r'filename suffix'):
+        Format.infer_format('spam.spam')
 
 
 class LoadsDumps(object):

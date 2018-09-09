@@ -6,6 +6,7 @@ API Reference
 .. autosummary::
     :nosignatures:
 
+    ~concepts.load
     ~concepts.load_cxt
     ~concepts.load_csv
     ~concepts.make_context
@@ -17,6 +18,8 @@ API Reference
 
 Context
 -------
+
+.. autofunction:: concepts.load
 
 .. autofunction:: concepts.load_cxt
 

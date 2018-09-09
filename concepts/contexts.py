@@ -115,6 +115,8 @@ class Context(object):
     @classmethod
     def fromfile(cls, filename, frmat='cxt', encoding=None, **kwargs):
         """Return a new context from file source in given format."""
+        if frmat is None:
+            frmat = formats.Format.infer_format(filename)
         frmat = formats.Format[frmat]
         objects, properties, bools = frmat.load(filename, encoding, **kwargs)
         return cls(objects, properties, bools)

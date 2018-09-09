@@ -5,7 +5,11 @@
 from .contexts import Context
 from .definitions import Definition
 
-__all__ = ['Context', 'Definition', 'load_cxt', 'load_csv', 'make_context']
+__all__ = [
+    'Context', 'Definition',
+    'load', 'load_cxt', 'load_csv',
+    'make_context',
+]
 
 __title__ = 'concepts'
 __version__ = '0.7.14.dev0'
@@ -22,6 +26,22 @@ EXAMPLE = '''
 3sg|  | X|  | X| X|  |  X|   |   |  X|
 3pl|  | X|  | X| X|  |   |  X|  X|   |
 '''
+
+
+def load(filename, encoding='utf-8', frmat=None):
+    """Load and return formal context from file.
+
+    Args:
+        filename: Path to the file to load the context from.
+        encoding (str): Encoding of the file (``'utf-8'``, ``'latin1'``, ``'ascii'``, ...).
+        frmat(str): Format of the file (``'table'``, ``'cxt'``, ``'csv'``).
+                    If None, inferred from filename suffix (default).
+
+    Example:
+        >>> load('examples/liveinwater.txt')  # doctest: +ELLIPSIS
+        <Context object mapping 8 objects to 9 properties at 0x...>
+    """
+    return Context.fromfile(filename, frmat, encoding)
 
 
 def load_cxt(filename, encoding=None):

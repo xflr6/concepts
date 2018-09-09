@@ -5,6 +5,8 @@ Changelog
 Version 0.7.14 (in development)
 -------------------------------
 
+Add ``load()`` inferring the format form the file suffix.
+
 Tag Python 3.7 support, add simple tox config.
 
 Fix collections.MutableSet PendingDeprecationWarning.

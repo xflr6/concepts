@@ -3,6 +3,7 @@
 """Parse and serialize formal contexts in different formats."""
 
 import io
+import os
 import csv
 import contextlib
 
@@ -19,20 +20,28 @@ class FormatMeta(type):
 
     _map = {}
 
-    by_extension = {}
+    by_suffix = {}
 
     def __init__(self, name, bases, dct):
         if not dct.get('__abstract__'):
             if 'name' not in dct:
                 self.name = name.lower()
-            if 'extension' in dct:
-                self.by_extension[self.extension] = self.name
+            if 'suffix' in dct:
+                self.by_suffix[self.suffix] = self.name
             self._map[self.name] = self
 
     def __getitem__(self, name):
         if name not in self._map:
             raise KeyError('%r unknown format: %r' % (self, name))
         return self._map[name]
+
+    def infer_format(self, filename, frmat=None):
+        _, suffix = os.path.splitext(filename)
+        try:
+            return self.by_suffix[suffix.lower()]
+        except KeyError:
+            raise ValueError('cannot infer file format from filename suffix %r, '
+                             'please specify ``frmat``' % (suffix,))
 
 
 class Format(with_metaclass(FormatMeta, object)):
@@ -84,7 +93,7 @@ class Format(with_metaclass(FormatMeta, object)):
 class Cxt(Format):
     """Formal context in the classic CXT format."""
 
-    extension = '.cxt'
+    suffix = '.cxt'
 
     @staticmethod
     def loads(source):
@@ -110,7 +119,7 @@ class Cxt(Format):
 class Table(Format):
     """Formal context as ASCII-art style table."""
 
-    extension = '.txt'
+    suffix = '.txt'
 
     @staticmethod
     def escape(item):
@@ -145,7 +154,7 @@ class Table(Format):
 class Csv(Format):
     """Formal context as CSV table."""
 
-    extension = '.csv'
+    suffix = '.csv'
 
     dialect = csv.excel
 
