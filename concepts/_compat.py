@@ -27,6 +27,8 @@ if PY2:
 
     import copy_reg as copyreg
 
+    from collections import MutableSet
+
 
 else:
     text_type = string_types = str
@@ -41,6 +43,8 @@ else:
     from io import StringIO
 
     import copyreg
+
+    from collections.abc import MutableSet
 
 
 def with_metaclass(meta, *bases):

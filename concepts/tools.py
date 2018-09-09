@@ -4,12 +4,12 @@ import collections
 import operator
 from itertools import permutations, groupby, starmap
 
-from ._compat import map
+from . import _compat
 
 __all__ = ['Unique', 'max_len', 'maximal', 'lazyproperty']
 
 
-class Unique(collections.MutableSet):
+class Unique(_compat.MutableSet):
     """Unique items preserving order.
 
     >>> Unique([3, 2, 1, 3, 2, 1, 0])
@@ -104,7 +104,7 @@ class Unique(collections.MutableSet):
         >>> Unique(['spam', 'eggs']).issuperset(['spam', 'spam', 'spam'])
         True
         """
-        return all(map(self._seen.__contains__, items))
+        return all(_compat.map(self._seen.__contains__, items))
 
     def rsub(self, items):
         """Return order preserving unique items not in this collection.
