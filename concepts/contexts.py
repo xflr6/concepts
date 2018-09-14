@@ -123,17 +123,13 @@ class Context(object):
 
     def __init__(self, objects, properties, bools):
         """Create context from ``objects``, ``properties``, and correspondence."""
-        objects = tuple(objects)
-        if not objects:
-            raise ValueError('empty objects')
-        if len(set(objects)) != len(objects):
-            raise ValueError('duplicate objects: %r' % (objects,))
+        objects, properties = map(tuple, (objects, properties))
 
-        properties = tuple(properties)
-        if not properties:
-            raise ValueError('empty properties')
-        if len(set(properties)) != len(properties):
-            raise ValueError('duplicate properties: %r' % (properties,))
+        for items, name in [(objects, 'objects'), (properties, 'properties')]:
+            if not items:
+                raise ValueError('empty %s' % name)
+            if len(set(items)) != len(items):
+                raise ValueError('duplicate %s: %r' % (name, items))
 
         if not set(objects).isdisjoint(properties):
             raise ValueError('objects and properties overlap: %r' % (
