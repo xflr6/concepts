@@ -5,32 +5,35 @@ import pytest
 from concepts.contexts import Context
 
 
+def test_empty_objects():
+    with pytest.raises(ValueError, match=r'empty objects'):
+        Context((), ('spam',), [(False,)])
+
+
+def test_empty_properies():
+    with pytest.raises(ValueError, match=r'empty properties'):
+        Context(('spam',), (), [(False,)])
+
+
 def test_duplicate_object():
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match=r'duplicate objects'):
         Context(('spam', 'spam'), ('ham', 'eggs'), [(True, False), (False, True)])
 
 
 def test_duplicate_property():
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match=r'duplicate properties'):
         Context(('spam', 'eggs'), ('ham', 'ham'), [(True, False), (False, True)])
 
 
 def test_object_property_overlap():
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match=r'overlap'):
         Context(('spam', 'eggs'), ('eggs', 'ham'), [(True, False), (False, True)])
 
 
-def test_empty_relation():
-    with pytest.raises(ValueError):
-        Context((), ('spam',), [(False,)])
-    with pytest.raises(ValueError):
-        Context(('spam',), (), [(False,)])
-
-
 def test_invalid_bools():
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match=r'bools is not 2 items of length 2'):
         Context(('spam', 'eggs'), ('camelot', 'launcelot'), [(True, False)])
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match=r'bools is not 2 items of length 2'):
         Context(('spam', 'eggs'), ('camelot', 'launcelot'), [(True, False, False), (False, True)])
 
 
