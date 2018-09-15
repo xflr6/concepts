@@ -38,30 +38,36 @@ def test_unicode(lattice):
     assert u'%s' % lattice == '%s' % lattice
 
 
-def test_upset_union(lattice):
-    l = lattice
-    assert list(l.upset_union([l[('+1',)], l[('+2',)]])) == \
-           [l[('+1',)], l[('+2',)],
-            l[('-3',)], l[('-2',)], l[('-1',)],
-            l.supremum]
+@pytest.mark.parametrize('concepts, expected', [
+    ([('+1',), ('+2',)], [('+1',), ('+2',),
+                          ('-3',), ('-2',), ('-1',),
+                          ()]),
+])
+def test_upset_union(lattice, concepts, expected):
+    concepts, expected = ([lattice[a] for a in arg] for arg in (concepts, expected))
+    assert list(lattice.upset_union(concepts)) == expected
 
 
-def test_downset_union(lattice):
-    l = lattice
-    assert list(l.downset_union([l[('+1',)], l[('+2',)]])) == \
-           [l[('+1',)], l[('+2',)],
-            l[('+1', '+sg')], l[('+1', '+pl')],
-            l[('+2', '+sg')], l[('+2', '+pl')],
-            l.infimum]
+@pytest.mark.parametrize('concepts, expected', [
+    ([('+1',), ('+2',)], [('+1',), ('+2',),
+                          ('+1', '+sg'), ('+1', '+pl'),
+                          ('+2', '+sg'), ('+2', '+pl'),
+                          ('+1', '-1', '+2', '-2', '+3', '-3', '+sg', '+pl','-sg', '-pl')]),
+])
+def test_downset_union(lattice, concepts, expected):
+    concepts, expected = ([lattice[a] for a in arg] for arg in (concepts, expected))
+    assert list(lattice.downset_union(concepts)) == expected
 
 
-def test_upset_generalization(lattice):
-    l = lattice
-    assert list(l.upset_generalization(
-        [l[('+1', '+sg')], l[('+2', '+sg')], l[('+3', '+sg')]])) == \
-        [l[('+1', '+sg')], l[('+2', '+sg')], l[('+3', '+sg')],
-         l[('-3', '+sg')], l[('-2', '+sg')], l[('-1', '+sg')],
-         l[('+sg',)]]
+@pytest.mark.parametrize('concepts, expected', [
+    ([('+1', '+sg'), ('+2', '+sg'), ('+3', '+sg')],
+          [('+1', '+sg'), ('+2', '+sg'), ('+3', '+sg'),
+           ('-3', '+sg'), ('-2', '+sg'), ('-1', '+sg'),
+           ('+sg',)]),
+])
+def test_upset_generalization(lattice, concepts, expected):
+    concepts, expected = ([lattice[a] for a in arg] for arg in (concepts, expected))
+    assert list(lattice.upset_generalization(concepts)) == expected
 
 
 def test_minimal(lattice):
