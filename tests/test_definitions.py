@@ -64,8 +64,8 @@ def test_union_compatible():
     a = Definition(('spam', 'eggs'), ('ni',), [(True,), (False,)])
     b = Definition(('ham', 'spam'), ('nini', 'ni',), [(True, True), (False, True)])
     assert a.union(b) == \
-           Definition(('spam', 'eggs', 'ham'), ('ni', 'nini'),
-                      [(True, False), (False, False), (True, True)])
+        Definition(('spam', 'eggs', 'ham'), ('ni', 'nini'),
+                   [(True, False), (False, False), (True, True)])
 
 
 def test_union_conflicting():
@@ -79,8 +79,8 @@ def test_union_ignoring():
     a = Definition(('spam', 'eggs'), ('ni',), [(True,), (False,)])
     b = Definition(('ham', 'spam'), ('nini', 'ni',), [(True, True), (False, False)])
     assert a.union(b, ignore_conflicts=True) == \
-           Definition(('spam', 'eggs', 'ham'), ('ni', 'nini'),
-                      [(True, False), (False, False), (True, True)])
+        Definition(('spam', 'eggs', 'ham'), ('ni', 'nini'),
+                   [(True, False), (False, False), (True, True)])
 
 
 def test_union_augmented():
@@ -88,8 +88,8 @@ def test_union_augmented():
     b = Definition(('ham', 'spam'), ('nini', 'ni',), [(True, True), (False, True)])
     a |= b
     assert a == \
-           Definition(('spam', 'eggs', 'ham'), ('ni', 'nini'),
-                      [(True, False), (False, False), (True, True)])
+        Definition(('spam', 'eggs', 'ham'), ('ni', 'nini'),
+                   [(True, False), (False, False), (True, True)])
 
 
 def test_inters_compatible():
@@ -109,7 +109,7 @@ def test_inters_ignoring():
     a = Definition(('spam', 'eggs'), ('ni',), [(True,), (False,)])
     b = Definition(('ham', 'spam'), ('nini', 'ni',), [(True, True), (False, False)])
     assert a.intersection(b, ignore_conflicts=True) == \
-           Definition(['spam'], ['ni'], [(False,)])
+        Definition(['spam'], ['ni'], [(False,)])
 
 
 def test_inters_augmented():

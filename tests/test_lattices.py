@@ -52,7 +52,7 @@ def test_upset_union(lattice, concepts, expected):
     ([('+1',), ('+2',)], [('+1',), ('+2',),
                           ('+1', '+sg'), ('+1', '+pl'),
                           ('+2', '+sg'), ('+2', '+pl'),
-                          ('+1', '-1', '+2', '-2', '+3', '-3', '+sg', '+pl','-sg', '-pl')]),
+                          ('+1', '-1', '+2', '-2', '+3', '-3', '+sg', '+pl', '-sg', '-pl')]),
 ])
 def test_downset_union(lattice, concepts, expected):
     concepts, expected = ([lattice[a] for a in arg] for arg in (concepts, expected))
