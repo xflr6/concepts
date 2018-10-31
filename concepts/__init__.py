@@ -12,7 +12,7 @@ __all__ = [
 ]
 
 __title__ = 'concepts'
-__version__ = '0.7.14'
+__version__ = '0.7.15.dev0'
 __author__ = 'Sebastian Bank <sebastian.bank@uni-leipzig.de>'
 __license__ = 'MIT, see LICENSE.txt'
 __copyright__ = 'Copyright (c) 2013-2018 Sebastian Bank'
