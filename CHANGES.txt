@@ -2,8 +2,8 @@ Changelog
 =========
 
 
-Version 0.7.14 (in development)
--------------------------------
+Version 0.7.14
+--------------
 
 Add ``load()`` inferring the format form the file suffix.
 
