@@ -20,3 +20,5 @@ Thumbs.db
 
 /test-output/
 /visualize-output/
+
+/.ipynb_checkpoints
