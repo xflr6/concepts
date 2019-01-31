@@ -1,4 +1,4 @@
-,relation,transitive,symmetric,antisymmetric,reflexive,irreflexive,asymmetric,neg. trans.,connected,total,trichotomous
+name,relation,transitive,symmetric,antisymmetric,reflexive,irreflexive,asymmetric,neg. trans.,connected,total,trichotomous
 irrefl.,X,,,,,X,,,,,
 tolerance,X,,X,,X,,,,,,
 equivalence,X,X,X,,X,,,,,,
