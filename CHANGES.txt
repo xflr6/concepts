@@ -5,7 +5,7 @@ Changelog
 Version 0.7.15 (in development)
 -------------------------------
 
-
+Add recipe for context from pandas.DataFrame.
 
 
 Version 0.7.14
