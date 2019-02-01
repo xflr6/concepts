@@ -98,3 +98,23 @@ the resulting context:
 .. image:: _static/union.svg
     :align: center
 
+
+Context from ``pandas.DataFrame``
+---------------------------------
+
+.. code:: python
+
+    import concepts
+    import pandas as pd
+
+    CONTEXT = 'examples/relations.csv'
+
+    c = concepts.load_csv(CONTEXT)
+
+    df = pd.read_csv(CONTEXT, index_col='name')
+    objects = df.index.tolist()
+    properties = list(df)
+    bools = list(df.fillna(False).astype(bool).itertuples(index=False, name=None))
+
+    c_ = concepts.Context(objects, properties, bools)
+    assert c_ == c
