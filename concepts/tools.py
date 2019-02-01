@@ -2,6 +2,7 @@
 
 import collections
 import operator
+import zlib
 from itertools import permutations, groupby, starmap
 
 from . import _compat
@@ -187,3 +188,12 @@ class lazyproperty(object):
             return self
         result = instance.__dict__[self.__name__] = self.fget(instance)
         return result
+
+
+def crc32_hex(value):
+    """
+
+    >>> crc32_hex(b'spam')
+    '43daff3d'
+    """
+    return '%x' % (zlib.crc32(value) & 0xffffffff)
