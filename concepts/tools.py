@@ -7,7 +7,7 @@ from itertools import permutations, groupby, starmap
 
 from . import _compat
 
-__all__ = ['Unique', 'max_len', 'maximal', 'lazyproperty']
+__all__ = ['Unique', 'max_len', 'maximal', 'lazyproperty', 'crc32_hex']
 
 
 class Unique(_compat.MutableSet):
@@ -190,10 +190,10 @@ class lazyproperty(object):
         return result
 
 
-def crc32_hex(value):
-    """
+def crc32_hex(data):
+    """Return unsigned CRC32 of binary data as hex-encoded string.
 
     >>> crc32_hex(b'spam')
     '43daff3d'
     """
-    return '%x' % (zlib.crc32(value) & 0xffffffff)
+    return '%x' % (zlib.crc32(data) & 0xffffffff)
