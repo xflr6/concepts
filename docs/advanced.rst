@@ -38,7 +38,7 @@ modification, and combination of contexts is supported by using
     >>> d.add_object('girl', ['female'])
 
     >>> print(Context(*d))  # doctest: +ELLIPSIS
-    <Context object mapping 4 objects to 4 properties (...) at 0x...>
+    <Context object mapping 4 objects to 4 properties (65aa9782) at 0x...>
              |male|female|adult|child|
         man  |X   |      |X    |     |
         woman|    |X     |X    |     |

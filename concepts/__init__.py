@@ -39,7 +39,7 @@ def load(filename, encoding='utf-8', frmat=None):
 
     Example:
         >>> load('examples/liveinwater.txt')  # doctest: +ELLIPSIS
-        <Context object mapping 8 objects to 9 properties (...) at 0x...>
+        <Context object mapping 8 objects to 9 properties (b1e86589) at 0x...>
     """
     return Context.fromfile(filename, frmat, encoding)
 
@@ -53,7 +53,7 @@ def load_cxt(filename, encoding=None):
 
     Example:
         >>> load_cxt('examples/digits.cxt')  # doctest: +ELLIPSIS
-        <Context object mapping 10 objects to 7 properties (...) at 0x...>
+        <Context object mapping 10 objects to 7 properties (51e571e6) at 0x...>
     """
     return Context.fromfile(filename, 'cxt', encoding)
 
@@ -68,7 +68,7 @@ def load_csv(filename, dialect='excel', encoding='utf-8'):
 
     Example:
         >>> load_csv('examples/vowels.csv')  # doctest: +ELLIPSIS
-        <Context object mapping 12 objects to 8 properties (...) at 0x...>
+        <Context object mapping 12 objects to 8 properties (a717eee4) at 0x...>
     """
     return Context.fromfile(filename, 'csv', encoding, dialect=dialect)
 
@@ -88,6 +88,6 @@ def make_context(source, frmat='table'):
         ... boy  |  X |      |     |  X  |
         ... girl |    |   X  |     |  X  |
         ... ''')  # doctest: +ELLIPSIS
-        <Context object mapping 4 objects to 4 properties (...) at 0x...>
+        <Context object mapping 4 objects to 4 properties (65aa9782) at 0x...>
     """
     return Context.fromstring(source, frmat=frmat)
