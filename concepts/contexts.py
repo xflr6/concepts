@@ -257,10 +257,9 @@ class Context(object):
         return '%r\n%s' % (self, self.tostring(indent=4))
 
     def __repr__(self):
-        hash_ = tools.crc32_hex(self.tostring().encode('utf-8'))
         return '<%s object mapping %d objects to %d properties (%s) at %#x>' % (
             self.__class__.__name__, len(self._Extent._members),
-            len(self._Intent._members), hash_, id(self))
+            len(self._Intent._members), self.crc32(), id(self))
 
     def tostring(self, frmat='table', **kwargs):
         """Return the context serialized in the given string-based format."""
@@ -273,6 +272,10 @@ class Context(object):
         frmat = formats.Format[frmat]
         return frmat.dump(filename, self._Extent._members, self._Intent._members,
             self._intents.bools(), encoding, **kwargs)
+
+    def crc32(self, encoding='utf-8'):
+        """Return hex-encoded unsigned CRC32 over encoded context table string."""
+        return tools.crc32_hex(self.tostring().encode(encoding))
 
     @property
     def objects(self):

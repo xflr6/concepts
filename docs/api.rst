@@ -33,7 +33,7 @@ Context
         intension, extension,
         neighbors,
         __getitem__,
-        tostring, tofile,
+        tostring, tofile, crc32,
         objects, properties, bools,
         definition, relations, lattice
 
@@ -46,7 +46,7 @@ Definition
         fromfile, copy,
         __iter__, __getitem__,
         objects, properties, bools,
-        tostring,
+        tostring, crc32,
         take, transposed, inverted,
         rename_object, rename_property,
         move_object, move_property,

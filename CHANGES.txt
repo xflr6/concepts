@@ -5,7 +5,12 @@ Changelog
 Version 0.7.15 (in development)
 -------------------------------
 
-Add recipe for context from pandas.DataFrame.
+Add crc32()-method to Context and Definition returning the hex-encoded crc32
+of their context table string.
+
+Indlude crc32 in the repr of context objects.
+
+Add recipe for context from pandas.DataFrame to docs.
 
 
 Version 0.7.14

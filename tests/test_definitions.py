@@ -43,6 +43,10 @@ def test_ne(definition):
     assert not (definition != definition)
 
 
+def test_crc32(definition):
+    assert definition.crc32() == 'ea62062b'
+
+
 def test_getitem_int(definition):
     assert definition[0] == definition.objects
     assert definition[1] == definition.properties

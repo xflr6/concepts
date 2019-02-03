@@ -156,6 +156,10 @@ class Triple(object):
         """Return the definition serialized in the given string-based format."""
         return formats.Format[frmat].dumps(*self, **kwargs)
 
+    def crc32(self, encoding='utf-8'):
+        """Return hex-encoded unsigned CRC32 over encoded definition table string."""
+        return tools.crc32_hex(self.tostring().encode(encoding))
+
     def take(self, objects=None, properties=None, reorder=False):
         """Return a subset with given objects/properties as new definition."""
         if (objects and not self._objects.issuperset(objects) or

@@ -71,6 +71,10 @@ def test_ne(context):
     assert context != Context(('spam', 'eggs'), ('camelot', 'launcelot'), [(True, False), (False, True)])
 
 
+def test_crc32(context):
+    assert context.crc32() == 'b9d20179' == context.definition().crc32()
+
+
 def test_minimize_infimum(context):
     assert list(context._minimize((), context.properties)) == [context.properties]
 
