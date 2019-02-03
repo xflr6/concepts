@@ -2,8 +2,8 @@ Changelog
 =========
 
 
-Version 0.7.15 (in development)
--------------------------------
+Version 0.8 (in development)
+----------------------------
 
 Add crc32()-method to Context and Definition returning the hex-encoded crc32
 of their context table string.
