@@ -56,7 +56,7 @@ identify them.
     ... ''')
 
     >>> c  # doctest: +ELLIPSIS
-    <Context object mapping 3 objects to 4 properties (dae7402a) at 0x...>
+    <Context object mapping 3 objects to 4 properties [dae7402a] at 0x...>
 
 You can also load contexts from files in different **plain-text formats**, see
 below.
@@ -158,7 +158,7 @@ context. You can iterate over the lattice to visit all concepts:
 .. code:: python
 
     >>> c  # doctest: +ELLIPSIS
-    <Context object mapping 3 objects to 4 properties (dae7402a) at 0x...>
+    <Context object mapping 3 objects to 4 properties [dae7402a] at 0x...>
     
     >>> l = c.lattice
 
@@ -316,15 +316,15 @@ format:
 
     >>> c1 = Context.fromfile('examples/liveinwater.cxt')
     >>> c1  # doctest: +ELLIPSIS
-    <Context object mapping 8 objects to 9 properties (b1e86589) at 0x...>
+    <Context object mapping 8 objects to 9 properties [b1e86589] at 0x...>
 
     >>> c2 = Context.fromfile('examples/liveinwater.csv', frmat='csv')
     >>> c2  # doctest: +ELLIPSIS
-    <Context object mapping 8 objects to 9 properties (b1e86589) at 0x...>
+    <Context object mapping 8 objects to 9 properties [b1e86589] at 0x...>
 
     >>> c3 = Context.fromfile('examples/liveinwater.txt', frmat='table')
     >>> c3  # doctest: +ELLIPSIS
-    <Context object mapping 8 objects to 9 properties (b1e86589) at 0x...>
+    <Context object mapping 8 objects to 9 properties [b1e86589] at 0x...>
 
     >>> c1 == c2 == c3
     True

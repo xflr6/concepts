@@ -17,7 +17,7 @@ class Context(object):
 
     Example:
         >>> Context(['man', 'woman'], ['male', 'female'], [(True, False), (False, True)])  # doctest: +ELLIPSIS
-        <Context object mapping 2 objects to 2 properties (47e29724) at 0x...>
+        <Context object mapping 2 objects to 2 properties [47e29724] at 0x...>
 
     Usage:
 
@@ -32,7 +32,7 @@ class Context(object):
     ... ''')
 
     >>> print(c)  # doctest: +ELLIPSIS
-    <Context object mapping 6 objects to 10 properties (b9d20179) at 0x...>
+    <Context object mapping 6 objects to 10 properties [b9d20179] at 0x...>
            |+1|-1|+2|-2|+3|-3|+sg|+pl|-sg|-pl|
         1sg|X |  |  |X |  |X |X  |   |   |X  |
         1pl|X |  |  |X |  |X |   |X  |X  |   |
@@ -257,7 +257,7 @@ class Context(object):
         return '%r\n%s' % (self, self.tostring(indent=4))
 
     def __repr__(self):
-        return '<%s object mapping %d objects to %d properties (%s) at %#x>' % (
+        return '<%s object mapping %d objects to %d properties [%s] at %#x>' % (
             self.__class__.__name__, len(self._Extent._members),
             len(self._Intent._members), self.crc32(), id(self))
 
