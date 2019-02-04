@@ -59,6 +59,8 @@ a simple ASCII-art style cross-table with *object* rows and *property* columns
     ... Sir Robin  |  X  |  X   |     |          |
     ... holy grail |     |      |     |     X    |
     ... ''')
+    >>> c  # doctest: +ELLIPSIS
+    <Context object mapping 3 objects to 4 properties [dae7402a] at 0x...>
 
 
 Query **common properties** of objects or **common objects** of properties
