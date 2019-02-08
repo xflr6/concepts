@@ -1,6 +1,5 @@
 # tools.py
 
-import collections
 import operator
 import zlib
 from itertools import permutations, groupby, starmap
