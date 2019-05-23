@@ -55,6 +55,9 @@ def test_getitem_int(definition):
 
 def test_getitem(definition):
     assert definition['spam', 'ni'] is True
+
+
+def test_getitem_missing(definition):
     with pytest.raises(KeyError):
         definition['ham', 'spam']
 

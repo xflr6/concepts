@@ -33,9 +33,12 @@ def test_object_property_overlap():
                 [(True, False), (False, True)])
 
 
-def test_invalid_bools():
+def test_invalid_bools_1():
     with pytest.raises(ValueError, match=r'bools is not 2 items of length 2'):
         Context(('spam', 'eggs'), ('camelot', 'launcelot'), [(True, False)])
+
+
+def test_invalid_bools_2():
     with pytest.raises(ValueError, match=r'bools is not 2 items of length 2'):
         Context(('spam', 'eggs'), ('camelot', 'launcelot'),
                 [(True, False, False), (False, True)])
