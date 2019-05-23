@@ -90,7 +90,7 @@ class RelationMeta(type):
 
     __map = {}
 
-    def __init__(self, name, bases, dct):
+    def __init__(self, name, bases, dct):  # noqa: N804
         if 'binary' not in dct:
             return
 
@@ -115,7 +115,7 @@ class RelationMeta(type):
             globals()[cls.__name__] = self.__map[pattern] = cls
             __all__.append(cls.__name__)
 
-    def __call__(self, left, right, pairs):
+    def __call__(self, left, right, pairs):  # noqa: N804
         self = self.__map[frozenset(pairs)]
         if not self.binary:
             right = pairs

@@ -20,7 +20,7 @@ if PY2:
         from StringIO import StringIO
     else:
         from StringIO import StringIO as _PureStringIO
-        def StringIO(*args):
+        def StringIO(*args):  # noqa: N802
             if args and isinstance(args[0], str):
                 return _cStringIO(*args)
             return _PureStringIO(*args)
@@ -52,7 +52,7 @@ def with_metaclass(meta, *bases):
 
     https://github.com/mitsuhiko/jinja2/blob/master/jinja2/_compat.py
     """
-    class metaclass(meta):
+    class metaclass(meta):  # noqa: N801
         __call__ = type.__call__
         __init__ = type.__init__
         def __new__(cls, name, this_bases, d):

@@ -117,13 +117,13 @@ class Lattice(object):
         concepts = [Concept(self, *args) for args in context._lattice(infimum)]
         mapping = {c._extent: c for c in concepts}
 
-        shortlex = lambda c: c._extent.shortlex()
+        shortlex = lambda c: c._extent.shortlex()  # noqa: E731
         for index, c in enumerate(concepts):
             c.index = index
             upper = (mapping[u] for u in c.upper_neighbors)
             c.upper_neighbors = tuple(sorted(upper, key=shortlex))
 
-        longlex = lambda c: c._extent.longlex()
+        longlex = lambda c: c._extent.longlex()  # noqa: E731
         atoms = concepts[0].upper_neighbors
         for dindex, c in enumerate(sorted(concepts, key=longlex)):  # downward
             c.dindex = dindex

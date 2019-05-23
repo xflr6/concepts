@@ -23,8 +23,8 @@ class Vectors(bitsets.series.Tuple):
         self.relation = relation
         self.relation_index = index
 
-        Prime = other.BitSet.supremum
-        Double = self.BitSet.supremum
+        Prime = other.BitSet.supremum  # noqa: N806
+        Double = self.BitSet.supremum  # noqa: N806
 
         _prime = other.BitSet.fromint
         _double = self.BitSet.fromint
@@ -104,11 +104,11 @@ class Relation(tuple):
     def __new__(cls, xname, yname, xmembers, ymembers, xbools, _ids=None):
         if _ids is not None:  # unpickle reconstruction
             xid, yid = _ids
-            X = bitsets.meta.bitset(xname, xmembers, xid, Vector, None, Vectors)
-            Y = bitsets.meta.bitset(yname, ymembers, yid, Vector, None, Vectors)
+            X = bitsets.meta.bitset(xname, xmembers, xid, Vector, None, Vectors)  # noqa: N806
+            Y = bitsets.meta.bitset(yname, ymembers, yid, Vector, None, Vectors)  # noqa: N806
         else:
-            X = bitsets.bitset(xname, xmembers, Vector, tuple=Vectors)
-            Y = bitsets.bitset(yname, ymembers, Vector, tuple=Vectors)
+            X = bitsets.bitset(xname, xmembers, Vector, tuple=Vectors)  # noqa: N806
+            Y = bitsets.bitset(yname, ymembers, Vector, tuple=Vectors)  # noqa: N806
 
         x = X.Tuple.frombools(xbools)
         y = Y.Tuple.frombools(zip(*x.bools()))
@@ -126,7 +126,7 @@ class Relation(tuple):
         return '<%s(%r, %r)>' % (self.__class__.__name__, self[0], self[1])
 
     def __reduce__(self):
-        X, Y = (v.BitSet for v in self)
+        X, Y = (v.BitSet for v in self)  # noqa: N806
         bools = self[0].bools()
         ids = (X._id, Y._id)
         args = (X.__name__, Y.__name__, X._members, Y._members, bools, ids)

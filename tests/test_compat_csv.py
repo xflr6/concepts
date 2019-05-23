@@ -6,7 +6,7 @@ import pytest
 
 
 @pytest.mark.skipif(sys.version_info.major != 2, reason='Python 2 only')
-def test_UnicodeCsvReader():
+def test_UnicodeCsvReader():  # noqa: N802
     from concepts._compat_csv import UnicodeCsvReader
 
     reader = UnicodeCsvReader([u',majestic,bites\r\n',

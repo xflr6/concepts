@@ -22,7 +22,7 @@ class FormatMeta(type):
 
     by_suffix = {}
 
-    def __init__(self, name, bases, dct):
+    def __init__(self, name, bases, dct):  # noqa: N804
         if not dct.get('__abstract__'):
             if 'name' not in dct:
                 self.name = name.lower()
@@ -30,12 +30,12 @@ class FormatMeta(type):
                 self.by_suffix[self.suffix] = self.name
             self._map[self.name] = self
 
-    def __getitem__(self, name):
+    def __getitem__(self, name):  # noqa: N804
         if name not in self._map:
             raise KeyError('%r unknown format: %r' % (self, name))
         return self._map[name]
 
-    def infer_format(self, filename, frmat=None):
+    def infer_format(self, filename, frmat=None):  # noqa: N804
         _, suffix = os.path.splitext(filename)
         try:
             return self.by_suffix[suffix.lower()]

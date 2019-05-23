@@ -90,7 +90,7 @@ def test_minimize_infimum(context):
 
 
 def test_raw(context):
-    Extent, Intent = context._Extent, context._Intent
+    Extent, Intent = context._Extent, context._Intent  # noqa: N806
     assert context.intension(['1sg', '1pl'], raw=True) == Intent('1001010000')
     assert context.extension(['+1', '+sg'], raw=True) == Extent('100000')
     assert context.neighbors(['1sg'], raw=True) == \

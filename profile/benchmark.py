@@ -5,7 +5,7 @@ import os
 import time
 
 sys.path.insert(1, os.pardir)
-import concepts
+import concepts  # noqa: E402
 
 
 start = time.time()
@@ -14,7 +14,7 @@ print('%r' % c.lattice)
 print(time.time() - start)
 
 
-import cProfile as Profile
+import cProfile as Profile  # noqa: E402
 
 c = concepts.load_cxt('segments.cxt', encoding='utf-8')
 Profile.run('c.lattice')
