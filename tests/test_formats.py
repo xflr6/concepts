@@ -61,11 +61,12 @@ class LoadsDumps(object):
         extension = getattr(self.format, 'extension', '.txt')
         filepath = os.path.join(outdir, self.__class__.__name__ + extension)
         self.format.dump(filepath,
-            self.objects, self.properties, self.bools,
-            self.encoding)
+                         self.objects, self.properties, self.bools,
+                         self.encoding)
 
         try:
-            objects, properties, bools = self.format.load(filepath, self.encoding)
+            objects, properties, bools = self.format.load(filepath,
+                                                          self.encoding)
         except NotImplementedError:
             pass
         else:
@@ -107,65 +108,59 @@ class TextCxtUnicode(unittest.TestCase, Unicode):
 class TestTableAscii(unittest.TestCase, Ascii):
 
     format = Table
-    result = (
-        '         |in_stock|sold_out|\n'
-        'Cheddar  |        |X       |\n'
-        'Limburger|        |X       |')
+    result = ('         |in_stock|sold_out|\n'
+              'Cheddar  |        |X       |\n'
+              'Limburger|        |X       |')
 
 
 class TestTableUnicode(unittest.TestCase, Unicode):
 
     format = Table
-    result = (
-        u'     |majestic|bites|\n'
-        u'M\xf8\xf8se|X       |X    |\n'
-        u'Llama|        |     |')
+    result = (u'     |majestic|bites|\n'
+              u'M\xf8\xf8se|X       |X    |\n'
+              u'Llama|        |     |')
 
 
 class TestCsvAscii(unittest.TestCase, Ascii):
 
     format = Csv
-    result = (
-        ',in_stock,sold_out\r\n'
-        'Cheddar,,X\r\n'
-        'Limburger,,X\r\n')
+    result = (',in_stock,sold_out\r\n'
+              'Cheddar,,X\r\n'
+              'Limburger,,X\r\n')
 
 
 class TestCsvUnicode(unittest.TestCase, Unicode):
 
     format = Csv
-    result = (
-        u',majestic,bites\r\n'
-        u'M\xf8\xf8se,X,X\r\n'
-        u'Llama,,\r\n')
+    result = (u',majestic,bites\r\n'
+              u'M\xf8\xf8se,X,X\r\n'
+              u'Llama,,\r\n')
 
 
 class TestWikitableAscii(unittest.TestCase, Ascii):
 
     format = WikiTable
-    result = (
-        '{| class="featuresystem"\n'
-        '!\n'
-        '!in_stock!!sold_out\n'
-        '|-\n'
-        '!Cheddar\n'
-        '|        ||X       \n'
-        '|-\n'
-        '!Limburger\n'
-        '|        ||X       \n'
-        '|}')
+    result = ('{| class="featuresystem"\n'
+              '!\n'
+              '!in_stock!!sold_out\n'
+              '|-\n'
+              '!Cheddar\n'
+              '|        ||X       \n'
+              '|-\n'
+              '!Limburger\n'
+              '|        ||X       \n'
+              '|}')
 
 
 class TestWikitableUnicode(unittest.TestCase, Unicode):
 
     format = WikiTable
-    result = (
-        u'{| class="featuresystem"\n'
-        u'!\n'
-        u'!majestic!!bites\n'
-        u'|-\n'
-        u'!M\xf8\xf8se\n|X       ||X    \n'
-        u'|-\n'
-        u'!Llama\n'
-        u'|        ||     \n'
-        '|}')
+    result = (u'{| class="featuresystem"\n'
+              u'!\n'
+              u'!majestic!!bites\n'
+              u'|-\n'
+              u'!M\xf8\xf8se\n|X       ||X    \n'
+              u'|-\n'
+              u'!Llama\n'
+              u'|        ||     \n'
+              u'|}')

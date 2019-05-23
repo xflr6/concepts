@@ -40,8 +40,8 @@ class FormatMeta(type):
         try:
             return self.by_suffix[suffix.lower()]
         except KeyError:
-            raise ValueError('cannot infer file format from filename suffix %r, '
-                             'please specify ``frmat``' % (suffix,))
+            raise ValueError('cannot infer file format from filename suffix'
+                             ' %r, please specify ``frmat``' % (suffix,))
 
 
 class Format(with_metaclass(FormatMeta, object)):
@@ -111,7 +111,7 @@ class Cxt(Format):
         result.extend(objects)
         result.extend(properties)
         result.extend(''.join('X' if b else '.' for b in intent)
-            for intent in bools)
+                      for intent in bools)
         result.append('')
         return '\n'.join(result)
 
@@ -147,7 +147,7 @@ class Table(Format):
         tmpl = ' ' * indent + '|'.join('%%-%ds' % w for w in wd) + '|'
         result = [tmpl % (('',) + tuple(properties))]
         result.extend(tmpl % ((o,) + tuple('X' if b else '' for b in intent))
-            for o, intent in zip(objects, bools))
+                      for o, intent in zip(objects, bools))
         return '\n'.join(result)
 
 
@@ -193,16 +193,20 @@ class Csv(Format):
         if dialect is None:
             dialect = cls.dialect
 
-        csv_writer, kwargs = csv.writer, {}
+        csv_writer = csv.writer
+        kwargs = {}
         if PY2 and not all(isinstance(s, str) for s in objects + properties):
-            csv_writer, kwargs = _compat_csv.UnicodeWriter, {'encoding': 'utf-8'}
+            csv_writer = _compat_csv.UnicodeWriter
+            kwargs = {'encoding': 'utf-8'}
 
         with contextlib.closing(StringIO()) as fd:
             writer = csv_writer(fd, dialect, **kwargs)
             cls._dump(writer, objects, properties, bools)
             result = fd.getvalue()
+
         if 'encoding' in kwargs:
             result = result.decode(kwargs['encoding'])
+
         return result
 
     @classmethod
@@ -254,7 +258,8 @@ class WikiTable(Format):
 
     @staticmethod
     def dumps(objects, properties, bools):
-        result = ['{| class="featuresystem"', '!', '!%s' % '!!'.join(properties)]
+        result = ['{| class="featuresystem"', '!',
+                  '!%s' % '!!'.join(properties)]
         wp = list(map(len, properties))
         for o, intent in zip(objects, bools):
             bcells = (('X' if b else '').ljust(w) for w, b in zip(wp, intent))

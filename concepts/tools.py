@@ -27,7 +27,7 @@ class Unique(_compat.MutableSet):
         self._seen = seen = set()
         add = seen.add
         self._items = [item for item in iterable
-            if item not in seen and not add(item)]
+                       if item not in seen and not add(item)]
 
     def copy(self):
         return self._fromargs(self._seen.copy(), self._items[:])
@@ -42,8 +42,8 @@ class Unique(_compat.MutableSet):
         return item in self._seen
 
     def __repr__(self):
-        items = repr(self._items) if self._items else ''
-        return '%s(%s)' % (self.__class__.__name__, items)
+        return '%s(%s)' % (self.__class__.__name__,
+                           repr(self._items) if self._items else '')
 
     def add(self, item):
         if item not in self._seen:
@@ -75,6 +75,7 @@ class Unique(_compat.MutableSet):
         """
         if new_item in self._seen:
             raise ValueError('%r already in list' % new_item)
+
         idx = self._items.index(item)
         self._seen.remove(item)
         self._seen.add(new_item)
@@ -151,9 +152,10 @@ def maximal(iterable, comparison=operator.lt, _groupkey=operator.itemgetter(0)):
     iterable = set(iterable)
     if len(iterable) < 2:
         return iterable
-    return (item for item, pairs
-        in groupby(permutations(iterable, 2), key=_groupkey)
-        if not any(starmap(comparison, pairs)))
+
+    return (item
+            for item, pairs in groupby(permutations(iterable, 2), key=_groupkey)
+            if not any(starmap(comparison, pairs)))
 
 
 class lazyproperty(object):

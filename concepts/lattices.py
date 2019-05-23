@@ -194,8 +194,10 @@ class Lattice(object):
         """Return concept by index, intension, or extension."""
         if isinstance(key, (int, slice)):
             return self._concepts[key]
+
         if not key:
             return self.supremum
+
         extent, intent = self._context.__getitem__(key, raw=True)
         return self._map[extent]
 
@@ -214,9 +216,12 @@ class Lattice(object):
         return '%r\n%s' % (self, '\n'.join(u'    %s' % c for c in self._concepts))
 
     def __repr__(self):
-        return '<%s object of %d atoms %d concepts %d coatoms at %#x>' % (
-            self.__class__.__name__, len(self.infimum.upper_neighbors),
-            len(self._concepts), len(self.supremum.lower_neighbors), id(self))
+        return ('<%s object of %d atoms %d concepts %d coatoms'
+                ' at %#x>') % (self.__class__.__name__,
+                               len(self.infimum.upper_neighbors),
+                               len(self._concepts),
+                               len(self.supremum.lower_neighbors),
+                               id(self))
 
     @property
     def atoms(self):
@@ -237,8 +242,9 @@ class Lattice(object):
 
     def upset_union(self, concepts):
         """Yield all concepts that subsume any of the given ones."""
-        heap = [(c.index, c) for c in tools.maximal(concepts,
-            comparison=Concept.properly_subsumes)]
+        heap = [(c.index, c)
+                for c in tools.maximal(concepts,
+                                       comparison=Concept.properly_subsumes)]
         heapq.heapify(heap)
         push, pop = heapq.heappush, heapq.heappop
         seen = -1
@@ -252,8 +258,9 @@ class Lattice(object):
 
     def downset_union(self, concepts):
         """Yield all concepts that imply any of the given ones."""
-        heap = [(c.dindex, c) for c in tools.maximal(concepts,
-            comparison=Concept.properly_implies)]
+        heap = [(c.dindex, c)
+                for c in tools.maximal(concepts,
+                                       comparison=Concept.properly_implies)]
         heapq.heapify(heap)
         push, pop = heapq.heappush, heapq.heappop
         seen = -1
@@ -267,8 +274,9 @@ class Lattice(object):
 
     def upset_generalization(self, concepts):  # EXPERIMENTAL
         """Yield all concepts that subsume only the given ones."""
-        heap = [(c.index, c) for c in tools.maximal(concepts,
-            comparison=Concept.properly_subsumes)]
+        heap = [(c.index, c)
+                for c in tools.maximal(concepts,
+                                       comparison=Concept.properly_subsumes)]
         heapq.heapify(heap)
         push, pop = heapq.heappush, heapq.heappop
         extents = (c._extent for i, c in heap)
@@ -285,9 +293,11 @@ class Lattice(object):
                     for c in concept.upper_neighbors:
                         push(heap, (c.index, c))
 
-    def graphviz(self, filename=None, directory=None, render=False, view=False, **kwargs):
+    def graphviz(self, filename=None, directory=None, render=False, view=False,
+                 **kwargs):
         """Return graphviz source for visualizing the lattice graph."""
-        return visualize.lattice(self, filename, directory, render, view, **kwargs)
+        return visualize.lattice(self, filename, directory, render, view,
+                                 **kwargs)
 
 
 @py3_unicode_to_str
@@ -441,7 +451,8 @@ class Concept(object):
 
     def minimal(self):
         """Shortlex minimal properties generating the concept."""
-        return self.lattice._context._minimal(self._extent, self._intent).members()
+        return self.lattice._context._minimal(self._extent,
+                                              self._intent).members()
 
     def attributes(self):
         """Shortlex ordered properties generating the concept."""
@@ -517,27 +528,27 @@ class Concept(object):
 
     def complement_of(self, other):
         """Infimum meet and supremum join comparison."""
-        return (not self._extent & other._extent and
-            (self._extent | other._extent) == self.lattice.supremum._extent)
+        return (not self._extent & other._extent
+                and (self._extent | other._extent) == self.lattice.supremum._extent)
 
     def subcontrary_with(self, other):
         """Non-infimum meet and supremum join comparison."""
-        return (self._extent & other._extent and
-            (self._extent | other._extent) == self.lattice.supremum._extent)
+        return (self._extent & other._extent
+                and (self._extent | other._extent) == self.lattice.supremum._extent)
 
     def orthogonal_to(self, other):
         """Non-infimum meet, incomparable, and non-supremum join comparison."""
         meet = self._extent & other._extent
         return (not not meet and meet != self._extent and meet != other._extent
-            and (self._extent | other._extent) != self.lattice.supremum._extent)
+                and (self._extent | other._extent) != self.lattice.supremum._extent)
 
     def __str__(self):
         extent = ', '.join(self._extent.members()).encode('unicode_escape')
         intent = ' '.join(self._intent.members()).encode('unicode_escape')
         objects = (' <=> %s' % ' '.join(self.objects).encode('unicode_escape')
-            if self.objects else '')
+                   if self.objects else '')
         properties = (' <=> %s' % ' '.join(self.properties).encode('unicode_escape')
-            if self.properties else '')
+                      if self.properties else '')
         return '{%s} <-> [%s]%s%s' % (extent, intent, objects, properties)
 
     def __unicode__(self):

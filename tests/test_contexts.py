@@ -17,29 +17,34 @@ def test_empty_properies():
 
 def test_duplicate_object():
     with pytest.raises(ValueError, match=r'duplicate objects'):
-        Context(('spam', 'spam'), ('ham', 'eggs'), [(True, False), (False, True)])
+        Context(('spam', 'spam'), ('ham', 'eggs'),
+                [(True, False), (False, True)])
 
 
 def test_duplicate_property():
     with pytest.raises(ValueError, match=r'duplicate properties'):
-        Context(('spam', 'eggs'), ('ham', 'ham'), [(True, False), (False, True)])
+        Context(('spam', 'eggs'), ('ham', 'ham'),
+                [(True, False), (False, True)])
 
 
 def test_object_property_overlap():
     with pytest.raises(ValueError, match=r'overlap'):
-        Context(('spam', 'eggs'), ('eggs', 'ham'), [(True, False), (False, True)])
+        Context(('spam', 'eggs'), ('eggs', 'ham'),
+                [(True, False), (False, True)])
 
 
 def test_invalid_bools():
     with pytest.raises(ValueError, match=r'bools is not 2 items of length 2'):
         Context(('spam', 'eggs'), ('camelot', 'launcelot'), [(True, False)])
     with pytest.raises(ValueError, match=r'bools is not 2 items of length 2'):
-        Context(('spam', 'eggs'), ('camelot', 'launcelot'), [(True, False, False), (False, True)])
+        Context(('spam', 'eggs'), ('camelot', 'launcelot'),
+                [(True, False, False), (False, True)])
 
 
 def test_init():
     c = Context(('spam', 'eggs'), ('camelot', 'launcelot'),
                 [(True, False), (False, True)])
+
     assert c.objects == ('spam', 'eggs')
     assert c.properties == ('camelot', 'launcelot')
     assert c.bools == [(True, False), (False, True)]
@@ -60,7 +65,8 @@ def context():
 
 
 def test_eq(context):
-    assert context == Context(context.objects, context.properties, context.bools)
+    assert context == Context(context.objects, context.properties,
+                              context.bools)
 
 
 def test_eq_undefined(context):
@@ -68,7 +74,8 @@ def test_eq_undefined(context):
 
 
 def test_ne(context):
-    assert context != Context(('spam', 'eggs'), ('camelot', 'launcelot'), [(True, False), (False, True)])
+    assert context != Context(('spam', 'eggs'), ('camelot', 'launcelot'),
+                              [(True, False), (False, True)])
 
 
 def test_crc32(context):

@@ -55,24 +55,26 @@ def test_upset_union(lattice, concepts, expected):
                           ('+1', '-1', '+2', '-2', '+3', '-3', '+sg', '+pl', '-sg', '-pl')]),
 ])
 def test_downset_union(lattice, concepts, expected):
-    concepts, expected = ([lattice[a] for a in arg] for arg in (concepts, expected))
+    concepts, expected = ([lattice[a] for a in arg]
+                          for arg in (concepts, expected))
     assert list(lattice.downset_union(concepts)) == expected
 
 
 @pytest.mark.parametrize('concepts, expected', [
     ([('+1', '+sg'), ('+2', '+sg'), ('+3', '+sg')],
-          [('+1', '+sg'), ('+2', '+sg'), ('+3', '+sg'),
-           ('-3', '+sg'), ('-2', '+sg'), ('-1', '+sg'),
-           ('+sg',)]),
+     [('+1', '+sg'), ('+2', '+sg'), ('+3', '+sg'),
+      ('-3', '+sg'), ('-2', '+sg'), ('-1', '+sg'),
+      ('+sg',)]),
 ])
 def test_upset_generalization(lattice, concepts, expected):
-    concepts, expected = ([lattice[a] for a in arg] for arg in (concepts, expected))
+    concepts, expected = ([lattice[a] for a in arg]
+                          for arg in (concepts, expected))
     assert list(lattice.upset_generalization(concepts)) == expected
 
 
 def test_minimal(lattice):
-    assert lattice.infimum.minimal() == \
-           ('+1', '-1', '+2', '-2', '+3', '-3', '+sg', '+pl', '-sg', '-pl')
+    assert lattice.infimum.minimal() == ('+1', '-1', '+2', '-2', '+3', '-3',
+                                         '+sg', '+pl', '-sg', '-pl')
 
 
 def test_minimum():

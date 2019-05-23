@@ -93,12 +93,13 @@ class Triple(object):
             raise ValueError('duplicate properties: %r' % (properties,))
 
         self._pairs = {(o, p) for o, boo in zip(objects, bools)
-            for p, b in zip(properties, boo) if b}
+                       for p, b in zip(properties, boo) if b}
 
     def copy(self):
         """Return an independent copy of the instance."""
-        return self._fromargs(self._objects.copy(), self._properties.copy(),
-            self._pairs.copy())
+        return self._fromargs(self._objects.copy(),
+                              self._properties.copy(),
+                              self._pairs.copy())
 
     def __iter__(self):
         """Yield ``objects``, ``properties``, and ``bools`` (e.g. for triple unpacking)."""
@@ -109,6 +110,7 @@ class Triple(object):
     def __getitem__(self, pair):
         if isinstance(pair, int):
             return list(self)[pair]
+
         o, p = pair
         if o not in self._objects or p not in self._properties:
             raise KeyError(pair)
@@ -116,9 +118,9 @@ class Triple(object):
 
     def __eq__(self, other):
         if isinstance(other, Triple):  # order insensitive
-            return (self._objects == other._objects and
-                self._properties == other._properties and
-                self._pairs == other._pairs)
+            return (self._objects == other._objects
+                    and self._properties == other._properties
+                    and self._pairs == other._pairs)
         return (self.objects, self.properties, self.bools) == other
 
     def __ne__(self, other):
@@ -139,8 +141,7 @@ class Triple(object):
         """Row-major list of boolean tuples."""
         prop = self._properties
         pairs = self._pairs
-        return [tuple((o, p) in pairs for p in prop)
-            for o in self._objects]
+        return [tuple((o, p) in pairs for p in prop) for o in self._objects]
 
     def __str__(self):
         return self.tostring(escape=True)
@@ -150,7 +151,9 @@ class Triple(object):
 
     def __repr__(self):
         return '<%s(%r, %r, %r)>' % (self.__class__.__name__,
-            self._objects._items, self._properties._items, self.bools)
+                                     self._objects._items,
+                                     self._properties._items,
+                                     self.bools)
 
     def tostring(self, frmat='table', **kwargs):
         """Return the definition serialized in the given string-based format."""
@@ -162,11 +165,12 @@ class Triple(object):
 
     def take(self, objects=None, properties=None, reorder=False):
         """Return a subset with given objects/properties as new definition."""
-        if (objects and not self._objects.issuperset(objects) or
-            properties and not self._properties.issuperset(properties)):
-            notfound = (self._objects.rsub(objects or ()) |
-                        self._properties.rsub(properties or ()))
+        if (objects and not self._objects.issuperset(objects)
+            or properties and not self._properties.issuperset(properties)):
+            notfound = (self._objects.rsub(objects or ())
+                        | self._properties.rsub(properties or ()))
             raise KeyError(list(notfound))
+
         if reorder:
             obj = tools.Unique(objects) if objects is not None else self._objects.copy()
             prop = tools.Unique(properties) if properties is not None else self._properties.copy()
@@ -178,20 +182,21 @@ class Triple(object):
             if properties is not None:
                 prop &= properties
         pairs = self._pairs
-        _pairs = {(o, p) for o in obj for p in prop if (o, p) in pairs}
-        return self._fromargs(obj, prop, _pairs)
+        return self._fromargs(obj, prop,
+                              {(o, p) for o in obj for p in prop
+                               if (o, p) in pairs})
 
     def transposed(self):
         """Return a new definition swapping ``objects`` and ``properties``."""
-        _pairs = {(p, o) for (o, p) in self._pairs}
-        return self._fromargs(self._properties.copy(), self._objects.copy(), _pairs)
+        return self._fromargs(self._properties.copy(), self._objects.copy(),
+                              {(p, o) for (o, p) in self._pairs})
 
     def inverted(self):
         """Return a new definition flipping all booleans."""
         pairs = self._pairs
-        _pairs = {(o, p) for o in self._objects for p in self._properties
-            if (o, p) not in pairs}
-        return self._fromargs(self._objects.copy(), self._properties.copy(), _pairs)
+        return self._fromargs(self._objects.copy(), self._properties.copy(),
+                              {(o, p) for o in self._objects for p in self._properties
+                               if (o, p) not in pairs})
 
     __neg__ = transposed
     __invert__ = inverted
@@ -212,7 +217,8 @@ def ensure_compatible(left, right):
     """Raise an informative ``ValueError`` if the two definitions disagree."""
     conflicts = list(conflicting_pairs(left, right))
     if conflicts:
-        raise ValueError('conflicting values for object/property pairs: %r' % conflicts)
+        raise ValueError('conflicting values for object/property pairs:'
+                         ' %r' % conflicts)
 
 
 class Definition(Triple):
@@ -319,14 +325,14 @@ class Definition(Triple):
         self._objects.replace(old, new)
         pairs = self._pairs
         pairs |= {(new, p) for p in self._properties
-            if (old, p) in pairs and not pairs.remove((old, p))}
+                  if (old, p) in pairs and not pairs.remove((old, p))}
 
     def rename_property(self, old, new):
         """Replace the name of a property by a new one."""
         self._properties.replace(old, new)
         pairs = self._pairs
         pairs |= {(o, new) for o in self._objects
-            if (o, old) in pairs and not pairs.remove((o, old))}
+                  if (o, old) in pairs and not pairs.remove((o, old))}
 
     def move_object(self, obj, index):
         """Reorder the definition such that object is at ``index``."""

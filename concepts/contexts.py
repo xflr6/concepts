@@ -117,6 +117,7 @@ class Context(object):
         """Return a new context from file source in given format."""
         if frmat is None:
             frmat = formats.Format.infer_format(filename)
+
         frmat = formats.Format[frmat]
         objects, properties, bools = frmat.load(filename, encoding, **kwargs)
         return cls(objects, properties, bools)
@@ -132,16 +133,17 @@ class Context(object):
                 raise ValueError('duplicate %s: %r' % (name, items))
 
         if not set(objects).isdisjoint(properties):
-            raise ValueError('objects and properties overlap: %r' % (
-                set(objects) & set(properties)))
+            raise ValueError('objects and properties overlap: '
+                             '%r' % (set(objects) & set(properties)))
 
-        if (len(bools) != len(objects) or
-            {len(b) for b in bools} != {len(properties)}):
-            raise ValueError('bools is not %d items of length %d' % (
-                len(objects), len(properties)))
+        if (len(bools) != len(objects)
+            or {len(b) for b in bools} != {len(properties)}):
+            raise ValueError('bools is not %d items '
+                             'of length %d' % (len(objects), len(properties)))
 
         self._intents, self._extents = matrices.Relation('Intent', 'Extent',
-            properties, objects, bools)
+                                                         properties, objects,
+                                                         bools)
 
         self._Intent = self._intents.BitSet
         self._Extent = self._extents.BitSet
@@ -158,8 +160,9 @@ class Context(object):
 
     def __eq__(self, other):
         if isinstance(other, Context):
-            return (self.objects == other.objects and
-                self.properties == other.properties and self.bools == other.bools)
+            return (self.objects == other.objects
+                    and self.properties == other.properties
+                    and self.bools == other.bools)
         return NotImplemented
 
     def __ne__(self, other):
@@ -174,6 +177,7 @@ class Context(object):
         if not extent:
             yield intent
             return
+
         for it in intent.powerset():
             if it.prime() == extent:
                 yield it
@@ -235,7 +239,7 @@ class Context(object):
         if raw:
             return list(self._neighbors(objects))
         return [(extent.members(), intent.members())
-            for extent, intent in self._neighbors(objects)]
+                for extent, intent in self._neighbors(objects)]
 
     def __getitem__(self, items, raw=False):
         """Return ``(extension, intension)`` pair by shared objects or properties."""
@@ -246,6 +250,7 @@ class Context(object):
             intent, extent = intent.doubleprime()
         else:
             extent, intent = extent.doubleprime()
+
         if raw:
             return extent, intent
         return extent.members(), intent.members()
@@ -257,21 +262,24 @@ class Context(object):
         return '%r\n%s' % (self, self.tostring(indent=4))
 
     def __repr__(self):
-        return '<%s object mapping %d objects to %d properties [%s] at %#x>' % (
-            self.__class__.__name__, len(self._Extent._members),
-            len(self._Intent._members), self.crc32(), id(self))
+        return ('<%s object mapping %d objects to %d properties'
+                ' [%s] at %#x>') % (self.__class__.__name__,
+                                    len(self._Extent._members),
+                                    len(self._Intent._members),
+                                    self.crc32(), id(self))
 
     def tostring(self, frmat='table', **kwargs):
         """Return the context serialized in the given string-based format."""
         frmat = formats.Format[frmat]
         return frmat.dumps(self._Extent._members, self._Intent._members,
-            self._intents.bools(), **kwargs)
+                           self._intents.bools(), **kwargs)
 
     def tofile(self, filename, frmat='cxt', encoding='utf-8', **kwargs):
         """Save the context serialized to file in the given format."""
         frmat = formats.Format[frmat]
-        return frmat.dump(filename, self._Extent._members, self._Intent._members,
-            self._intents.bools(), encoding, **kwargs)
+        return frmat.dump(filename,
+                          self._Extent._members, self._Intent._members,
+                          self._intents.bools(), encoding, **kwargs)
 
     def crc32(self, encoding='utf-8'):
         """Return hex-encoded unsigned CRC32 over encoded context table string."""
@@ -294,13 +302,15 @@ class Context(object):
 
     def definition(self):
         """Return ``(objects, properties, bools)`` triple as mutable object."""
-        return definitions.Definition(self._Extent._members, self._Intent._members,
-            self._intents.bools())
+        return definitions.Definition(self._Extent._members,
+                                      self._Intent._members,
+                                      self._intents.bools())
 
     def relations(self, include_unary=False):
         """Return the logical relations between the context properties."""
-        return junctors.Relations(self.properties, self._extents.bools(),
-            include_unary)
+        return junctors.Relations(self.properties,
+                                  self._extents.bools(),
+                                  include_unary)
 
     @tools.lazyproperty
     def lattice(self):

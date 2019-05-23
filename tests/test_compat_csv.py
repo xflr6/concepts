@@ -9,12 +9,9 @@ import pytest
 def test_UnicodeCsvReader():
     from concepts._compat_csv import UnicodeCsvReader
 
-    lines = [
-        u',majestic,bites\r\n',
-        u'M\xf8\xf8se,X,X\r\n',
-        u'Llama,,\r\n',
-    ]
-    reader = UnicodeCsvReader(lines)
+    reader = UnicodeCsvReader([u',majestic,bites\r\n',
+                               u'M\xf8\xf8se,X,X\r\n',
+                               u'Llama,,\r\n'])
 
     assert reader.dialect.delimiter == ','
     assert reader.line_num == 0
@@ -22,7 +19,5 @@ def test_UnicodeCsvReader():
     assert next(reader) == [u'', u'majestic', u'bites']
     assert reader.line_num == 1
 
-    assert list(reader) == [
-        [u'M\xf8\xf8se', u'X', u'X'],
-        [u'Llama', u'', u''],
-    ]
+    assert list(reader) == [[u'M\xf8\xf8se', u'X', u'X'],
+                            [u'Llama', u'', u'']]
