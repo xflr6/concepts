@@ -9,7 +9,9 @@ if PY2:
     text_type = unicode
     string_types = basestring
 
-    from itertools import imap as map, izip as zip, ifilter as filter
+    from itertools import (imap as map,
+                           izip as zip,
+                           ifilter as filter)
 
     def py3_unicode_to_str(cls):
         return cls
