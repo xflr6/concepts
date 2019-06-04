@@ -14,7 +14,7 @@ Version 0.8
 Add ``.crc32()``-method to ``Context`` and ``Definition`` returning the
 hex-encoded crc32 of their context table string.
 
-Indlude crc32 in the ``__repr__`` of context objects.
+Include crc32 in the ``__repr__`` of context objects.
 
 Add recipe for context from ``pandas.DataFrame`` to docs.
 
