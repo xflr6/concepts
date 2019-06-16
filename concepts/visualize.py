@@ -18,7 +18,7 @@ def lattice(lattice, filename, directory, render, view, **kwargs):
                            comment=repr(lattice),
                            filename=filename, directory=directory,
                            node_attr={'shape': 'circle', 'width': '.25',
-                                      'style': 'filled','label': ''},
+                                      'style': 'filled', 'label': ''},
                            edge_attr={'dir': 'none', 'labeldistance': '1.5',
                                       'minlen': '2'},
                            **kwargs)

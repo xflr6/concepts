@@ -463,7 +463,7 @@ class Concept(object):
               _next_concepts=operator.attrgetter('upper_neighbors')):
         """Yield implied concepts including ``self``."""
         return _iterunion([self], _sortkey, _next_concepts)
-                          
+
     def downset(self,
               _sortkey=operator.attrgetter('dindex'),
               _next_concepts=operator.attrgetter('lower_neighbors')):
