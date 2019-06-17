@@ -159,13 +159,17 @@ class Context(object):
         self._Extent = self._extents.BitSet
 
     def __eq__(self, other):
-        if isinstance(other, Context):
-            return (self.objects == other.objects
-                    and self.properties == other.properties
-                    and self.bools == other.bools)
-        return NotImplemented
+        if not isinstance(other, Context):
+            return NotImplemented
+
+        return (self.objects == other.objects
+                and self.properties == other.properties
+                and self.bools == other.bools)
 
     def __ne__(self, other):
+        if not isinstance(other, Context):
+            return NotImplemented
+
         return not self == other
 
     def _minimal(self, extent, intent):

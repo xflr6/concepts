@@ -53,32 +53,34 @@ def test_init():
     assert c.bools == [(True, False), (False, True)]
 
 
-@pytest.fixture(scope='module')
-def context():
-    source = '''
-       |+1|-1|+2|-2|+3|-3|+sg|+pl|-sg|-pl|
-    1sg| X|  |  | X|  | X|  X|   |   |  X|
-    1pl| X|  |  | X|  | X|   |  X|  X|   |
-    2sg|  | X| X|  |  | X|  X|   |   |  X|
-    2pl|  | X| X|  |  | X|   |  X|  X|   |
-    3sg|  | X|  | X| X|  |  X|   |   |  X|
-    3pl|  | X|  | X| X|  |   |  X|  X|   |
-    '''
-    return Context.fromstring(source)
+def test_eq_noncontext(context):
+    assert not (context == object())
 
 
-def test_eq(context):
+def test_eq_true(context):
     assert context == Context(context.objects, context.properties,
                               context.bools)
 
 
-def test_eq_undefined(context):
-    assert not (context == object())
+def test_eq_false(context):
+    d = context.definition()
+    d.move_object('3pl', 0)
+    assert not context == Context(*d)
 
 
-def test_ne(context):
-    assert context != Context(('spam', 'eggs'), ('camelot', 'launcelot'),
-                              [(True, False), (False, True)])
+def test_ne_concontext(context):
+    assert context != object()
+
+
+def test_ne_true(context):
+    d = context.definition()
+    d.move_object('3pl', 0)
+    assert context != Context(*d)
+
+
+def test_ne_false(context):
+    assert not context != Context(context.objects, context.properties,
+                                  context.bools)
 
 
 def test_crc32(context):
