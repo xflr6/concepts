@@ -138,7 +138,7 @@ class Lattice(object):
 
         self._context = context
         self._concepts = concepts
-        self._map = mapping
+        self._mapping = mapping
 
         self.infimum = self._concepts[0]  #: The most specific concept of the lattice.
         self.infimum.__class__ = Infimum
@@ -183,14 +183,14 @@ class Lattice(object):
     def __setstate__(self, state):
         """Unpickle lattice from ``(context, concepts)`` tuple."""
         self._context, self._concepts = state
-        self._map = {c._extent: c for c in self._concepts}
+        self._mapping = {c._extent: c for c in self._concepts}
         self.infimum = self._concepts[0]
         self.supremum = self._concepts[-1]
 
     def __call__(self, properties):
         """Return concept having all given ``properties`` as intension."""
         extent = self._context.extension(properties, raw=True)
-        return self._map[extent]
+        return self._mapping[extent]
 
     def __getitem__(self, key):
         """Return concept by index, intension, or extension."""
@@ -201,7 +201,7 @@ class Lattice(object):
             return self.supremum
 
         extent, intent = self._context.__getitem__(key, raw=True)
-        return self._map[extent]
+        return self._mapping[extent]
 
     def __iter__(self):
         """Yield all concepts of the lattice."""
@@ -234,13 +234,13 @@ class Lattice(object):
         """Return the nearest concept that subsumes all given concepts."""
         extents = (c._extent for c in concepts)
         join = self._context._Extent.reduce_or(extents)
-        return self._map[join.double()]
+        return self._mapping[join.double()]
 
     def meet(self, concepts):
         """Return the nearest concept that implies all given concepts."""
         extents = (c._extent for c in concepts)
         meet = self._context._Extent.reduce_and(extents)
-        return self._map[meet.double()]
+        return self._mapping[meet.double()]
 
     def upset_union(self, concepts,
                     _sortkey=operator.attrgetter('index'),
@@ -496,13 +496,13 @@ class Concept(object):
         """Least upper bound, supremum, or, generalization."""
         common = self._extent | other._extent
         extent = self.lattice._context._extents.double(common)
-        return self.lattice._map[extent]
+        return self.lattice._mapping[extent]
 
     def meet(self, other):
         """Greatest lower bound, infimum, and, unification."""
         common = self._extent & other._extent
         extent = self.lattice._context._extents.double(common)
-        return self.lattice._map[extent]
+        return self.lattice._mapping[extent]
 
     __or__ = join
     __and__ = meet
