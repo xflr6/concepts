@@ -119,18 +119,18 @@ class Lattice(object):
         mapping = {c._extent: c for c in concepts}
 
         shortlex = lambda c: c._extent.shortlex()  # noqa: E731
+        longlex = lambda c: c._extent.longlex()  # noqa: E731
         for index, c in enumerate(concepts):
             c.index = index
             upper = (mapping[u] for u in c.upper_neighbors)
+            lower = (mapping[l] for l in c.lower_neighbors)
             c.upper_neighbors = tuple(sorted(upper, key=shortlex))
+            c.lower_neighbors = tuple(sorted(lower, key=longlex))
 
-        longlex = lambda c: c._extent.longlex()  # noqa: E731
-        atoms = concepts[0].upper_neighbors
         # downward
+        atoms = concepts[0].upper_neighbors
         for dindex, c in enumerate(sorted(concepts, key=longlex)):
             c.dindex = dindex
-            lower = (mapping[l] for l in c.lower_neighbors)
-            c.lower_neighbors = tuple(sorted(lower, key=longlex))
             e = c._extent
             c.atoms = tuple(a for a in atoms if e | a._extent == e)
 
@@ -140,12 +140,10 @@ class Lattice(object):
         self._concepts = concepts
         self._mapping = mapping
 
-        self.infimum = self._concepts[0]  #: The most specific concept of the lattice.
-        self.infimum.__class__ = Infimum
-        self.supremum = self._concepts[-1]  #: The most general concept of the lattice.
-        self.supremum.__class__ = Supremum
-        for a in self.infimum.upper_neighbors:
+        for a in self.atoms:
             a.__class__ = Atom
+        self.supremum.__class__ = Supremum
+        self.infimum.__class__ = Infimum
 
     @staticmethod
     def _annotate(context, mapping):
@@ -184,8 +182,6 @@ class Lattice(object):
         """Unpickle lattice from ``(context, concepts)`` tuple."""
         self._context, self._concepts = state
         self._mapping = {c._extent: c for c in self._concepts}
-        self.infimum = self._concepts[0]
-        self.supremum = self._concepts[-1]
 
     def __call__(self, properties):
         """Return concept having all given ``properties`` as intension."""
@@ -224,6 +220,16 @@ class Lattice(object):
                                len(self._concepts),
                                len(self.supremum.lower_neighbors),
                                id(self))
+
+    @property
+    def infimum(self):
+        """The most specific concept of the lattice."""
+        return self._concepts[0]
+
+    @property
+    def supremum(self):
+        """The most general concept of the lattice."""
+        return self._concepts[-1]
 
     @property
     def atoms(self):
