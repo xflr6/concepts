@@ -125,7 +125,8 @@ class Lattice(object):
 
         longlex = lambda c: c._extent.longlex()  # noqa: E731
         atoms = concepts[0].upper_neighbors
-        for dindex, c in enumerate(sorted(concepts, key=longlex)):  # downward
+        # downward
+        for dindex, c in enumerate(sorted(concepts, key=longlex)):
             c.dindex = dindex
             lower = (mapping[l] for l in c.lower_neighbors)
             c.lower_neighbors = tuple(sorted(lower, key=longlex))
@@ -272,8 +273,9 @@ class Lattice(object):
                 for c in concept.lower_neighbors:
                     push(heap, (c.dindex, c))
 
-    def upset_generalization(self, concepts):  # EXPERIMENTAL
+    def upset_generalization(self, concepts):
         """Yield all concepts that subsume only the given ones."""
+        # EXPERIMENTAL
         heap = [(c.index, c)
                 for c in tools.maximal(concepts,
                                        comparison=Concept.properly_subsumes)]
