@@ -3,6 +3,7 @@
 """Formal Concept Analysis concept lattices."""
 
 import heapq
+import operator
 
 from ._compat import py3_unicode_to_str
 
@@ -241,37 +242,19 @@ class Lattice(object):
         meet = self._context._Extent.reduce_and(extents)
         return self._map[meet.double()]
 
-    def upset_union(self, concepts):
+    def upset_union(self, concepts,
+                    _sortkey=operator.attrgetter('index'),
+                    _next_concepts=operator.attrgetter('upper_neighbors')):
         """Yield all concepts that subsume any of the given ones."""
-        heap = [(c.index, c)
-                for c in tools.maximal(concepts,
-                                       comparison=Concept.properly_subsumes)]
-        heapq.heapify(heap)
-        push, pop = heapq.heappush, heapq.heappop
-        seen = -1
-        while heap:
-            index, concept = pop(heap)
-            if index > seen:
-                seen = index
-                yield concept
-                for c in concept.upper_neighbors:
-                    push(heap, (c.index, c))
+        concepts = tools.maximal(concepts, comparison=Concept.properly_subsumes)
+        return _iterunion(concepts, _sortkey, _next_concepts)
 
-    def downset_union(self, concepts):
+    def downset_union(self, concepts,
+                    _sortkey=operator.attrgetter('dindex'),
+                    _next_concepts=operator.attrgetter('lower_neighbors')):
         """Yield all concepts that imply any of the given ones."""
-        heap = [(c.dindex, c)
-                for c in tools.maximal(concepts,
-                                       comparison=Concept.properly_implies)]
-        heapq.heapify(heap)
-        push, pop = heapq.heappush, heapq.heappop
-        seen = -1
-        while heap:
-            index, concept = pop(heap)
-            if index > seen:
-                seen = index
-                yield concept
-                for c in concept.lower_neighbors:
-                    push(heap, (c.dindex, c))
+        concepts = tools.maximal(concepts, comparison=Concept.properly_implies)
+        return _iterunion(concepts, _sortkey, _next_concepts)
 
     def upset_generalization(self, concepts):
         """Yield all concepts that subsume only the given ones."""
@@ -300,6 +283,20 @@ class Lattice(object):
         """Return graphviz source for visualizing the lattice graph."""
         return visualize.lattice(self, filename, directory, render, view,
                                  **kwargs)
+
+
+def _iterunion(concepts, sortkey, next_concepts):
+    heap = [(sortkey(c), c) for c in concepts]
+    heapq.heapify(heap)
+    push, pop = heapq.heappush, heapq.heappop
+    seen = -1
+    while heap:
+        index, concept = pop(heap)
+        if index > seen:
+            seen = index
+            yield concept
+            for c in next_concepts(concept):
+                push(heap, (sortkey(c), c))
 
 
 @py3_unicode_to_str
@@ -461,31 +458,17 @@ class Concept(object):
         minimize = self.lattice._context._minimize(self._extent, self._intent)
         return (i.members() for i in minimize)
 
-    def upset(self):
+    def upset(self,
+              _sortkey=operator.attrgetter('index'),
+              _next_concepts=operator.attrgetter('upper_neighbors')):
         """Yield implied concepts including ``self``."""
-        heap = [(self.index, self)]
-        push, pop = heapq.heappush, heapq.heappop
-        seen = -1
-        while heap:
-            index, concept = pop(heap)
-            if index > seen:
-                seen = index
-                yield concept
-                for c in concept.upper_neighbors:
-                    push(heap, (c.index, c))
-
-    def downset(self):
+        return _iterunion([self], _sortkey, _next_concepts)
+                          
+    def downset(self,
+              _sortkey=operator.attrgetter('dindex'),
+              _next_concepts=operator.attrgetter('lower_neighbors')):
         """Yield subsumed concepts including ``self``."""
-        heap = [(self.dindex, self)]
-        push, pop = heapq.heappush, heapq.heappop
-        seen = -1
-        while heap:
-            index, concept = pop(heap)
-            if index > seen:
-                seen = index
-                yield concept
-                for c in concept.lower_neighbors:
-                    push(heap, (c.dindex, c))
+        return _iterunion([self], _sortkey, _next_concepts)
 
     def implies(self, other):
         """Implication comparison."""
