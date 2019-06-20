@@ -183,6 +183,13 @@ class Lattice(object):
         self._context, self._concepts = state
         self._mapping = {c._extent: c for c in self._concepts}
 
+    def _tolist(self):
+        return [(tuple(c._extent.iter_set()),
+                 tuple(c._intent.iter_set()),
+                 tuple(u.index for u in c.upper_neighbors),
+                 tuple(l.index for l in c.lower_neighbors),
+                ) for c in self._concepts]
+
     def __call__(self, properties):
         """Return concept having all given ``properties`` as intension."""
         extent = self._context.extension(properties, raw=True)

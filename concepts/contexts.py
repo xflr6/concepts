@@ -285,6 +285,17 @@ class Context(object):
                           self._Extent._members, self._Intent._members,
                           self._intents.bools(), encoding, **kwargs)
 
+    def todict(self, include_lattice=None):
+        result = {
+            'objects': self.objects,
+            'properties': self.properties,
+            'context': self._intents.index_sets(),
+        }
+        if (include_lattice
+            or include_lattice is None and 'lattice' in self.__dict__):
+            result['lattice'] = self.lattice._tolist()
+        return result
+
     def crc32(self, encoding='utf-8'):
         """Return hex-encoded unsigned CRC32 over encoded context table string."""
         return tools.crc32_hex(self.tostring().encode(encoding))
