@@ -68,6 +68,91 @@ def test_todict(context, d):
         assert 'lattice' in context.__dict__
 
 
+@pytest.fixture
+def d_invalid():
+    return {'objects': SERIALIZED['objects'],
+            'properties': SERIALIZED['properties'],
+            'context': list(SERIALIZED['context']),
+            'lattice': list(SERIALIZED['lattice'])}
+
+
+@pytest.mark.parametrize('missing',
+                         ['objects', 'properties', 'context', 'lattice'])
+def test_fromdict_missing(d_invalid, missing):
+    del d_invalid[missing]
+    with pytest.raises(ValueError, match=r'missing .*%s' % missing):
+        Context.fromdict(d_invalid, require_lattice=(missing == 'lattice'))
+
+
+@pytest.mark.parametrize('nonstring', ['objects', 'properties'])
+def test_fromdict_nonstring(d_invalid, nonstring):
+    d_invalid[nonstring] = (42,) + d_invalid[nonstring][1:]
+    with pytest.raises(ValueError, match=r'non-string %s' % nonstring):
+        Context.fromdict(d_invalid)
+
+
+@pytest.mark.parametrize('short', ['objects', 'context'])
+def test_fromdict_mismatch(d_invalid, short):
+    d_invalid[short] = d_invalid[short][1:]
+    lens = (5, 6) if short == 'objects' else (6, 5)
+    match = r'mismatch: %d objects with %d context' % lens
+    with pytest.raises(ValueError, match=match):
+        Context.fromdict(d_invalid)
+
+
+def test_fromdict_context_duplicates(d_invalid):
+    first = d_invalid['context'][0]
+    d_invalid['context'][0] = (first[0], first[0]) + first[2:]
+    with pytest.raises(ValueError, match='duplicate'):
+        Context.fromdict(d_invalid)
+
+
+def test_fromdict_context_invalid_index(d_invalid):
+    first = d_invalid['context'][0]
+    d_invalid['context'][0] = (42,) + first[1:]
+    with pytest.raises(ValueError, match='invalid index'):
+        Context.fromdict(d_invalid)
+
+
+def test_fromdict_empty_lattice(d_invalid):
+    d_invalid['lattice'] = []
+    with pytest.raises(ValueError, match='empty lattice'):
+        Context.fromdict(d_invalid)
+
+
+@pytest.fixture(params=[False, True])
+def require_lattice(request):
+    return request.param
+
+
+@pytest.fixture(params=[False, True])
+def exclude_lattice(request):
+    return request.param
+
+
+@pytest.fixture(params=[False, True])
+def raw(request):
+    return request.param
+
+
+def test_fromdict(context, d, require_lattice, exclude_lattice, raw):
+    if require_lattice and 'lattice' not in d:
+        return
+
+    result = Context.fromdict(d,
+                              require_lattice=require_lattice,
+                              exclude_lattice=exclude_lattice,
+                              raw=raw)
+
+    assert result == context
+
+    if exclude_lattice or 'lattice' not in d:
+        assert 'lattice' not in result.__dict__
+    else:
+        assert 'lattice' in result.__dict__
+        assert result.lattice
+
+
 @pytest.mark.parametrize('include_lattice', [False, None, True])
 def test_roundtrip(context, include_lattice):
     context = Context(context.objects, context.properties, context.bools)

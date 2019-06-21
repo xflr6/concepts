@@ -4,7 +4,7 @@
 
 import heapq
 
-from ._compat import py3_unicode_to_str, map
+from ._compat import py3_unicode_to_str, string_types, map
 
 from . import formats, matrices, tools, definitions, junctors, lattices
 
@@ -121,6 +121,57 @@ class Context(object):
         frmat = formats.Format[frmat]
         objects, properties, bools = frmat.load(filename, encoding, **kwargs)
         return cls(objects, properties, bools)
+
+    @classmethod
+    def fromdict(cls, d, exclude_lattice=False, require_lattice=False, raw=False):
+        """Return a new context from dict ``d``."""
+        required_keys = ('objects', 'properties', 'context')
+        try:
+            args = [d[k] for k in required_keys]
+        except KeyError:
+            missing = [k for k in required_keys if k not in d]
+            raise ValueError('missing required keys in fromdict: %r' % missing)
+        else:
+            objects, properties, context = args
+
+        for name, values in zip(['objects', 'properties'], args[:2]):
+            if not all(isinstance(v, string_types) for v in values):
+                raise ValueError('non-string %s in %r' % (name, values))
+
+        if len(context) != len(objects):
+            raise ValueError('mismatch: %r objects with %r'
+                             ' context rows: ' % (len(objects),
+                                                 len(context)))
+
+        if require_lattice:
+            try:
+                lattice = d['lattice']
+            except KeyError:
+                raise ValueError('missing lattice with required_lattice')
+        else:
+            lattice = d.get('lattice')
+        if lattice is not None and not lattice:
+            raise ValueError('empty lattice')
+
+        indexes = tuple(range(len(properties)))
+
+        def _make_set(r, indexes=set(indexes)):
+            result = set(r)
+            if len(result) != len(r):
+                raise ValueError('context contains duplicated values')
+            if not result.issubset(indexes):
+                raise ValueError('context contains invalid index')
+            return result
+
+        bools = [tuple(i in intent for i in indexes)
+                 for intent in map(_make_set, context)]
+
+        inst = cls(objects, properties, bools)
+
+        if not exclude_lattice and lattice is not None:
+            assert 'lattice' not in inst.__dict__
+            inst.lattice = lattices.Lattice._fromlist(inst, lattice, raw)
+        return inst
 
     def __init__(self, objects, properties, bools):
         """Create context from ``objects``, ``properties``, and correspondence."""

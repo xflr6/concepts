@@ -113,6 +113,10 @@ class Lattice(object):
     <Lattice object of 11 atoms 65 concepts 6 coatoms at 0x...>
     """
 
+    @classmethod
+    def _fromlist(cls, context, lattice, unordered):
+        return object()
+
     def __init__(self, context, infimum=()):
         """Create lattice from context."""
         concepts = [Concept(self, *args) for args in context._lattice(infimum)]
