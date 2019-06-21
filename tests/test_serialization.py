@@ -1,5 +1,7 @@
 # test_serialization.py
 
+import random
+
 import pytest
 
 from concepts import Context
@@ -150,6 +152,30 @@ def test_fromdict(context, d, require_lattice, exclude_lattice, raw):
         assert 'lattice' not in result.__dict__
     else:
         assert 'lattice' in result.__dict__
+        assert result.lattice
+
+
+def test_raw(context, d, raw):
+    def shuffled(items):
+        result = list(items)
+        random.shuffle(result)
+        return result
+
+    lattice = d.get('lattice')
+    d = {'objects': d['objects'], 'properties': d['properties'],
+         'context': [shuffled(intent) for intent in d['context']]}
+
+    if lattice is not None:
+        pairs = shuffled(enumerate(lattice))
+        index_map = {old: new for new, (old, _) in enumerate(pairs)}
+        d['lattice'] = [(shuffled(ex), shuffled(in_),
+                         shuffled(index_map[i] for i in up),
+                         shuffled(index_map[i] for i in lo))
+                        for _, (ex, in_, up, lo) in pairs]
+
+    result = Context.fromdict(d, raw=raw)
+    assert result == context
+    if lattice is not None:
         assert result.lattice
 
 
