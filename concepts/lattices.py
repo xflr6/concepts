@@ -71,23 +71,23 @@ class Lattice(object):
      <Atom {3pl} <-> [-1 -2 +3 +pl -sg] <=> 3pl>)
 
 
-    >>> l[('1sg', '1pl', '2pl')]
+    >>> l['1sg', '1pl', '2pl']
     <Concept {1sg, 1pl, 2sg, 2pl} <-> [-3] <=> -3>
 
-    >>> l[('-1', '-sg')]
+    >>> l['-1', '-sg']
     <Concept {2pl, 3pl} <-> [-1 +pl -sg]>
 
     >>> l(['+1', '-sg'])
     <Atom {1pl} <-> [+1 -2 -3 +pl -sg] <=> 1pl>
 
 
-    >>> l.join([l[('1sg',)], l[('1pl',)], l[('2sg',)]])
+    >>> l.join([l['1sg',], l['1pl',], l['2sg',]])
     <Concept {1sg, 1pl, 2sg, 2pl} <-> [-3] <=> -3>
 
     >>> l.join([])
     <Infimum {} <-> [+1 -1 +2 -2 +3 -3 +sg +pl -sg -pl]>
 
-    >>> l.meet([l[('-1',)], l[('-2',)], l[('-pl',)]])
+    >>> l.meet([l['-1',], l['-2',], l['-pl',]])
     <Atom {3sg} <-> [-1 -2 +3 +sg -pl] <=> 3sg>
 
     >>> l.meet([])
@@ -317,7 +317,7 @@ class Concept(object):
     ... 3pl|  | X|  | X| X|  |   |  X|  X|   |
     ... ''').lattice
 
-    >>> c = l[('+1',)]
+    >>> c = l['+1',]
 
     >>> c
     <Concept {1sg, 1pl} <-> [+1 -2 -3] <=> +1>
@@ -371,54 +371,54 @@ class Concept(object):
      <Infimum {} <-> [+1 -1 +2 -2 +3 -3 +sg +pl -sg -pl]>]
 
 
-    >>> l[('+1',)] <= l[('-3',)] <= l[('-3',)] <= l[()]
+    >>> l['+1',] <= l['-3',] <= l['-3',] <= l[()]
     True
 
-    >>> l[('+1',)] <= l[('+sg',)] or l[('+sg',)] <= l[('+1',)]
+    >>> l['+1',] <= l['+sg',] or l['+sg',] <= l['+1',]
     False
 
-    >>> l[('+1',)] >= l[('+1', '+sg')] >= l[('+1', '+sg')] >= l[('+1', '-1')]
+    >>> l['+1',] >= l['+1', '+sg'] >= l['+1', '+sg'] >= l['+1', '-1']
     True
 
-    >>> l[('+1',)] >= l[('+sg',)] or l[('+sg',)] >= l[('+1',)]
+    >>> l['+1',] >= l['+sg',] or l['+sg',] >= l['+1',]
     False
 
-    >>> l[('+1',)] < l[('-3',)] < l[()]
+    >>> l['+1',] < l['-3',] < l[()]
     True
 
-    >>> l[('+1',)] > l[('+1', '+sg')] > l[('+1', '-1')]
+    >>> l['+1',] > l['+1', '+sg'] > l['+1', '-1']
     True
 
 
-    >>> l[('+1',)] | l[('+2',)]
+    >>> l['+1',] | l['+2',]
     <Concept {1sg, 1pl, 2sg, 2pl} <-> [-3] <=> -3>
 
-    >>> l[('-1', '-2')] & l[('-pl',)]
+    >>> l['-1', '-2'] & l['-pl',]
     <Atom {3sg} <-> [-1 -2 +3 +sg -pl] <=> 3sg>
 
 
-    >>> l[('+1',)].incompatible_with(l[('+3',)])
+    >>> l['+1',].incompatible_with(l['+3',])
     True
 
-    >>> l[('+1',)].incompatible_with(l[('+sg',)])
+    >>> l['+1',].incompatible_with(l['+sg',])
     False
 
-    >>> l[('+1',)].complement_of(l[('-1',)])
+    >>> l['+1',].complement_of(l['-1',])
     True
 
-    >>> l[('+1',)].complement_of(l[('+3',)])
+    >>> l['+1',].complement_of(l['+3',])
     False
 
-    >>> l[('-1',)].subcontrary_with(l[('-3',)])
+    >>> l['-1',].subcontrary_with(l['-3',])
     True
 
-    >>> l[('-1',)].subcontrary_with(l[('+sg',)])
+    >>> l['-1',].subcontrary_with(l['+sg',])
     False
 
-    >>> l[('+1',)].orthogonal_to(l[('+sg',)])
+    >>> l['+1',].orthogonal_to(l['+sg',])
     True
 
-    >>> l[('+1',)].orthogonal_to(l[('+3',)])
+    >>> l['+1',].orthogonal_to(l['+3',])
     False
     """
 
