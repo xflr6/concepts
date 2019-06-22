@@ -113,6 +113,14 @@ class Lattice(object):
     <Lattice object of 11 atoms 65 concepts 6 coatoms at 0x...>
     """
 
+    @staticmethod
+    def _longlex(concept):
+        return concept._extent.longlex()
+
+    @staticmethod
+    def _shortlex(concept):
+        return concept._extent.shortlex()
+
     @classmethod
     def _fromlist(cls, context, lattice, unordered):
         return object()
@@ -120,10 +128,10 @@ class Lattice(object):
     def __init__(self, context, infimum=()):
         """Create lattice from context."""
         concepts = [Concept(self, *args) for args in context._lattice(infimum)]
-        mapping = {c._extent: c for c in concepts}
+        mapping = self._make_mapping(concepts)
 
-        shortlex = lambda c: c._extent.shortlex()  # noqa: E731
-        longlex = lambda c: c._extent.longlex()  # noqa: E731
+        shortlex = self._shortlex
+        longlex = self._longlex
         for index, c in enumerate(concepts):
             c.index = index
             upper = (mapping[u] for u in c.upper_neighbors)
@@ -131,23 +139,37 @@ class Lattice(object):
             c.upper_neighbors = tuple(sorted(upper, key=shortlex))
             c.lower_neighbors = tuple(sorted(lower, key=longlex))
 
+        self._init(self, context, concepts, mapping=mapping)
+
+    @staticmethod
+    def _make_mapping(concepts):
+        return {c._extent: c for c in concepts}
+
+    @staticmethod
+    def _init(inst, context, concepts, mapping=None, unpickle=False):
+        inst._context = context
+        inst._concepts = concepts
+
+        if mapping is None:
+            mapping = inst._make_mapping(inst._concepts)
+        inst._mapping = mapping
+
+        if unpickle:
+            return
+
         # downward
-        atoms = concepts[0].upper_neighbors
-        for dindex, c in enumerate(sorted(concepts, key=longlex)):
+        atoms = inst.atoms
+        for dindex, c in enumerate(sorted(inst._concepts, key=inst._longlex)):
             c.dindex = dindex
             e = c._extent
             c.atoms = tuple(a for a in atoms if e | a._extent == e)
 
-        self._annotate(context, mapping)
+        inst._annotate(inst._context, inst._mapping)
 
-        self._context = context
-        self._concepts = concepts
-        self._mapping = mapping
-
-        for a in self.atoms:
+        for a in inst.atoms:
             a.__class__ = Atom
-        self.supremum.__class__ = Supremum
-        self.infimum.__class__ = Infimum
+        inst.supremum.__class__ = Supremum
+        inst.infimum.__class__ = Infimum
 
     @staticmethod
     def _annotate(context, mapping):
@@ -184,8 +206,8 @@ class Lattice(object):
 
     def __setstate__(self, state):
         """Unpickle lattice from ``(context, concepts)`` tuple."""
-        self._context, self._concepts = state
-        self._mapping = {c._extent: c for c in self._concepts}
+        context, concepts = state
+        self._init(self, context, concepts, unpickle=True)
 
     def _tolist(self):
         return [(tuple(c._extent.iter_set()),
