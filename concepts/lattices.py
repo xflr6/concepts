@@ -5,7 +5,7 @@
 import heapq
 import operator
 
-from ._compat import py3_unicode_to_str
+from ._compat import py3_unicode_to_str, zip
 
 from . import tools, visualize
 
@@ -208,6 +208,36 @@ class Lattice(object):
         """Unpickle lattice from ``(context, concepts)`` tuple."""
         context, concepts = state
         self._init(self, context, concepts, unpickle=True)
+
+    def __eq__(self, other):
+        if not isinstance(other, Lattice):
+            return NotImplemented
+
+        if other._concepts != self._concepts:
+            return False
+
+        if len(other._mapping) != len(self._mapping):
+            return False
+        if ({e.members() for e in other._mapping}
+            != {e.members() for e in self._mapping}):
+            return False
+
+        for s, o in zip(self._concepts, other._concepts):
+            if o.index != s.index or o.dindex != s.dindex:
+                return False
+            if ([a._extent.members() for a in o.atoms]
+                != [a._extent.members() for a in s.atoms]):
+                return False
+            if o.objects != s.objects or o.properties != s.properties:
+                return False
+
+        return True
+
+    def __ne__(self, other):
+        if not isinstance(other, Lattice):
+            return NotImplemented
+
+        return not self == other
 
     def _tolist(self):
         return [(tuple(c._extent.iter_set()),
@@ -471,6 +501,33 @@ class Concept(object):
         self._intent = intent
         self.upper_neighbors = upper  #: The directly implied concepts.
         self.lower_neighbors = lower  #: The directly subsumed concepts.
+
+    def __hash__(self):
+        return id(self)
+
+    def __eq__(self, other):
+        if not isinstance(other, Concept):
+            return NotImplemented
+
+        if (other._extent.members() != self._extent.members()
+            or other._intent.members() != self._intent.members()):
+            return False
+
+        for attname in ('upper_neighbors', 'lower_neighbors'):
+            s_neighbors = getattr(self, attname)
+            o_neighbors = getattr(other, attname)
+            if len(o_neighbors) != len(s_neighbors):
+                return False
+            for s, o in zip(s_neighbors, o_neighbors):
+                if o._extent.members() != s._extent.members():
+                    return False
+        return True
+
+    def __ne__(self, other):
+        if not isinstance(other, Concept):
+            return NotImplemented
+
+        return not self == other
 
     def __iter__(self):
         """Yield ``extent`` and ``intent`` (e.g. for pair unpacking)."""
