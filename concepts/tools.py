@@ -202,5 +202,33 @@ def crc32_hex(data):
     return '%x' % (zlib.crc32(data) & 0xffffffff)
 
 
-def load_json(path_or_fileobj, encoding='utf-8', **kwargs):
-    raise NotImplementedError
+def load_json(path_or_fileobj, encoding='utf-8'):
+    try:
+        f = io.open(path_or_fileobj, encoding=encoding)
+    except TypeError:
+        try:
+            f = path_or_fileobj.open(encoding=encoding)
+        except AttributeError:
+            try:
+                return json.load(path_or_fileobj)
+            except AttributeError:
+                raise TypeError('path_or_fileobj: %r' % path_or_fileobj)
+    with f:
+        result = json.load(f)
+    return result
+
+
+def dump_json(obj, path_or_fileobj, mode='w', encoding='utf-8'):
+    try:
+        f = io.open(path_or_fileobj, mode, encoding=encoding)
+    except TypeError:
+        try:
+            f = path_or_fileobj.open(mode, encoding=encoding)
+        except AttributeError:
+            try:
+                return json.dump(obj, path_or_fileobj)
+            except AttributeError:
+                raise TypeError('path_or_fileobj: %r' % path_or_fileobj)
+    
+    with f:
+        json.dump(obj, f)

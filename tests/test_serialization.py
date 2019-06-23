@@ -5,6 +5,7 @@ import random
 import pytest
 
 from concepts import Context
+from concepts.lattices import Lattice
 
 
 SERIALIZED = {
@@ -208,3 +209,23 @@ def test_roundtrip(context, include_lattice):
     if include_lattice:
         assert 'lattice' in result.__dict__
         assert result.lattice == context.lattice
+
+
+def test_json_roundtrip(tmp_path,  context, encoding='utf-8'):
+    path = tmp_path / 'context.json'
+
+    assert 'lattice' not in context.__dict__
+    context.tojson(path, encoding=encoding)
+    assert 'lattice' not in context.__dict__
+    deserialized = context.fromjson(path, encoding=encoding)
+    assert 'lattice' not in deserialized.__dict__
+    assert deserialized == context
+
+    context = Context(context.objects, context.properties, context.bools)
+    assert isinstance(context.lattice, Lattice)
+    assert 'lattice' in context.__dict__
+    context.tojson(path, encoding=encoding)
+    deserialized = context.fromjson(path, encoding=encoding)
+    assert 'lattice' in deserialized.__dict__
+    assert deserialized == context
+    assert deserialized.lattice == context.lattice
