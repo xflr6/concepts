@@ -123,7 +123,36 @@ class Lattice(object):
 
     @classmethod
     def _fromlist(cls, context, lattice, unordered):
-        return object()
+        make_extent = context._Extent.fromint
+        make_intent = context._Intent.fromint
+        inst = object.__new__(cls)
+        concepts = [Concept(inst,
+                            make_extent(sum(1 << e for e in ex)),
+                            make_intent(sum(1 << i for i in in_)),
+                            up, lo)
+                    for ex, in_, up, lo in lattice]
+
+        if unordered:
+            index_map = dict(enumerate(concepts))
+            shortlex = inst._shortlex
+            longlex = inst._longlex
+            concepts.sort(key=shortlex)
+            for index, c in enumerate(concepts):
+                c.index = index
+                upper = (index_map[i] for i in c.upper_neighbors)
+                lower = (index_map[i] for i in c.lower_neighbors)
+                c.upper_neighbors = tuple(sorted(upper, key=shortlex))
+                c.lower_neighbors = tuple(sorted(lower, key=longlex))
+        else:
+            # assume sorted(upper_neighbors, key=shortlex)
+            # assume sorted(lower_neighbors, key=longlex)
+            for index, c in enumerate(concepts):
+                c.index = index
+                c.upper_neighbors = tuple(concepts[i] for i in c.upper_neighbors)
+                c.lower_neighbors = tuple(concepts[i] for i in c.lower_neighbors)
+
+        cls._init(inst, context, concepts)
+        return inst
 
     def __init__(self, context, infimum=()):
         """Create lattice from context."""

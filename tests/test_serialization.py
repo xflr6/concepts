@@ -137,7 +137,7 @@ def raw(request):
     return request.param
 
 
-def test_fromdict(context, d, require_lattice, exclude_lattice, raw):
+def test_fromdict(context, lattice, d, require_lattice, exclude_lattice, raw):
     if require_lattice and 'lattice' not in d:
         return
 
@@ -152,21 +152,21 @@ def test_fromdict(context, d, require_lattice, exclude_lattice, raw):
         assert 'lattice' not in result.__dict__
     else:
         assert 'lattice' in result.__dict__
-        assert result.lattice
+        assert result.lattice == lattice
 
 
-def test_raw(context, d, raw):
+def test_raw(context, lattice, d, raw):
     def shuffled(items):
         result = list(items)
         random.shuffle(result)
         return result
 
-    lattice = d.get('lattice')
+    _lattice = d.get('lattice')
     d = {'objects': d['objects'], 'properties': d['properties'],
          'context': [shuffled(intent) for intent in d['context']]}
 
-    if lattice is not None:
-        pairs = shuffled(enumerate(lattice))
+    if _lattice is not None:
+        pairs = shuffled(enumerate(_lattice))
         index_map = {old: new for new, (old, _) in enumerate(pairs)}
         d['lattice'] = [(shuffled(ex), shuffled(in_),
                          shuffled(index_map[i] for i in up),
@@ -174,9 +174,15 @@ def test_raw(context, d, raw):
                         for _, (ex, in_, up, lo) in pairs]
 
     result = Context.fromdict(d, raw=raw)
+
+    assert isinstance(result, Context)
     assert result == context
-    if lattice is not None:
-        assert result.lattice
+    if _lattice is not None:
+        if raw:
+            assert result.lattice == lattice
+        else:
+            # instance broken by shuffled(d['lattice'])
+            assert result.lattice != lattice
 
 
 @pytest.mark.parametrize('include_lattice', [False, None, True])
@@ -194,3 +200,11 @@ def test_roundtrip(context, include_lattice):
     else:
         assert 'lattice' not in context.__dict__
         assert 'lattice' not in d
+
+    result = Context.fromdict(d)
+
+    assert isinstance(result, Context)
+    assert result == context
+    if include_lattice:
+        assert 'lattice' in result.__dict__
+        assert result.lattice == context.lattice
