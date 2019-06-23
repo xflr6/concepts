@@ -1,5 +1,7 @@
 # tools.py
 
+import io
+import json
 import operator
 import zlib
 from itertools import permutations, groupby, starmap
@@ -198,3 +200,7 @@ def crc32_hex(data):
     '43daff3d'
     """
     return '%x' % (zlib.crc32(data) & 0xffffffff)
+
+
+def load_json(path_or_fileobj, encoding='utf-8', **kwargs):
+    raise NotImplementedError

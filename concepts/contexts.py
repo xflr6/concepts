@@ -123,6 +123,24 @@ class Context(object):
         return cls(objects, properties, bools)
 
     @classmethod
+    def fromjson(cls, path_or_fileobj, encoding='utf-8',
+                 ignore_lattice=False, require_lattice=False, raw=False):
+        """Return a new context from json path or file-like object.
+
+        Args:
+            path_or_fileobj:
+            encoding:
+            ignore_lattice (bool): don't load lattice from json
+            require_lattice (bool): raise if no lattice in json
+            raw (bool): if set, sort so the input sequences can be in any order;
+                        if unset (default), assume input is already ordered for speedup
+        """
+        d = tools.load_json(path_or_fileobj, encoding=encoding)
+        return cls.fromdict(d,
+                            ignore_lattice=ignore_lattice,
+                            require_lattice=require_lattice, raw=raw)
+
+    @classmethod
     def fromdict(cls, d, ignore_lattice=False, require_lattice=False, raw=False):
         """Return a new context from dict ``d``.
 
