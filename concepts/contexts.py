@@ -127,11 +127,11 @@ class Context(object):
         """Return a new context from dict ``d``.
 
         Args:
-            d(dict): serialized context with optional ``'lattice'``
-            ignore_lattice(bool): don't load lattice from ``d``
-            require_lattice(bool): raise if no lattice in ``d``
-            raw(bool): if set, sort so the input sequences can be in any order;
-                       if unset (default), assume input is already ordered for speedup
+            d (dict): serialized context with optional ``'lattice'``
+            ignore_lattice (bool): don't load lattice from ``d``
+            require_lattice (bool): raise if no lattice in ``d``
+            raw (bool): if set, sort so the input sequences can be in any order;
+                        if unset (default), assume input is already ordered for speedup
         Returns: new :class:`concepts.Context` instance
         """
         required_keys = ('objects', 'properties', 'context')
