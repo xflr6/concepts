@@ -128,7 +128,7 @@ def require_lattice(request):
 
 
 @pytest.fixture(params=[False, True])
-def exclude_lattice(request):
+def ignore_lattice(request):
     return request.param
 
 
@@ -137,18 +137,18 @@ def raw(request):
     return request.param
 
 
-def test_fromdict(context, lattice, d, require_lattice, exclude_lattice, raw):
+def test_fromdict(context, lattice, d, require_lattice, ignore_lattice, raw):
     if require_lattice and 'lattice' not in d:
         return
 
     result = Context.fromdict(d,
                               require_lattice=require_lattice,
-                              exclude_lattice=exclude_lattice,
+                              ignore_lattice=ignore_lattice,
                               raw=raw)
 
     assert result == context
 
-    if exclude_lattice or 'lattice' not in d:
+    if ignore_lattice or 'lattice' not in d:
         assert 'lattice' not in result.__dict__
     else:
         assert 'lattice' in result.__dict__

@@ -123,7 +123,7 @@ class Context(object):
         return cls(objects, properties, bools)
 
     @classmethod
-    def fromdict(cls, d, exclude_lattice=False, require_lattice=False, raw=False):
+    def fromdict(cls, d, ignore_lattice=False, require_lattice=False, raw=False):
         """Return a new context from dict ``d``."""
         required_keys = ('objects', 'properties', 'context')
         try:
@@ -168,7 +168,7 @@ class Context(object):
 
         inst = cls(objects, properties, bools)
 
-        if not exclude_lattice and lattice is not None:
+        if not ignore_lattice and lattice is not None:
             assert 'lattice' not in inst.__dict__
             inst.lattice = lattices.Lattice._fromlist(inst, lattice, raw)
         return inst
