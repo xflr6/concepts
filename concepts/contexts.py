@@ -124,7 +124,16 @@ class Context(object):
 
     @classmethod
     def fromdict(cls, d, ignore_lattice=False, require_lattice=False, raw=False):
-        """Return a new context from dict ``d``."""
+        """Return a new context from dict ``d``.
+
+        Args:
+            d(dict): serialized context with optional ``'lattice'``
+            ignore_lattice(bool): don't load lattice from ``d``
+            require_lattice(bool): raise if no lattice in ``d``
+            raw(bool): if set, sort so the input sequences can be in any order;
+                       if unset (default), assume input is already ordered for speedup
+        Returns: new :class:`concepts.Context` instance
+        """
         required_keys = ('objects', 'properties', 'context')
         try:
             args = [d[k] for k in required_keys]
@@ -323,6 +332,23 @@ class Context(object):
                                     len(self._Intent._members),
                                     self.crc32(), id(self))
 
+    def todict(self, include_lattice=None):
+        """Return serialized context with optional lattice.
+
+        Args:
+            include_lattice (bool): include ``'lattice'`` in result
+        Returns: new ``dict`` with serialized context
+        """
+        result = {
+            'objects': self.objects,
+            'properties': self.properties,
+            'context': self._intents.index_sets(),
+        }
+        if (include_lattice
+            or include_lattice is None and 'lattice' in self.__dict__):
+            result['lattice'] = self.lattice._tolist()
+        return result
+
     def tostring(self, frmat='table', **kwargs):
         """Return the context serialized in the given string-based format."""
         frmat = formats.Format[frmat]
@@ -335,17 +361,6 @@ class Context(object):
         return frmat.dump(filename,
                           self._Extent._members, self._Intent._members,
                           self._intents.bools(), encoding, **kwargs)
-
-    def todict(self, include_lattice=None):
-        result = {
-            'objects': self.objects,
-            'properties': self.properties,
-            'context': self._intents.index_sets(),
-        }
-        if (include_lattice
-            or include_lattice is None and 'lattice' in self.__dict__):
-            result['lattice'] = self.lattice._tolist()
-        return result
 
     def crc32(self, encoding='utf-8'):
         """Return hex-encoded unsigned CRC32 over encoded context table string."""

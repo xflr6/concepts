@@ -29,11 +29,11 @@ Context
 
 .. autoclass:: concepts.Context
     :members:
-        fromstring, fromfile,
+        fromstring, fromfile, fromdict,
         intension, extension,
         neighbors,
         __getitem__,
-        tostring, tofile, crc32,
+        tostring, tofile, todict,  crc32,
         objects, properties, bools,
         definition, relations, lattice
 
