@@ -252,8 +252,8 @@ def test_json_roundtrip(tmp_path, py2, context, encoding='utf-8'):
 def test_json_indent(py2, context):
     assert 'lattice' not in context.__dict__
     with (io.BytesIO() if py2 else io.StringIO()) as f:
-        context.tojson(f, indent=4)
+        context.tojson(f, indent=4, sort_keys=True)
         assert 'lattice' not in context.__dict__
         serialized = f.getvalue()
 
-    assert serialized.startswith('{\n    "objects": [')
+    assert serialized.startswith('{\n    "context": [')

@@ -367,7 +367,8 @@ class Context(object):
             result[u'lattice'] = self.lattice._tolist()
         return result
 
-    def tojson(self, path_or_fileobj, encoding='utf-8', indent=None,
+    def tojson(self, path_or_fileobj, encoding='utf-8',
+               indent=None, sort_keys=True,
                include_lattice=None):
         """Write serialized context as json to path or file-like object.
 
@@ -375,10 +376,12 @@ class Context(object):
             path_or_fileobj:
             encoding (str): 
             indent (int): 
+            sort_keys (bool): 
             include_lattice (bool): include ``'lattice'`` in result
         """
         d = self.todict(include_lattice=include_lattice)
-        tools.dump_json(d, path_or_fileobj, encoding=encoding, indent=indent)
+        tools.dump_json(d, path_or_fileobj, encoding=encoding,
+                        indent=indent, sort_keys=sort_keys)
 
     def tostring(self, frmat='table', **kwargs):
         """Return the context serialized in the given string-based format."""
