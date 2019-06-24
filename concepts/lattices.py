@@ -144,6 +144,7 @@ class Lattice(object):
                 c.upper_neighbors = tuple(sorted(upper, key=shortlex))
                 c.lower_neighbors = tuple(sorted(lower, key=longlex))
         else:
+            # assume sorted(concepts, key=shortlex)
             # assume sorted(upper_neighbors, key=shortlex)
             # assume sorted(lower_neighbors, key=longlex)
             for index, c in enumerate(concepts):
