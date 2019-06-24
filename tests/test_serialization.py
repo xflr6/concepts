@@ -214,6 +214,13 @@ def test_roundtrip(context, include_lattice):
         assert result.lattice == context.lattice
 
 
+def test_json_invalid_path(context):
+    with pytest.raises(TypeError, match=r'path_or_fileobj'):
+        context.tojson(object())
+    with pytest.raises(TypeError, match=r'path_or_fileobj'):
+        context.fromjson(object())
+
+
 def test_json_roundtrip(tmp_path, py2, context, encoding='utf-8'):
     path_obj = tmp_path / 'context.json'
     args = [str(path_obj), path_obj]
@@ -242,8 +249,11 @@ def test_json_roundtrip(tmp_path, py2, context, encoding='utf-8'):
         assert deserialized.lattice == context.lattice
 
 
-def test_json_invalid_path(context):
-    with pytest.raises(TypeError, match=r'path_or_fileobj'):
-        context.tojson(object())
-    with pytest.raises(TypeError, match=r'path_or_fileobj'):
-        context.fromjson(object())
+def test_json_indent(py2, context):
+    assert 'lattice' not in context.__dict__
+    with (io.BytesIO() if py2 else io.StringIO()) as f:
+        context.tojson(f, indent=4)
+        assert 'lattice' not in context.__dict__
+        serialized = f.getvalue()
+
+    assert serialized.startswith('{\n    "objects": [')

@@ -208,29 +208,38 @@ def crc32_hex(data):
     return '%x' % (zlib.crc32(data) & 0xffffffff)
 
 
-def load_json(path_or_fileobj, encoding='utf-8', mode='r'):
-    close = True
-    try:
-        f = _compat.json_open(path_or_fileobj, mode, encoding=encoding)
-    except TypeError:
-        try:
-            f = _compat.json_path_open(path_or_fileobj, mode, encoding=encoding)
-        except AttributeError:
-            f = path_or_fileobj
-            close = False
+def load_json(path_or_fileobj, encoding='utf-8', mode='r', **kwargs):
+    f, fallthrough = _get_fileobj(path_or_fileobj, mode, encoding=encoding)
+    close = not fallthrough
 
     try:
-        result = _compat.json_call('load', f, encoding=encoding)
+        result = _compat.json_call('load', f, encoding=encoding, **kwargs)
     except (AttributeError, TypeError):
         raise TypeError('path_or_fileobj: %r' % path_or_fileobj)
     finally:
         if close:
             f.close()
+
     return result
 
 
-def dump_json(obj, path_or_fileobj, encoding='utf-8', mode='w'):
-    close = True
+
+def dump_json(obj, path_or_fileobj, encoding='utf-8', mode='w', **kwargs):
+    f, fallthrough = _get_fileobj(path_or_fileobj, mode, encoding=encoding)
+    close = not fallthrough
+
+    try:
+        _compat.json_call('dump', obj, f, encoding=encoding, **kwargs)
+    except (AttributeError, TypeError):
+        raise TypeError('path_or_fileobj: %r' % path_or_fileobj)
+    finally:
+        if close:
+            f.close()
+
+
+def _get_fileobj(path_or_fileobj, mode, encoding):
+    fallthrough = False
+
     try:
         f = _compat.json_open(path_or_fileobj, mode, encoding=encoding)
     except TypeError:
@@ -238,12 +247,6 @@ def dump_json(obj, path_or_fileobj, encoding='utf-8', mode='w'):
             f = _compat.json_path_open(path_or_fileobj, mode, encoding=encoding)
         except AttributeError:
             f = path_or_fileobj
-            close = False
+            fallthrough = True
 
-    try:
-        _compat.json_call('dump', obj, f, encoding=encoding)
-    except (AttributeError, TypeError):
-        raise TypeError('path_or_fileobj: %r' % path_or_fileobj)
-    finally:
-        if close:
-            f.close()
+    return f, fallthrough
