@@ -358,13 +358,13 @@ class Context(object):
         Returns: new ``dict`` with serialized context
         """
         result = {
-            'objects': self.objects,
-            'properties': self.properties,
-            'context': self._intents.index_sets(),
+            u'objects': self.objects,
+            u'properties': self.properties,
+            u'context': self._intents.index_sets(),
         }
         if (include_lattice
-            or include_lattice is None and 'lattice' in self.__dict__):
-            result['lattice'] = self.lattice._tolist()
+            or include_lattice is None and u'lattice' in self.__dict__):
+            result[u'lattice'] = self.lattice._tolist()
         return result
 
     def tojson(self, path_or_fileobj, encoding='utf-8', include_lattice=None):

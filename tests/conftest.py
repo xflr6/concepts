@@ -1,8 +1,15 @@
 # conftest.py
 
+import sys
+
 import pytest
 
 import concepts
+
+
+@pytest.fixture(scope='session')
+def py2():
+    return sys.version_info.major == 2
 
 
 @pytest.fixture(scope='session')

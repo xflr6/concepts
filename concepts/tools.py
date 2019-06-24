@@ -8,7 +8,13 @@ from itertools import permutations, groupby, starmap
 
 from . import _compat
 
-__all__ = ['Unique', 'max_len', 'maximal', 'lazyproperty', 'crc32_hex']
+__all__ = [
+    'Unique',
+    'max_len', 'maximal',
+    'lazyproperty',
+    'crc32_hex',
+    'json_load', 'json_dump',
+]
 
 
 class Unique(_compat.MutableSet):
@@ -202,33 +208,42 @@ def crc32_hex(data):
     return '%x' % (zlib.crc32(data) & 0xffffffff)
 
 
-def load_json(path_or_fileobj, encoding='utf-8'):
+def load_json(path_or_fileobj, encoding='utf-8', mode='r'):
+    close = True
     try:
-        f = io.open(path_or_fileobj, encoding=encoding)
+        f = _compat.json_open(path_or_fileobj, mode, encoding=encoding)
     except TypeError:
         try:
-            f = path_or_fileobj.open(encoding=encoding)
+            f = _compat.json_path_open(path_or_fileobj, mode, encoding=encoding)
         except AttributeError:
-            try:
-                return json.load(path_or_fileobj)
-            except AttributeError:
-                raise TypeError('path_or_fileobj: %r' % path_or_fileobj)
-    with f:
-        result = json.load(f)
+            f = path_or_fileobj
+            close = False
+
+    try:
+        result = _compat.json_call('load', f, encoding=encoding)
+    except (AttributeError, TypeError):
+        raise TypeError('path_or_fileobj: %r' % path_or_fileobj)
+    finally:
+        if close:
+            f.close()
     return result
 
 
-def dump_json(obj, path_or_fileobj, mode='w', encoding='utf-8'):
+def dump_json(obj, path_or_fileobj, encoding='utf-8', mode='w'):
+    close = True
     try:
-        f = io.open(path_or_fileobj, mode, encoding=encoding)
+        f = _compat.json_open(path_or_fileobj, mode, encoding=encoding)
     except TypeError:
         try:
-            f = path_or_fileobj.open(mode, encoding=encoding)
+            f = _compat.json_path_open(path_or_fileobj, mode, encoding=encoding)
         except AttributeError:
-            try:
-                return json.dump(obj, path_or_fileobj)
-            except AttributeError:
-                raise TypeError('path_or_fileobj: %r' % path_or_fileobj)
-    
-    with f:
-        json.dump(obj, f)
+            f = path_or_fileobj
+            close = False
+
+    try:
+        _compat.json_call('dump', obj, f, encoding=encoding)
+    except (AttributeError, TypeError):
+        raise TypeError('path_or_fileobj: %r' % path_or_fileobj)
+    finally:
+        if close:
+            f.close()

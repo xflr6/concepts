@@ -1,5 +1,8 @@
 # test_serialization.py
 
+from __future__ import unicode_literals
+
+import io
 import random
 
 import pytest
@@ -211,21 +214,36 @@ def test_roundtrip(context, include_lattice):
         assert result.lattice == context.lattice
 
 
-def test_json_roundtrip(tmp_path,  context, encoding='utf-8'):
-    path = tmp_path / 'context.json'
+def test_json_roundtrip(tmp_path, py2, context, encoding='utf-8'):
+    path_obj = tmp_path / 'context.json'
+    args = [str(path_obj), path_obj]
+    args.append(io.BytesIO() if py2 else io.StringIO())
+    for path in args:
+        context = Context(context.objects, context.properties, context.bools)
+        assert 'lattice' not in context.__dict__
+        context.tojson(path)
+        if isinstance(path, (io.BytesIO, io.StringIO)):
+            path.seek(0)
+        assert 'lattice' not in context.__dict__
+        deserialized = context.fromjson(path, encoding=encoding)
+        if isinstance(path, (io.BytesIO, io.StringIO)):
+            path.seek(0)
+        assert 'lattice' not in deserialized.__dict__
+        assert deserialized == context
 
-    assert 'lattice' not in context.__dict__
-    context.tojson(path, encoding=encoding)
-    assert 'lattice' not in context.__dict__
-    deserialized = context.fromjson(path, encoding=encoding)
-    assert 'lattice' not in deserialized.__dict__
-    assert deserialized == context
+        assert isinstance(context.lattice, Lattice)
+        assert 'lattice' in context.__dict__
+        context.tojson(path, encoding=encoding)
+        if isinstance(path, (io.BytesIO, io.StringIO)):
+            path.seek(0)
+        deserialized = context.fromjson(path, encoding=encoding)
+        assert 'lattice' in deserialized.__dict__
+        assert deserialized == context
+        assert deserialized.lattice == context.lattice
 
-    context = Context(context.objects, context.properties, context.bools)
-    assert isinstance(context.lattice, Lattice)
-    assert 'lattice' in context.__dict__
-    context.tojson(path, encoding=encoding)
-    deserialized = context.fromjson(path, encoding=encoding)
-    assert 'lattice' in deserialized.__dict__
-    assert deserialized == context
-    assert deserialized.lattice == context.lattice
+
+def test_json_invalid_path(context):
+    with pytest.raises(TypeError, match=r'path_or_fileobj'):
+        context.tojson(object())
+    with pytest.raises(TypeError, match=r'path_or_fileobj'):
+        context.fromjson(object())

@@ -1,5 +1,7 @@
 # _compat.py - Python 2/3 compatibility
 
+import io
+import json
 import sys
 
 PY2 = (sys.version_info.major == 2)
@@ -31,6 +33,15 @@ if PY2:
 
     from collections import MutableSet
 
+    def json_open(path, mode, encoding=None):
+        return open(path, mode)
+
+    def json_path_open(pathobj, mode, encoding=None):
+        return pathobj.open('b' + mode)
+
+    def json_call(funcname, *args, **kwargs):
+        return getattr(json, funcname)(*args, **kwargs)
+
 
 else:
     text_type = string_types = str
@@ -47,6 +58,15 @@ else:
     import copyreg
 
     from collections.abc import MutableSet
+
+    json_open = io.open
+
+    def json_path_open(pathobj, mode, encoding=None):
+        return pathobj.open(mode, encoding=encoding)
+
+    def json_call(funcname, *args,  **kwargs):
+        kwargs.pop('encoding', None)
+        return getattr(json, funcname)(*args, **kwargs)
 
 
 def with_metaclass(meta, *bases):
