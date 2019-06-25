@@ -19,6 +19,10 @@ def test_eq(lattice):
     d = lattice._context.definition()
     assert lattice == Context(*d).lattice
 
+    d.add_object('X', ['mysterious', 'child'])
+    assert not lattice == Context(*d).lattice
+    d.remove_object('X')
+
     d.move_object('3pl', 0)
     assert not lattice == Context(*d).lattice
 
