@@ -257,3 +257,18 @@ def test_json_indent(py2, context):
         serialized = f.getvalue()
 
     assert serialized.startswith('{\n    "context": [')
+
+
+def test_json_newlinedelmited(py2, context):
+    assert 'lattice' not in context.__dict__
+    with (io.BytesIO() if py2 else io.StringIO()) as f:
+        context.tojson(f, sort_keys=True)
+        assert 'lattice' not in context.__dict__
+        f.write(str('\n'))
+        serialized = f.getvalue()
+        assert serialized.startswith('{"context": [')
+        context.tojson(f, sort_keys=True)
+        assert 'lattice' not in context.__dict__
+        f.write(str('\n'))
+        second = f.getvalue()
+        assert second == serialized * 2
