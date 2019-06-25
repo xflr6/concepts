@@ -7,7 +7,7 @@ import random
 
 import pytest
 
-from concepts import Context
+from concepts import Context, Definition
 from concepts.lattices import Lattice
 
 
@@ -272,3 +272,16 @@ def test_json_newlinedelmited(py2, context):
         f.write(str('\n'))
         second = f.getvalue()
         assert second == serialized * 2
+
+
+def test_nonascii():
+    d = Definition()
+    abba = (u'Agneta F\xe4ltskog', u'Anni-Frid Lyngstat',
+            u'Benny Andersson', u'Bj\xf6rn Ulvaeus')
+    for o  in abba:
+       d.add_object(o, ['human', 'singer'])
+    d.add_property(u'female', abba[:2])
+    d.add_property(u'male', abba[2:])
+    d.add_property(u'keyboarder', abba[2])
+    d.add_property(u'guitarrist', abba[3]) 
+    d.add_property(u'sch\xf6n', abba[::2]) 
