@@ -62,32 +62,23 @@ def test_ne(lattice):
 
 
 def test_concept_eq_nonconcept(lattice):
-    assert not lattice[1] == object()
+    assert lattice[1]._eq(object()) is NotImplemented
 
 
 def test_concept_eq(lattice):
-    assert lattice[5] == lattice[5]
-    assert not lattice[1] == lattice[7]
+    assert lattice[5]._eq(lattice[5])
+    assert not lattice[1]._eq(lattice[7])
 
 
 def test_concept_eq_neighors(lattice):
     c = lattice[7]
     mock_concept = functools.partial(Concept, c.lattice, c._extent, c._intent)
-    assert c != mock_concept(c.upper_neighbors[1:], c.lower_neighbors)
-    assert c != mock_concept(c.upper_neighbors, c.lower_neighbors[1:])
-    assert c != mock_concept(tuple(reversed(c.upper_neighbors)),
-                             c.lower_neighbors)
-    assert c != mock_concept(c.upper_neighbors,
-                             tuple(reversed(c.lower_neighbors)))
-
-
-def test_concept_ne_nonconcept(lattice):
-    assert lattice[1] != object()
-
-
-def test_concept_ne(lattice):
-    assert not lattice[5] != lattice[5]
-    assert lattice[1] != lattice[7]
+    assert not c._eq(mock_concept(c.upper_neighbors[1:], c.lower_neighbors))
+    assert not c._eq(mock_concept(c.upper_neighbors, c.lower_neighbors[1:]))
+    assert not c._eq(mock_concept(tuple(reversed(c.upper_neighbors)),
+                                  c.lower_neighbors))
+    assert not c._eq(mock_concept(c.upper_neighbors,
+                                  tuple(reversed(c.lower_neighbors))))
 
 
 def test_pickling(lattice):

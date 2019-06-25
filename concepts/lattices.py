@@ -243,7 +243,9 @@ class Lattice(object):
         if not isinstance(other, Lattice):
             return NotImplemented
 
-        if other._concepts != self._concepts:
+        if len(other._concepts) != len(self._concepts):
+            return False
+        if not all(s._eq(o) for s, o in zip(self._concepts, other._concepts)):
             return False
 
         if len(other._mapping) != len(self._mapping):
@@ -532,10 +534,7 @@ class Concept(object):
         self.upper_neighbors = upper  #: The directly implied concepts.
         self.lower_neighbors = lower  #: The directly subsumed concepts.
 
-    def __hash__(self):
-        return id(self)
-
-    def __eq__(self, other):
+    def _eq(self, other):
         if not isinstance(other, Concept):
             return NotImplemented
 
@@ -552,12 +551,6 @@ class Concept(object):
                 if o._extent.members() != s._extent.members():
                     return False
         return True
-
-    def __ne__(self, other):
-        if not isinstance(other, Concept):
-            return NotImplemented
-
-        return not self == other
 
     def __iter__(self):
         """Yield ``extent`` and ``intent`` (e.g. for pair unpacking)."""
