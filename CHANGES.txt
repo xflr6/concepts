@@ -12,11 +12,11 @@ compute can be stored and loaded without the need to re-calculate the lattice.
 
 Add ``Context.todict()`` and ``Context.fromdict()`` for long term storage format
 as Python dict. Can be (de)serialized with other tools such as pickle, yaml,
-pprint.pprint() + ast.literal_eval, toml, xml, etc.
+pprint.pprint() + ast.literal_eval, toml, xml, a database, etc.
 
-Add equivalence checking for Lattice. Note that while Context ignore their lattices for
-equivalence checking, Lattices also compare their contexts. Lattice comparison is mostly
-for unit-testing (not meant to be efficient), context-comparison should be superiour in most cases.
+Add equivalence checking for ``Lattice``. Note that while ``Context`` ignore their
+lattices for equivalence checking, ``Lattice`` also compare their contexts.
+Lattice-comparison is mostly for unit-testing (not meant to be efficient), context-comparison should be superior in most cases.
 
 
 Version 0.8.1

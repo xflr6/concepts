@@ -118,3 +118,17 @@ Context from ``pandas.DataFrame``
 
     c_ = concepts.Context(objects, properties, bools)
     assert c_ == c
+
+
+Long-term storage format
+------------------------
+
+For the ``concepts.Context.fromstring(concepts.EXAMPLE)``:
+
+.. literalinclude:: ../concepts/__init__.py
+    :lines: 20-27
+
+The serialization looks like this:
+
+.. literalinclude:: ../tests/test_serialization.py
+    :lines: 14-53

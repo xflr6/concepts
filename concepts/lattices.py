@@ -246,7 +246,7 @@ class Lattice(object):
             Also compares their context objects.
             Lattice-comparison is present mainly for unit-tests
             (not meant to be efficient), context-comparison should be
-            superiour in most cases.
+            superior in most cases.
         """
         if not isinstance(other, Lattice):
             return NotImplemented
