@@ -279,11 +279,11 @@ def _nonascii_context():
     abba = (u'Agneta F\xe4ltskog', u'Anni-Frid Lyngstat',
             u'Benny Andersson', u'Bj\xf6rn Ulvaeus')
     for o in abba:
-       d.add_object(o, [u'human', u'singer'])
+        d.add_object(o, [u'human', u'singer'])
     d.add_property(u'female', abba[:2])
     d.add_property(u'male', abba[2:])
     d.add_property(u'keyboarder', [abba[2]])
-    d.add_property(u'guitarrist', [abba[3]]) 
+    d.add_property(u'guitarrist', [abba[3]])
     d.add_property(u'sch\xf6n', abba[::2])
     return Context(*d)
 
@@ -295,6 +295,6 @@ def test_json_nonascii_context(py2, encoding='utf-8'):
         f.seek(0)
         serialized = f.getvalue()
         deserialized = context.fromjson(f, encoding=encoding)
-        assert deserialized  == context
+        assert deserialized == context
         assert u'"Agneta F\\u00e4ltskog"' in serialized
         assert u'"Bj\\u00f6rn Ulvaeus"' in serialized

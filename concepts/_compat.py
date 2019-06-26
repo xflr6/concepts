@@ -64,7 +64,7 @@ else:
     def json_path_open(pathobj, mode, encoding=None):
         return pathobj.open(mode, encoding=encoding)
 
-    def json_call(funcname, *args,  **kwargs):
+    def json_call(funcname, *args, **kwargs):
         kwargs.pop('encoding', None)
         return getattr(json, funcname)(*args, **kwargs)
 

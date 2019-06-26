@@ -1,7 +1,5 @@
 # tools.py
 
-import io
-import json
 import operator
 import zlib
 from itertools import permutations, groupby, starmap
@@ -221,7 +219,6 @@ def load_json(path_or_fileobj, encoding='utf-8', mode='r', **kwargs):
             f.close()
 
     return result
-
 
 
 def dump_json(obj, path_or_fileobj, encoding='utf-8', mode='w', **kwargs):

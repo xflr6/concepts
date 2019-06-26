@@ -33,7 +33,7 @@ Context
         intension, extension,
         neighbors,
         __getitem__,
-        tostring, tofile, todict,  crc32,
+        tostring, tofile, todict, crc32,
         objects, properties, bools,
         definition, relations, lattice
 

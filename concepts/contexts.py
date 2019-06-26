@@ -373,7 +373,7 @@ class Context(object):
         """Write serialized context as json to path or file-like object.
 
         Args:
-            path_or_fileobj:
+            path_or_fileobj: 
             encoding (str): 
             indent (int): 
             sort_keys (bool): 
