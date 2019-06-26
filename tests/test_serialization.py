@@ -222,53 +222,66 @@ def test_json_invalid_path(context):
 
 
 @pytest.fixture(scope='module')
-def stringio_cls(py2):
+def make_stringio(py2):
     return io.BytesIO if py2 else io.StringIO
 
 
+@pytest.fixture(params=range(3))
+def path_or_fileobj(request, make_stringio, tmp_path, filename='context.json'):
+    if request.param == 0:
+        return str(tmp_path / filename), False
+    elif request.param == 1:
+        return tmp_path / filename, False
+    elif request.param == 2:
+        return make_stringio(), True
+    raise RuntimeError
+
+
 @pytest.fixture(params=['utf-8', None])
-def  encoding(request):
+def encoding(request):
     return request.param
 
 
-def test_json_roundtrip(tmp_path, stringio_cls, context, encoding):
-    path_obj = tmp_path / 'context.json'
+def test_json_roundtrip(context, path_or_fileobj, encoding):
+    f, is_fileobj = path_or_fileobj
     kwargs = {'encoding': encoding} if encoding is not None else {}
 
-    for path in [str(path_obj), path_obj,  stringio_cls()]:
-        context = Context(context.objects, context.properties, context.bools)
-        assert 'lattice' not in context.__dict__
+    context = Context(context.objects, context.properties, context.bools)
+    assert 'lattice' not in context.__dict__
 
-        context.tojson(path, **kwargs)
-        if isinstance(path, stringio_cls):
-            path.seek(0)
-        assert 'lattice' not in context.__dict__
+    context.tojson(f, **kwargs)
+    if is_fileobj:
+        f.seek(0)
+    assert 'lattice' not in context.__dict__
 
-        deserialized = Context.fromjson(path, **kwargs)
-        if isinstance(path, stringio_cls):
-            path.seek(0)
-        assert 'lattice' not in deserialized.__dict__
+    deserialized = Context.fromjson(f, **kwargs)
+    if is_fileobj:
+        f.seek(0)
+    assert 'lattice' not in deserialized.__dict__
 
-        assert deserialized == context
+    assert deserialized == context
 
-        assert isinstance(context.lattice, Lattice)
-        assert 'lattice' in context.__dict__
-        context.tojson(path, **kwargs)
-        if isinstance(path, stringio_cls):
-            path.seek(0)
+    assert isinstance(context.lattice, Lattice)
+    assert 'lattice' in context.__dict__
 
-        deserialized = Context.fromjson(path, **kwargs)
-        assert 'lattice' in deserialized.__dict__
+    context.tojson(f, **kwargs)
+    if is_fileobj:
+        f.seek(0)
 
-        assert deserialized == context
-        assert deserialized.lattice == context.lattice
+    deserialized = Context.fromjson(f, **kwargs)
+    if is_fileobj:
+        f.close()
+    assert 'lattice' in deserialized.__dict__
+
+    assert deserialized == context
+    assert deserialized.lattice == context.lattice
 
 
-def test_json_indent(stringio_cls, context, encoding):
+def test_json_indent(make_stringio, context, encoding):
     assert 'lattice' not in context.__dict__
     kwargs = {'encoding': encoding} if encoding is not None else {}
 
-    with stringio_cls() as f:
+    with make_stringio() as f:
         context.tojson(f, indent=4, sort_keys=True, **kwargs)
 
         assert 'lattice' not in context.__dict__
@@ -277,11 +290,11 @@ def test_json_indent(stringio_cls, context, encoding):
     assert serialized.startswith('{\n    "context": [')
 
 
-def test_json_newlinedelmited(stringio_cls, context, encoding):
+def test_json_newlinedelmited(make_stringio, context, encoding):
     assert 'lattice' not in context.__dict__
     kwargs = {'encoding': encoding} if encoding is not None else {}
 
-    with stringio_cls() as f:
+    with make_stringio() as f:
         context.tojson(f, sort_keys=True,  **kwargs)
         assert 'lattice' not in context.__dict__
         f.write(str('\n'))
@@ -312,12 +325,12 @@ def nonascii_context(abba=(u'Agneta F\xe4ltskog', u'Anni-Frid Lyngstat',
     return Context(*d)
 
 
-def test_json_nonascii_context(stringio_cls, nonascii_context, encoding):
+def test_json_nonascii_context(make_stringio, nonascii_context, encoding):
     assert isinstance(nonascii_context.lattice, Lattice)
     assert 'lattice' in nonascii_context.__dict__
     kwargs = {'encoding': encoding} if encoding is not None else {}
 
-    with stringio_cls() as f:
+    with make_stringio() as f:
         nonascii_context.tojson(f, **kwargs)
         serialized = f.getvalue()
         f.seek(0)
