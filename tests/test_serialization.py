@@ -215,9 +215,12 @@ def test_dict_roundtrip(context, include_lattice):
         assert result.lattice == context.lattice
 
 
-def test_json_invalid_path(context):
+def test_tojson_invalid_path(context):
     with pytest.raises(TypeError, match=r'path_or_fileobj'):
         context.tojson(object())
+
+
+def test_fromjson_invalid_path(context):
     with pytest.raises(TypeError, match=r'path_or_fileobj'):
         Context.fromjson(object())
 
@@ -308,7 +311,7 @@ def test_tojson_newlinedelmited(make_stringio, context, encoding):
         f.write(str('\n'))
         second = f.getvalue()
 
-        assert second == serialized * 2
+    assert second == serialized * 2
 
 
 @pytest.fixture(scope='module')
@@ -337,10 +340,11 @@ def test_json_roundtrip_nonascii_context(make_stringio, nonascii_context, encodi
         f.seek(0)
 
         deserialized = Context.fromjson(f, **kwargs)
-        assert 'lattice' in deserialized.__dict__
-        assert deserialized == nonascii_context
-        assert deserialized.lattice == nonascii_context.lattice
 
-        assert u'"Agneta F\\u00e4ltskog"' in serialized
-        assert u'"Bj\\u00f6rn Ulvaeus"' in serialized
-        assert u'"sch\\u00f6n"' in serialized
+    assert 'lattice' in deserialized.__dict__
+    assert deserialized == nonascii_context
+    assert deserialized.lattice == nonascii_context.lattice
+
+    assert u'"Agneta F\\u00e4ltskog"' in serialized
+    assert u'"Bj\\u00f6rn Ulvaeus"' in serialized
+    assert u'"sch\\u00f6n"' in serialized
