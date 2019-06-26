@@ -29,11 +29,12 @@ Context
 
 .. autoclass:: concepts.Context
     :members:
-        fromstring, fromfile, fromdict,
+        fromstring, fromfile, fromdict, fromjson,
         intension, extension,
         neighbors,
         __getitem__,
-        tostring, tofile, todict, crc32,
+        __eq__, __ne__,
+        tostring, tofile, todict, tojson, crc32,
         objects, properties, bools,
         definition, relations, lattice
 
@@ -65,6 +66,7 @@ Lattice
     :members:
         infimum, supremum,
         __call__, __getitem__, __iter__, __len__,
+        __eq__, __ne__,
         atoms,
         join, meet,
         upset_union, downset_union,

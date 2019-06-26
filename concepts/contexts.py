@@ -128,8 +128,8 @@ class Context(object):
         """Return a new context from json path or file-like object.
 
         Args:
-            path_or_fileobj:
-            encoding:
+            path_or_fileobj: path, pathlike, or file-like object for reading
+            encoding (str): ignored for file-like objects on Python 3
             ignore_lattice (bool): don't load lattice from json
             require_lattice (bool): raise if no lattice in json
             raw (bool): if set, sort so the input sequences can be in any order;
@@ -237,6 +237,15 @@ class Context(object):
         self._Extent = self._extents.BitSet
 
     def __eq__(self, other):
+        """Return True if two contexts are equivalent.
+
+        Notes:
+            Ignores their .lattice objects.
+            Lattices compare both themselves and their contexts.
+            Lattice-comparison is present mainly for unit-tests
+            (not meant to be efficient), context-comparison should be
+            superiour in most cases.
+        """
         if not isinstance(other, Context):
             return NotImplemented
 
@@ -245,6 +254,7 @@ class Context(object):
                 and self.bools == other.bools)
 
     def __ne__(self, other):
+        """Return False if two contexts are equivalent."""
         if not isinstance(other, Context):
             return NotImplemented
 
@@ -372,11 +382,13 @@ class Context(object):
                include_lattice=None):
         """Write serialized context as json to path or file-like object.
 
+            ignore_lattice (bool): don't load lattice from json
+
         Args:
-            path_or_fileobj: 
-            encoding (str): 
-            indent (int): 
-            sort_keys (bool): 
+            path_or_fileobj: path, pathlike, or file-like object for reading
+            encoding (str): ignored for file-like objects on Python 3
+            indent (int): json.dump(indent=indent) for pretty-printing
+            sort_keys (bool): json.dump(sort_keys=sort_keys) for diffability
             include_lattice (bool): include ``'lattice'`` in result
         """
         d = self.todict(include_lattice=include_lattice)
