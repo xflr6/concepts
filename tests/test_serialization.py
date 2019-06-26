@@ -290,11 +290,17 @@ def _nonascii_context():
 
 def test_json_nonascii_context(py2, encoding='utf-8'):
     context = _nonascii_context()
+    assert isinstance(context.lattice, Lattice)
+    assert 'lattice' in context.__dict__
+
     with (io.BytesIO() if py2 else io.StringIO()) as f:
         context.tojson(f, encoding=encoding)
         f.seek(0)
         serialized = f.getvalue()
         deserialized = context.fromjson(f, encoding=encoding)
+        assert 'lattice' in deserialized.__dict__
         assert deserialized == context
+        assert deserialized.lattice == context.lattice
         assert u'"Agneta F\\u00e4ltskog"' in serialized
         assert u'"Bj\\u00f6rn Ulvaeus"' in serialized
+        assert u'"sch\\u00f6n"' in serialized
