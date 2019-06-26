@@ -128,7 +128,8 @@ For the ``concepts.Context.fromstring(concepts.EXAMPLE)``:
 .. literalinclude:: ../concepts/__init__.py
     :lines: 20-27
 
-The serialization (including its lattice) looks like this:
+The serialization (including its lattice) looks like this (any extra keys will be
+ignored when loading):
 
 .. literalinclude:: ../tests/test_serialization.py
     :lines: 14-53
