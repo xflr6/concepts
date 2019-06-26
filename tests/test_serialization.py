@@ -64,14 +64,15 @@ def d(request):
 
 def test_todict(context, d):
     assert 'lattice' not in context.__dict__
-    if 'lattice' not in d:
-        assert context.todict() == context.todict(include_lattice=False) == d
-        assert 'lattice' not in context.__dict__
-    else:
+    if 'lattice' in d:
         context = Context(context.objects, context.properties, context.bools)
         assert 'lattice' not in context.__dict__
+
         assert context.todict(include_lattice=True) == context.todict() == d
         assert 'lattice' in context.__dict__
+    else:
+        assert context.todict() == context.todict(include_lattice=False) == d
+        assert 'lattice' not in context.__dict__
 
 
 @pytest.fixture
@@ -159,7 +160,7 @@ def test_fromdict(context, lattice, d, require_lattice, ignore_lattice, raw):
         assert result.lattice == lattice
 
 
-def test_raw(context, lattice, d, raw):
+def test_fromdict_raw(context, lattice, d, raw):
     def shuffled(items):
         result = list(items)
         random.shuffle(result)
@@ -190,7 +191,7 @@ def test_raw(context, lattice, d, raw):
 
 
 @pytest.mark.parametrize('include_lattice', [False, None, True])
-def test_roundtrip(context, include_lattice):
+def test_dict_roundtrip(context, include_lattice):
     context = Context(context.objects, context.properties, context.bools)
     assert 'lattice' not in context.__dict__
 
@@ -226,13 +227,13 @@ def make_stringio(py2):
     return io.BytesIO if py2 else io.StringIO
 
 
-@pytest.fixture(params=range(3))
-def path_or_fileobj(request, make_stringio, tmp_path, filename='context.json'):
-    if request.param == 0:
+@pytest.fixture(params=['str', 'pathlike', 'fileobj'])
+def path_or_fileobj(request, tmp_path, make_stringio, filename='context.json'):
+    if request.param == 'str':
         return str(tmp_path / filename), False
-    elif request.param == 1:
+    elif request.param == 'pathlike':
         return tmp_path / filename, False
-    elif request.param == 2:
+    elif request.param == 'fileobj':
         return make_stringio(), True
     raise RuntimeError
 
@@ -277,7 +278,7 @@ def test_json_roundtrip(context, path_or_fileobj, encoding):
     assert deserialized.lattice == context.lattice
 
 
-def test_json_indent(make_stringio, context, encoding):
+def test_tojson_indent4(make_stringio, context, encoding):
     assert 'lattice' not in context.__dict__
     kwargs = {'encoding': encoding} if encoding is not None else {}
 
@@ -290,7 +291,7 @@ def test_json_indent(make_stringio, context, encoding):
     assert serialized.startswith('{\n    "context": [')
 
 
-def test_json_newlinedelmited(make_stringio, context, encoding):
+def test_tojson_newlinedelmited(make_stringio, context, encoding):
     assert 'lattice' not in context.__dict__
     kwargs = {'encoding': encoding} if encoding is not None else {}
 
@@ -325,7 +326,7 @@ def nonascii_context(abba=(u'Agneta F\xe4ltskog', u'Anni-Frid Lyngstat',
     return Context(*d)
 
 
-def test_json_nonascii_context(make_stringio, nonascii_context, encoding):
+def test_json_roundtrip_nonascii_context(make_stringio, nonascii_context, encoding):
     assert isinstance(nonascii_context.lattice, Lattice)
     assert 'lattice' in nonascii_context.__dict__
     kwargs = {'encoding': encoding} if encoding is not None else {}
@@ -334,10 +335,12 @@ def test_json_nonascii_context(make_stringio, nonascii_context, encoding):
         nonascii_context.tojson(f, **kwargs)
         serialized = f.getvalue()
         f.seek(0)
+
         deserialized = Context.fromjson(f, **kwargs)
         assert 'lattice' in deserialized.__dict__
         assert deserialized == nonascii_context
         assert deserialized.lattice == nonascii_context.lattice
+
         assert u'"Agneta F\\u00e4ltskog"' in serialized
         assert u'"Bj\\u00f6rn Ulvaeus"' in serialized
         assert u'"sch\\u00f6n"' in serialized
