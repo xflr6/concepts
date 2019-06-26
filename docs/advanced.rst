@@ -128,8 +128,13 @@ For the ``concepts.Context.fromstring(concepts.EXAMPLE)``:
 .. literalinclude:: ../concepts/__init__.py
     :lines: 20-27
 
-The serialization (including its lattice) looks like this (any extra keys will be
-ignored when loading):
+The serialization (including its ``.lattice``) looks like this (any extra keys
+will be ignored when loading):
 
 .. literalinclude:: ../tests/test_serialization.py
     :lines: 14-53
+
+Note that ``'context'`` items are references to ``'properties'`` (indexes) and
+``'lattice'`` items are 4-tuples where the first two are references to
+``'objects'`` and the last two are references to the ``'lattice'`` list (all
+integer indexes).
