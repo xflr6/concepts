@@ -220,7 +220,7 @@ def test_tojson_invalid_path(context):
         context.tojson(object())
 
 
-def test_fromjson_invalid_path(context):
+def test_fromjson_invalid_path():
     with pytest.raises(TypeError, match=r'path_or_fileobj'):
         Context.fromjson(object())
 
