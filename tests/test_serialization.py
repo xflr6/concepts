@@ -221,19 +221,22 @@ def test_json_invalid_path(context):
         Context.fromjson(object())
 
 
-def test_json_roundtrip(tmp_path, py2, context, encoding='utf-8'):
+@pytest.fixture(scope='module')
+def stringio_cls(py2):
+    return io.BytesIO if py2 else io.StringIO
+
+
+def test_json_roundtrip(tmp_path, stringio_cls, context, encoding='utf-8'):
     path_obj = tmp_path / 'context.json'
-    args = [str(path_obj), path_obj]
-    args.append(io.BytesIO() if py2 else io.StringIO())
-    for path in args:
+    for path in [str(path_obj), path_obj,  stringio_cls()]:
         context = Context(context.objects, context.properties, context.bools)
         assert 'lattice' not in context.__dict__
         context.tojson(path)
-        if isinstance(path, (io.BytesIO, io.StringIO)):
+        if isinstance(path, stringio_cls):
             path.seek(0)
         assert 'lattice' not in context.__dict__
         deserialized = Context.fromjson(path, encoding=encoding)
-        if isinstance(path, (io.BytesIO, io.StringIO)):
+        if isinstance(path, stringio_cls):
             path.seek(0)
         assert 'lattice' not in deserialized.__dict__
         assert deserialized == context
@@ -241,7 +244,7 @@ def test_json_roundtrip(tmp_path, py2, context, encoding='utf-8'):
         assert isinstance(context.lattice, Lattice)
         assert 'lattice' in context.__dict__
         context.tojson(path, encoding=encoding)
-        if isinstance(path, (io.BytesIO, io.StringIO)):
+        if isinstance(path, stringio_cls):
             path.seek(0)
         deserialized = Context.fromjson(path, encoding=encoding)
         assert 'lattice' in deserialized.__dict__
@@ -249,9 +252,9 @@ def test_json_roundtrip(tmp_path, py2, context, encoding='utf-8'):
         assert deserialized.lattice == context.lattice
 
 
-def test_json_indent(py2, context):
+def test_json_indent(stringio_cls, context):
     assert 'lattice' not in context.__dict__
-    with (io.BytesIO() if py2 else io.StringIO()) as f:
+    with stringio_cls() as f:
         context.tojson(f, indent=4, sort_keys=True)
         assert 'lattice' not in context.__dict__
         serialized = f.getvalue()
@@ -259,9 +262,9 @@ def test_json_indent(py2, context):
     assert serialized.startswith('{\n    "context": [')
 
 
-def test_json_newlinedelmited(py2, context):
+def test_json_newlinedelmited(stringio_cls, context):
     assert 'lattice' not in context.__dict__
-    with (io.BytesIO() if py2 else io.StringIO()) as f:
+    with stringio_cls() as f:
         context.tojson(f, sort_keys=True)
         assert 'lattice' not in context.__dict__
         f.write(str('\n'))
@@ -289,11 +292,11 @@ def nonascii_context():
     return Context(*d)
 
 
-def test_json_nonascii_context(py2, nonascii_context, encoding='utf-8'):
+def test_json_nonascii_context(stringio_cls, nonascii_context, encoding='utf-8'):
     assert isinstance(nonascii_context.lattice, Lattice)
     assert 'lattice' in nonascii_context.__dict__
 
-    with (io.BytesIO() if py2 else io.StringIO()) as f:
+    with stringio_cls() as f:
         nonascii_context.tojson(f, encoding=encoding)
         serialized = f.getvalue()
         f.seek(0)
