@@ -218,7 +218,7 @@ def test_json_invalid_path(context):
     with pytest.raises(TypeError, match=r'path_or_fileobj'):
         context.tojson(object())
     with pytest.raises(TypeError, match=r'path_or_fileobj'):
-        context.fromjson(object())
+        Context.fromjson(object())
 
 
 def test_json_roundtrip(tmp_path, py2, context, encoding='utf-8'):
@@ -232,7 +232,7 @@ def test_json_roundtrip(tmp_path, py2, context, encoding='utf-8'):
         if isinstance(path, (io.BytesIO, io.StringIO)):
             path.seek(0)
         assert 'lattice' not in context.__dict__
-        deserialized = context.fromjson(path, encoding=encoding)
+        deserialized = Context.fromjson(path, encoding=encoding)
         if isinstance(path, (io.BytesIO, io.StringIO)):
             path.seek(0)
         assert 'lattice' not in deserialized.__dict__
@@ -243,7 +243,7 @@ def test_json_roundtrip(tmp_path, py2, context, encoding='utf-8'):
         context.tojson(path, encoding=encoding)
         if isinstance(path, (io.BytesIO, io.StringIO)):
             path.seek(0)
-        deserialized = context.fromjson(path, encoding=encoding)
+        deserialized = Context.fromjson(path, encoding=encoding)
         assert 'lattice' in deserialized.__dict__
         assert deserialized == context
         assert deserialized.lattice == context.lattice
@@ -274,7 +274,8 @@ def test_json_newlinedelmited(py2, context):
         assert second == serialized * 2
 
 
-def _nonascii_context():
+@pytest.fixture(scope='module')
+def nonascii_context():
     d = Definition()
     abba = (u'Agneta F\xe4ltskog', u'Anni-Frid Lyngstat',
             u'Benny Andersson', u'Bj\xf6rn Ulvaeus')
@@ -288,19 +289,18 @@ def _nonascii_context():
     return Context(*d)
 
 
-def test_json_nonascii_context(py2, encoding='utf-8'):
-    context = _nonascii_context()
-    assert isinstance(context.lattice, Lattice)
-    assert 'lattice' in context.__dict__
+def test_json_nonascii_context(py2, nonascii_context, encoding='utf-8'):
+    assert isinstance(nonascii_context.lattice, Lattice)
+    assert 'lattice' in nonascii_context.__dict__
 
     with (io.BytesIO() if py2 else io.StringIO()) as f:
-        context.tojson(f, encoding=encoding)
-        f.seek(0)
+        nonascii_context.tojson(f, encoding=encoding)
         serialized = f.getvalue()
-        deserialized = context.fromjson(f, encoding=encoding)
+        f.seek(0)
+        deserialized = Context.fromjson(f, encoding=encoding)
         assert 'lattice' in deserialized.__dict__
-        assert deserialized == context
-        assert deserialized.lattice == context.lattice
+        assert deserialized == nonascii_context
+        assert deserialized.lattice == nonascii_context.lattice
         assert u'"Agneta F\\u00e4ltskog"' in serialized
         assert u'"Bj\\u00f6rn Ulvaeus"' in serialized
         assert u'"sch\\u00f6n"' in serialized
