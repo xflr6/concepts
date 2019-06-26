@@ -340,6 +340,27 @@ Context objects are pickleable:
     >>> pickle.loads(pickle.dumps(c)) == c
     True
 
+Contexts can be serialized and deserialized as json (possibly including 
+their lattice structure) for long-term storage, e.g. of large graphs that
+are expensive to compute:
+
+.. code:: python
+
+    >>> c = Context.fromjson('examples/example.json', encoding='utf-8')
+    >>> c
+    <Context object mapping 6 objects to 10 properties [b9d20179] at 0x...>
+
+The same long term storage format is also available as Python dict, e.g. to
+be used with other methods of (de)serialization such as pickle, yaml,
+pprint.pprint() + ast.literal_eval(), toml, xml, a database, etc.
+
+.. code:: python
+
+    >>> print(', '.join(sorted(c.todict())))
+    context, lattice, objects, properties
+
+See :ref:`advanced` for details.
+
 
 .. _available from PyPI: https://pypi.org/project/concepts/
 

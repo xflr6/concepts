@@ -12,7 +12,7 @@ compute can be stored and loaded without the need to re-calculate the lattice.
 
 Add ``Context.todict()`` and ``Context.fromdict()`` for long term storage format
 as Python dict. Can be (de)serialized with other tools such as pickle, yaml,
-pprint.pprint() + ast.literal_eval, toml, xml, a database, etc.
+pprint.pprint() + ast.literal_eval(), toml, xml, a database, etc.
 
 Add equivalence checking for ``Lattice``. Note that while ``Context`` ignore their
 lattices for equivalence checking, ``Lattice`` also compare their contexts.
