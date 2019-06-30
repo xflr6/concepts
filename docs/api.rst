@@ -7,8 +7,8 @@ API Reference
     :nosignatures:
 
     ~concepts.load
-    ~concepts.load_cxt
     ~concepts.load_csv
+    ~concepts.load_cxt
     ~concepts.make_context
     ~concepts.Context
     ~concepts.Definition
@@ -16,16 +16,23 @@ API Reference
     concepts.lattices.Concept
 
 
-Context
--------
+Top-level functions
+-------------------
+
+Short-cuts to the most common uses of :meth:`.Context.fromfile` and
+:meth:`.Context.fromstring`:
 
 .. autofunction:: concepts.load
 
-.. autofunction:: concepts.load_cxt
-
 .. autofunction:: concepts.load_csv
 
+.. autofunction:: concepts.load_cxt
+
 .. autofunction:: concepts.make_context
+
+
+Context
+-------
 
 .. autoclass:: concepts.Context
     :members:

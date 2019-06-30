@@ -33,8 +33,11 @@ def load(filename, encoding='utf-8', frmat=None):
     Args:
         filename: Path to the file to load the context from.
         encoding (str): Encoding of the file (``'utf-8'``, ``'latin1'``, ``'ascii'``, ...).
-        frmat(str): Format of the file (``'table'``, ``'cxt'``, ``'csv'``).
-                    If None, inferred from filename suffix (default).
+        frmat (str): Format of the file (``'table'``, ``'cxt'``, ``'csv'``).
+                     If ``None`` (default), infer ``frmat`` from ``filename`` suffix.
+
+    Returns:
+        New :class:`.Context` instance.
 
     Example:
         >>> load('examples/liveinwater.txt')  # doctest: +ELLIPSIS
@@ -49,6 +52,9 @@ def load_cxt(filename, encoding=None):
     Args:
         filename: Path to the CXT file to load the context from.
         encoding (str): Encoding of the file (``'utf-8'``, ``'latin1'``, ``'ascii'``, ...).
+
+    Returns:
+        New :class:`.Context` instance.
 
     Example:
         >>> load_cxt('examples/digits.cxt')  # doctest: +ELLIPSIS
@@ -65,6 +71,9 @@ def load_csv(filename, dialect='excel', encoding='utf-8'):
         dialect: Syntax variant of the CSV file (``'excel'``, ``'excel-tab'``).
         encoding (str): Encoding of the file (``'utf-8'``, ``'latin1'``, ``'ascii'``, ...).
 
+    Returns:
+        New :class:`.Context` instance.
+
     Example:
         >>> load_csv('examples/vowels.csv')  # doctest: +ELLIPSIS
         <Context object mapping 12 objects to 8 properties [a717eee4] at 0x...>
@@ -78,6 +87,9 @@ def make_context(source, frmat='table'):
     Args:
         source (str): Formal context table as plain-text string.
         frmat (str): Format of the context string (``'table'``, ``'cxt'``, ``'csv'``).
+
+    Returns:
+        New :class:`.Context` instance.
 
     Example:
         >>> make_context('''

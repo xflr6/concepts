@@ -107,14 +107,32 @@ class Context(object):
 
     @classmethod
     def fromstring(cls, source, frmat='table', **kwargs):
-        """Return a new context from string ``source`` in given format."""
+        """Return a new context from string ``source`` in given format.
+
+        Args:
+            source (str): Formal context table as plain-text string.
+            frmat (str): Format of the context string (``'table'``, ``'cxt'``, ``'csv'``).
+
+        Returns:
+            New :class:`.Context` instance.
+        """
         frmat = formats.Format[frmat]
         objects, properties, bools = frmat.loads(source, **kwargs)
         return cls(objects, properties, bools)
 
     @classmethod
     def fromfile(cls, filename, frmat='cxt', encoding=None, **kwargs):
-        """Return a new context from file source in given format."""
+        """Return a new context from file source in given format.
+
+        Args:
+            filename: Path to the file to load the context from.
+            encoding (str): Encoding of the file (``'utf-8'``, ``'latin1'``, ``'ascii'``, ...).
+            frmat (str): Format of the file (``'table'``, ``'cxt'``, ``'csv'``).
+                         If ``None`` (default), infer ``frmat`` from ``filename`` suffix.
+
+        Returns:
+            New :class:`.Context` instance.
+        """
         if frmat is None:
             frmat = formats.Format.infer_format(filename)
 
@@ -128,12 +146,15 @@ class Context(object):
         """Return a new context from json path or file-like object.
 
         Args:
-            path_or_fileobj: path, pathlike, or file-like object for reading
-            encoding (str): ignored for file-like objects on Python 3
-            ignore_lattice (bool): don't load lattice from json
-            require_lattice (bool): raise if no lattice in json
-            raw (bool): if set, sort so the input sequences can be in any order;
-                        if unset (default), assume input is already ordered for speedup
+            path_or_fileobj: Path, pathlike, or file-like object for reading.
+            encoding (str): Ignored for file-like objects on Python 3.
+            ignore_lattice (bool): Don't load lattice from json serialization.
+            require_lattice (bool): Raise if no lattice in json serialization.
+            raw (bool): If set, sort so the input sequences can be in any order.
+                        If unset (default), assume input is already ordered for speedup
+
+        Returns:
+            New :class:`.Context` instance.
         """
         d = tools.load_json(path_or_fileobj, encoding=encoding)
         return cls.fromdict(d,
@@ -237,14 +258,9 @@ class Context(object):
         self._Extent = self._extents.BitSet
 
     def __eq__(self, other):
-        """Return True if two contexts are equivalent.
+        """Return ``True`` if two contexts are equivalent.
 
-        Notes:
-            Ignores their .lattice objects.
-            Lattices compare both themselves and their contexts.
-            Lattice-comparison is present mainly for unit-tests
-            (not meant to be efficient), context-comparison should be
-            superior in most cases.
+        Ignores ``self.lattice`` and ``other.lattice`` objects.
         """
         if not isinstance(other, Context):
             return NotImplemented
@@ -254,7 +270,10 @@ class Context(object):
                 and self.bools == other.bools)
 
     def __ne__(self, other):
-        """Return False if two contexts are equivalent."""
+        """Return ``False`` if two contexts are equivalent.
+
+        Ignores ``self.lattice`` and ``other.lattice`` objects.
+        """
         if not isinstance(other, Context):
             return NotImplemented
 
@@ -312,14 +331,30 @@ class Context(object):
             yield concept  # concept[3] keeps growing until exhaustion
 
     def intension(self, objects, raw=False):
-        """Return all properties shared by the given ``objects``."""
+        """Return all properties shared by the given ``objects``.
+
+        Args:
+            objects: Iterable of strings taken from ``self.objects``.
+            raw (bool): return raw intent instead of string tuple.
+
+        Returns:
+            A tuple of strings taken from ``self.properties``.
+        """
         intent = self._Extent.frommembers(objects).prime()
         if raw:
             return intent
         return intent.members()
 
     def extension(self, properties, raw=False):
-        """Return all objects sharing the given ``properties``."""
+        """Return all objects sharing the given ``properties``.
+
+        Args:
+            properties: Iterable of strings taken from ``self.properties``.
+            raw (bool): return raw extent instead of string tuple.
+
+        Returns:
+            A tuple of strings taken from ``self.objects``.
+        """
         extent = self._Intent.frommembers(properties).prime()
         if raw:
             return extent
@@ -364,8 +399,10 @@ class Context(object):
         """Return serialized context with optional lattice.
 
         Args:
-            include_lattice (bool): include ``'lattice'`` in result
-        Returns: new ``dict`` with serialized context
+            include_lattice (bool): Include ``'lattice'`` in result.
+
+        Returns:
+            A new :class:`dict` with the serialized context.
         """
         result = {
             u'objects': self.objects,
@@ -382,21 +419,26 @@ class Context(object):
                include_lattice=None):
         """Write serialized context as json to path or file-like object.
 
-            ignore_lattice (bool): don't load lattice from json
-
         Args:
-            path_or_fileobj: path, pathlike, or file-like object for reading
-            encoding (str): ignored for file-like objects on Python 3
-            indent (int): json.dump(indent=indent) for pretty-printing
-            sort_keys (bool): json.dump(sort_keys=sort_keys) for diffability
-            include_lattice (bool): include ``'lattice'`` in result
+            path_or_fileobj: Path, pathlike, or file-like object for reading.
+            encoding (str): Ignored for file-like objects on Python 3.
+            indent (int): :func:`json.dump` ``indent`` for pretty-printing.
+            sort_keys (bool): :func:`json.dump` ``sort_keys`` for diffability.
+            include_lattice (bool): Include ``'lattice'`` in result.
         """
         d = self.todict(include_lattice=include_lattice)
         tools.dump_json(d, path_or_fileobj, encoding=encoding,
                         indent=indent, sort_keys=sort_keys)
 
     def tostring(self, frmat='table', **kwargs):
-        """Return the context serialized in the given string-based format."""
+        """Return the context serialized in the given string-based format.
+
+        Args:
+            frmat (str): Format of the string (``'table'``, ``'cxt'``, ``'csv'``).
+
+        Reuturns:
+            Seralized string.
+        """
         frmat = formats.Format[frmat]
         return frmat.dumps(self._Extent._members, self._Intent._members,
                            self._intents.bools(), **kwargs)
@@ -428,7 +470,11 @@ class Context(object):
         return self._intents.bools()
 
     def definition(self):
-        """Return ``(objects, properties, bools)`` triple as mutable object."""
+        """Return ``(objects, properties, bools)`` triple as mutable object.
+
+        Returns:
+            New :class:`.Definition` instance.
+        """
         return definitions.Definition(self._Extent._members,
                                       self._Intent._members,
                                       self._intents.bools())

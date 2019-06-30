@@ -35,11 +35,13 @@ should print the version of your Graphiz installation.
 Formal contexts
 ---------------
 
-With Concepts, formal contexts can be created from a string with an ASCII-art
-style **cross-table**. The objects and properties will simply be represented by
-strings. Separate the property columns with *pipe* symbols (``|``), create one
-row for each objects, one column for each property, and indicate the presence
-of a property with the character ``X``.
+With :mod:`concepts`, formal contexts (:class:`.Context` objects) can be
+created from a string with an ASCII-art style **cross-table**.
+The :attr:`~.Context.objects` and :attr:`~.Context.properties` will simply be
+represented by strings.
+Separate the property columns with *pipe* symbols (``'|'``), create one row for
+each objects, one column for each property, and indicate the presence of a
+property with the character ``'X'``.
 
 Note that the object and property names need to be *disjoint* to uniquely
 identify them.
@@ -61,8 +63,8 @@ identify them.
 You can also load contexts from files in different **plain-text formats**, see
 below.
 
-After creation, the parsed content of the table is available on the **context
-object**.
+After creation, the parsed content of the table is available on the
+:class:`.Context` object.
 
 .. code:: python
 
@@ -76,9 +78,9 @@ object**.
     [(True, True, True, False), (True, True, False, False), (False, False, False, True)]
 
 
-The context object can be queried to return the **common properties** for a
-collection of objects (common *intent*, :meth:`~.Context.intension`) as well as
-the **common objects** for a collection of properties (common *extent*,
+The :class:`.Context` object can be queried to return the **common properties**
+for a collection of objects (common *intent*, :meth:`~.Context.intension`) as well
+as the **common objects** for a collection of properties (common *extent*,
 :meth:`~.Context.extension`):
 
 .. code:: python
@@ -111,7 +113,7 @@ context table, when rows and columns can be reordered freely.
 
 You can retrieve the **closest matching concept** corresponding to a collection
 of objects or properties with the :meth:`~.Context.__getitem__` method of the
-concept object:
+:class:`.Context` object:
 
 .. code:: python
 
@@ -124,8 +126,9 @@ concept object:
     >>> c['King Arthur', 'Sir Robin']
     (('King Arthur', 'Sir Robin'), ('human', 'knight'))
 
-Within each context, there is a **maximally general concept** comprising all of
-the objects as extent and having an empty intent (*supremum*).
+Within each :class:`~.Context`, there is a **maximally general
+concept** comprising all of the :attr:`~.Context.objects` as extent and having
+an *empty* intent (*supremum*).
 
 .. code:: python
 
@@ -134,16 +137,16 @@ the objects as extent and having an empty intent (*supremum*).
 
 
 Furthermore there is a **minimally general concept** comprising no object at all
-and having all properties as intent (*infimum*).
+and having all :attr:`~.Context.properties` as intent (*infimum*).
 
 .. code:: python
 
     >>> c['mysterious', 'knight']  # minimal concept, infimum
     ((), ('human', 'knight', 'king', 'mysterious'))
 
-The concepts of a context can be ordered by extent set-inclusion (or dually
-intent set-inclusion). With this (partial) order, they form a *concept lattice*
-having the **supremum** concept (i.e. the tautology) at the top, the **infimum**
+The concepts of a context can be ordered by extent set-inclusion (or, dually,
+by intent set-inclusion). With this (partial) order, they form a *concept lattice*
+(:class:`.Lattice` object) having the :attr:`~.Lattice.supremum` concept (i.e. the tautology) at the top, the :attr:`~.Lattice.infimum`
 concept (i.e. the contradiction) at the bottom, and the other concepts in
 between.
 
@@ -151,9 +154,10 @@ between.
 Concept lattice
 ---------------
 
-The concept :attr:`~.Context.lattice` of a context contains **all pairs of
-objects and properties** (*formal concepts*) that can be retrieved from a formal
-context. You can iterate over the lattice to visit all concepts:
+The concept :attr:`~.Context.lattice` of a :class:`.Context` contains **all
+pairs of objects and properties** (*formal concepts*) that can be retrieved
+from a formal context. You can iterate over the :class:`.Lattice` to
+visit all concepts:
 
 .. code:: python
 
@@ -173,7 +177,8 @@ context. You can iterate over the lattice to visit all concepts:
     ('King Arthur', 'Sir Robin') ('human', 'knight')
     ('King Arthur', 'Sir Robin', 'holy grail') ()
 
-Individual concepts can be retrieved by different means :
+Individual :class:`~.lattices.Concept` objets can be retrieved from the
+:class:`.Lattice` object by different means :
 
 .. code:: python
 
@@ -207,7 +212,7 @@ subconcepts):
 Visualization
 -------------
 
-To visualize the lattice, use its :meth:`~.Lattice.graphviz` method:
+To visualize the :class:`.Lattice`, use its :meth:`~.Lattice.graphviz` method:
 
 .. code:: python
 
@@ -309,8 +314,13 @@ the `Python graphviz interface`_ used.
 Persistence
 -----------
 
-Contexts can be loaded from and saved to files in CXT, CSV, and ASCII-art table
-format:
+
+CXT, CXT, table
+^^^^^^^^^^^^^^^
+
+:class:`.Context` objects can be loaded from and saved to files and strings in
+CXT, CSV and ASCII-art table formats.
+For loading, use :meth:`.Context.fromfile` or :meth:`.Context.fromstring`:
 
 .. code:: python
 
@@ -326,23 +336,37 @@ format:
     >>> c3  # doctest: +ELLIPSIS
     <Context object mapping 8 objects to 9 properties [b1e86589] at 0x...>
 
-    >>> c1 == c2 == c3
-    True
+    >>> assert c1 == c2 == c3
 
-To save a context, use its :meth:`~.Context.tofile` method.
+To save a :class:`.Context` object, use its :meth:`~.Context.tofile` or
+:meth:`~.Context.tostring` methods.
+All four methods allow to specify the ``frmat`` argument (``'cxt'``, ``'csv'``,
+or ``'table'``).
 
-Context objects are pickleable:
+The :func:`.load` function can be used to infer the format from the filename
+suffix.
+There is also a dedicated :func:`.load_cxt` for loading CXT files, and
+:func:`.load_csv` for loading contexts from CSV files in different formats via
+the ``dialect`` argument (e.g. ``'excel-tab'`` for tab-separated, see
+:mod:`csv` docs).
 
-.. code:: python
+.. note::
 
-    >>> import pickle
+    These methods/functions load/save only the :class:`.Context`, not the
+    structure of its :attr:`~.Context.lattice` (i.e. only the information to
+    recreate the :class:`.Context`; its :attr:`~.Context.lattice` can be
+    recomputed on demand).
 
-    >>> pickle.loads(pickle.dumps(c)) == c
-    True
 
-Contexts can be serialized and deserialized as json (possibly including 
-their lattice structure) for long-term storage, e.g. of large graphs that
-are expensive to compute:
+Custom :mod:`json`-compatible format
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+:class:`.Context` objects can also be serialized and deserialized using a
+custom :mod:`json`-based format with :meth:`~.Context.tojson` and 
+:meth:`.Context.fromjson`.
+This format allows to include the :attr:`~.Context.lattice` structure, so it
+can be used for long-term storage of large graphs that are expensive to
+compute:
 
 .. code:: python
 
@@ -350,16 +374,30 @@ are expensive to compute:
     >>> c
     <Context object mapping 6 objects to 10 properties [b9d20179] at 0x...>
 
-The same long term storage format is also available as Python dict, e.g. to
-be used with other methods of (de)serialization such as pickle, yaml,
-pprint.pprint() + ast.literal_eval(), toml, xml, a database, etc.
+The same custom storage format is also available as plain Python :class:`dict`,
+e.g. to be used with other methods of (de)serialization such as :mod:`pickle`,
+:func:`pprint.pprint` + :func:`ast.literal_eval`, yaml_, toml, xml, a database,
+etc. Use :meth:`~.Context.todict` and  :meth:`.Context.fromdict`:
 
 .. code:: python
 
     >>> print(', '.join(sorted(c.todict())))
     context, lattice, objects, properties
 
-See :ref:`advanced` for details.
+See :ref:`json_format` for details.
+
+
+With :mod:`pickle`
+^^^^^^^^^^^^^^^^^^
+
+:class:`.Context` objects are also pickleable:
+
+.. code:: python
+
+    >>> import pickle
+
+    >>> pickle.loads(pickle.dumps(c)) == c
+    True
 
 
 .. _available from PyPI: https://pypi.org/project/concepts/
@@ -375,3 +413,5 @@ See :ref:`advanced` for details.
 
 .. _documentation: https://graphviz.readthedocs.io
 .. _Python graphviz interface: graphviz_
+
+.. _yaml: https://pyyaml.org
