@@ -25,10 +25,13 @@ def test_getitem_invalid():
         Format['spam']
 
 
-def test_infer_format():
-    assert Format.infer_format('spam.TXT') == 'table'
-    assert Format.infer_format('spam.cxt') == 'cxt'
-    assert Format.infer_format('spam.spam.csv') == 'csv'
+@pytest.mark.parametrize('filename, expected', [
+    ('spam.TXT', 'table'),
+    ('spam.cxt', 'cxt'),
+    ('spam.spam.csv', 'csv')
+])
+def test_infer_format(filename, expected):
+    assert Format.infer_format(filename) == expected
 
 
 def test_infer_format_invalid():
