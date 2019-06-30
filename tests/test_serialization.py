@@ -68,10 +68,12 @@ def test_todict(context, d):
         context = Context(context.objects, context.properties, context.bools)
         assert 'lattice' not in context.__dict__
 
-        assert context.todict(include_lattice=True) == context.todict() == d
+        for ignore_lattice in (False, None):
+            assert context.todict(ignore_lattice=ignore_lattice) == d
         assert 'lattice' in context.__dict__
     else:
-        assert context.todict() == context.todict(include_lattice=False) == d
+        for ignore_lattice in (True, None):
+            assert context.todict(ignore_lattice=ignore_lattice) == d
         assert 'lattice' not in context.__dict__
 
 
@@ -190,39 +192,42 @@ def test_fromdict_raw(context, lattice, d, raw):
             assert not result.lattice._eq(lattice)
 
 
-@pytest.mark.parametrize('include_lattice', [False, None, True])
-def test_dict_roundtrip(context, include_lattice):
+@pytest.mark.parametrize('ignore_lattice', [True, None, False])
+def test_dict_roundtrip(context, ignore_lattice):
     context = Context(context.objects, context.properties, context.bools)
     assert 'lattice' not in context.__dict__
 
-    d = context.todict(include_lattice=include_lattice)
+    d = context.todict(ignore_lattice=ignore_lattice)
 
     assert isinstance(d, dict) and d
     assert all(d[k] for k in ('objects', 'properties', 'context'))
-    if include_lattice:
-        assert 'lattice' in context.__dict__
-        assert d['lattice']
-    else:
+    if ignore_lattice or ignore_lattice is None:
         assert 'lattice' not in context.__dict__
         assert 'lattice' not in d
+    else:
+        assert 'lattice' in context.__dict__
+        assert d['lattice']
 
     result = Context.fromdict(d)
 
     assert isinstance(result, Context)
     assert result == context
-    if include_lattice:
+
+    if ignore_lattice or ignore_lattice is None:
+        assert 'lattice' not in result.__dict__
+    else:
         assert 'lattice' in result.__dict__
         assert result.lattice._eq(context.lattice)
 
 
 def test_tojson_invalid_path(context):
     with pytest.raises(TypeError, match=r'path_or_fileobj'):
-        context.tojson(object())
+        context.tojson(object(), ignore_lattice=True)
 
 
 def test_fromjson_invalid_path():
     with pytest.raises(TypeError, match=r'path_or_fileobj'):
-        Context.fromjson(object())
+        Context.fromjson(object(), ignore_lattice=True)
 
 
 @pytest.fixture(scope='module')
@@ -247,13 +252,13 @@ def encoding(request):
 
 
 def test_json_roundtrip(context, path_or_fileobj, encoding):
-    f, is_fileobj = path_or_fileobj
-    kwargs = {'encoding': encoding} if encoding is not None else {}
-
     context = Context(context.objects, context.properties, context.bools)
     assert 'lattice' not in context.__dict__
 
-    context.tojson(f, **kwargs)
+    f, is_fileobj = path_or_fileobj
+    kwargs = {'encoding': encoding} if encoding is not None else {}
+
+    context.tojson(f, ignore_lattice=True, **kwargs)
     if is_fileobj:
         f.seek(0)
     assert 'lattice' not in context.__dict__
@@ -268,7 +273,7 @@ def test_json_roundtrip(context, path_or_fileobj, encoding):
     assert isinstance(context.lattice, Lattice)
     assert 'lattice' in context.__dict__
 
-    context.tojson(f, **kwargs)
+    context.tojson(f, ignore_lattice=None, **kwargs)
     if is_fileobj:
         f.seek(0)
 
@@ -286,9 +291,9 @@ def test_tojson_indent4(make_stringio, context, encoding):
     kwargs = {'encoding': encoding} if encoding is not None else {}
 
     with make_stringio() as f:
-        context.tojson(f, indent=4, sort_keys=True, **kwargs)
-
+        context.tojson(f, indent=4, sort_keys=True, ignore_lattice=True, **kwargs)
         assert 'lattice' not in context.__dict__
+
         serialized = f.getvalue()
 
     assert serialized.startswith('{\n    "context": [')
@@ -299,14 +304,14 @@ def test_tojson_newlinedelmited(make_stringio, context, encoding):
     kwargs = {'encoding': encoding} if encoding is not None else {}
 
     with make_stringio() as f:
-        context.tojson(f, sort_keys=True, **kwargs)
+        context.tojson(f, sort_keys=True, ignore_lattice=True, **kwargs)
         assert 'lattice' not in context.__dict__
         f.write(str('\n'))
         serialized = f.getvalue()
 
         assert serialized.startswith('{"context": [')
 
-        context.tojson(f, sort_keys=True, **kwargs)
+        context.tojson(f, sort_keys=True, ignore_lattice=True, **kwargs)
         assert 'lattice' not in context.__dict__
         f.write(str('\n'))
         second = f.getvalue()

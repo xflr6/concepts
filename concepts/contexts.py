@@ -395,28 +395,34 @@ class Context(object):
                                     len(self._Intent._members),
                                     self.crc32(), id(self))
 
-    def todict(self, include_lattice=None):
+    def todict(self, ignore_lattice=False):
         """Return serialized context with optional lattice.
 
         Args:
-            include_lattice (bool): Include ``'lattice'`` in result.
+            ingnore_lattice (bool): Omit ``'lattice'`` in result.
 
         Returns:
             A new :class:`dict` with the serialized context.
+
+        If ``ignore_lattice`` is ``None``, ``'lattice'`` is omitted if it has
+        not yet been computed.
         """
         result = {
             u'objects': self.objects,
             u'properties': self.properties,
             u'context': self._intents.index_sets(),
         }
-        if (include_lattice
-            or include_lattice is None and u'lattice' in self.__dict__):
+        if ignore_lattice:
+            pass
+        elif ignore_lattice is None and u'lattice' not in self.__dict__:
+            pass
+        else:
             result[u'lattice'] = self.lattice._tolist()
         return result
 
     def tojson(self, path_or_fileobj, encoding='utf-8',
                indent=None, sort_keys=True,
-               include_lattice=None):
+               ignore_lattice=False):
         """Write serialized context as json to path or file-like object.
 
         Args:
@@ -424,9 +430,12 @@ class Context(object):
             encoding (str): Ignored for file-like objects on Python 3.
             indent (int): :func:`json.dump` ``indent`` for pretty-printing.
             sort_keys (bool): :func:`json.dump` ``sort_keys`` for diffability.
-            include_lattice (bool): Include ``'lattice'`` in result.
+            ingnore_lattice (bool): Omit ``'lattice'`` in result.
+
+        If ``ignore_lattice`` is ``None``, ``'lattice'`` is omitted if it has
+        not yet been computed.
         """
-        d = self.todict(include_lattice=include_lattice)
+        d = self.todict(ignore_lattice=ignore_lattice)
         tools.dump_json(d, path_or_fileobj, encoding=encoding,
                         indent=indent, sort_keys=sort_keys)
 
