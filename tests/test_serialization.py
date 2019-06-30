@@ -299,7 +299,7 @@ def test_tojson_newlinedelmited(make_stringio, context, encoding):
     kwargs = {'encoding': encoding} if encoding is not None else {}
 
     with make_stringio() as f:
-        context.tojson(f, sort_keys=True,  **kwargs)
+        context.tojson(f, sort_keys=True, **kwargs)
         assert 'lattice' not in context.__dict__
         f.write(str('\n'))
         serialized = f.getvalue()

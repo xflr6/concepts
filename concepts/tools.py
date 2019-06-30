@@ -11,7 +11,7 @@ __all__ = [
     'max_len', 'maximal',
     'lazyproperty',
     'crc32_hex',
-    'json_load', 'json_dump',
+    'load_json', 'dump_json',
 ]
 
 
