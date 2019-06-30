@@ -10,17 +10,20 @@ reading/writing ``Context`` objects case-insensitive (mirroring
 case-insensitivity of format inference from filename suffixes).
 
 Add ``Context.tojson(path_or_fileonj)`` and ``Context.fromjson(path_or_fileonj)``
-for long term storage format serialized as json. Long term storage format can include
+for long term storage format serialized as json. This custom format can include
 the lattice structure information so that e.g. big lattices that are expensive to
 compute can be stored and loaded without the need to re-calculate the lattice.
 
-Add ``Context.todict()`` and ``Context.fromdict()`` for long term storage format
-as Python dict. Can be (de)serialized with other tools such as pickle, yaml,
-pprint.pprint() + ast.literal_eval(), toml, xml, a database, etc.
+Add ``Context.todict()`` and ``Context.fromdict()`` for custom format as plain
+Python ``dict``. Can be (de)serialized with other tools such as pickle,
+``pprint.pprint()`` + ``ast.literal_eval()``, yaml,, toml, xml, a database,
+etc.
 
-Add equivalence checking for ``Lattice``. Note that while ``Context`` ignore their
-lattices for equivalence checking, ``Lattice`` also compare their contexts.
-Lattice-comparison is mostly for unit-testing (not meant to be efficient), context-comparison should be superior in most cases.
+Add equivalence checking for ``Lattice``. Note that ``Lattice`` comparison does
+not compare their contexts (the same as ``Context`` ignore their lattices for
+equivalence checking). Lattice-comparison is mostly for unit-testing the
+implementation of this package (not meant to be efficient). Context-comparison
+should be superior in most cases.
 
 
 Version 0.8.1
