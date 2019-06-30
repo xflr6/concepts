@@ -31,9 +31,10 @@ class FormatMeta(type):
             self._map[self.name] = self
 
     def __getitem__(self, name):  # noqa: N804
-        if name not in self._map:
+        try:
+            return self._map[name.lower()]
+        except KeyError:
             raise KeyError('%r unknown format: %r' % (self, name))
-        return self._map[name]
 
     def infer_format(self, filename, frmat=None):  # noqa: N804
         _, suffix = os.path.splitext(filename)

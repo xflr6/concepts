@@ -5,6 +5,10 @@ Changelog
 Version 0.9 (in development)
 ----------------------------
 
+Make the ``frmat`` argument (e.g. ``'table'``, ``'cxt'``, ``'csv'``) for
+reading/writing ``Context`` objects case-insensitive (mirroring
+case-insensitivity of format inference from filename suffixes).
+
 Add ``Context.tojson(path_or_fileonj)`` and ``Context.fromjson(path_or_fileonj)``
 for long term storage format serialized as json. Long term storage format can include
 the lattice structure information so that e.g. big lattices that are expensive to

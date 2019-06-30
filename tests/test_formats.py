@@ -10,16 +10,14 @@ from concepts.formats import Format, Cxt, Table, Csv, WikiTable
 DIRECTORY = 'test-output'
 
 
-def test_getitem():
-    assert Format['table'] == Table
-    assert Format['cxt'] == Cxt
-    assert Format['csv'] == Csv
-    assert Format['wikitable'] == WikiTable
-
-
-def test_getitem_case_wrongcase():
-    with pytest.raises(KeyError):
-        Format['CSV']
+@pytest.mark.parametrize('name, expected', [
+    ('table', Table),
+    ('cxt', Cxt),
+    ('csv', Csv),
+    ('wikitable', WikiTable),
+])
+def test_getitem(name, expected):
+    assert Format[name] is expected is Format[name.upper()]
 
 
 def test_getitem_invalid():
