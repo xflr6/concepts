@@ -239,7 +239,7 @@ class Lattice(object):
         context, concepts = state
         self._init(self, context, concepts, unpickle=True)
 
-    def __eq__(self, other):
+    def _eq(self, other):
         """Return ``True`` if two lattices are equivalent.
 
         Notes:
@@ -272,20 +272,6 @@ class Lattice(object):
                 return False
 
         return True
-
-    def __ne__(self, other):
-        """Return ``False`` if two lattices are equivalent.
-
-        Notes:
-            Does not compares their context objects.
-            Lattice-equivalence comparison is present mainly for unit-tests
-            (not meant to be efficient). Context-comparison should be superior
-            in most cases.
-        """
-        if not isinstance(other, Lattice):
-            return NotImplemented
-
-        return not self == other
 
     def _tolist(self):
         return [(tuple(c._extent.iter_set()),

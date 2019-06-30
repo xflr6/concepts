@@ -10,31 +10,31 @@ from concepts.lattices import Concept
 
 
 def test_eq_nonlattice(lattice):
-    assert not lattice == object()
+    assert lattice._eq(object()) is NotImplemented
 
 
 def test_eq(lattice):
-    assert lattice == lattice
+    assert lattice._eq(lattice)
 
     d = lattice._context.definition()
-    assert lattice == Context(*d).lattice
+    assert lattice._eq(Context(*d).lattice)
 
     d.add_object('X', ['mysterious', 'child'])
-    assert not lattice == Context(*d).lattice
+    assert not lattice._eq(Context(*d).lattice)
     d.remove_object('X')
 
     d.move_object('3pl', 0)
-    assert not lattice == Context(*d).lattice
+    assert not lattice._eq(Context(*d).lattice)
 
 
 def test_eq_mapping(lattice):
     other = Context(*lattice._context.definition()).lattice
     k, v = other._mapping.popitem()
-    assert not other == lattice
+    assert not other._eq(lattice)
 
     k = k.__class__.frommembers(['1sg', '3pl'])
     other._mapping[k] = v
-    assert not other == lattice
+    assert not other._eq(lattice)
 
 
 def test_eq_concepts(lattice):
@@ -44,7 +44,7 @@ def test_eq_concepts(lattice):
     for attname in ('index', 'dindex'):
         i = getattr(c, attname)
         setattr(c, attname, -1)
-        assert not other == lattice
+        assert not other._eq(lattice)
         setattr(c, attname, i)
 
     for attname in ('atoms', 'properties', 'objects'):
@@ -53,16 +53,8 @@ def test_eq_concepts(lattice):
             setattr(c, attname, ('spam',))
         else:
             setattr(c, attname, tuple(reversed(t)))
-        assert not other == lattice
+        assert not other._eq(lattice)
         setattr(c, attname, t)
-
-
-def test_ne_nonlattice(lattice):
-    assert lattice != object()
-
-
-def test_ne(lattice):
-    assert not lattice != lattice
 
 
 def test_concept_eq_nonconcept(lattice):

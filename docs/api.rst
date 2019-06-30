@@ -73,7 +73,6 @@ Lattice
     :members:
         infimum, supremum,
         __call__, __getitem__, __iter__, __len__,
-        __eq__, __ne__,
         atoms,
         join, meet,
         upset_union, downset_union,

@@ -157,7 +157,7 @@ def test_fromdict(context, lattice, d, require_lattice, ignore_lattice, raw):
         assert 'lattice' not in result.__dict__
     else:
         assert 'lattice' in result.__dict__
-        assert result.lattice == lattice
+        assert result.lattice._eq(lattice)
 
 
 def test_fromdict_raw(context, lattice, d, raw):
@@ -184,10 +184,10 @@ def test_fromdict_raw(context, lattice, d, raw):
     assert result == context
     if _lattice is not None:
         if raw:
-            assert result.lattice == lattice
+            assert result.lattice._eq(lattice)
         else:
             # instance broken by shuffled(d['lattice'])
-            assert result.lattice != lattice
+            assert not result.lattice._eq(lattice)
 
 
 @pytest.mark.parametrize('include_lattice', [False, None, True])
@@ -212,7 +212,7 @@ def test_dict_roundtrip(context, include_lattice):
     assert result == context
     if include_lattice:
         assert 'lattice' in result.__dict__
-        assert result.lattice == context.lattice
+        assert result.lattice._eq(context.lattice)
 
 
 def test_tojson_invalid_path(context):
@@ -278,7 +278,7 @@ def test_json_roundtrip(context, path_or_fileobj, encoding):
     assert 'lattice' in deserialized.__dict__
 
     assert deserialized == context
-    assert deserialized.lattice == context.lattice
+    assert deserialized.lattice._eq(context.lattice)
 
 
 def test_tojson_indent4(make_stringio, context, encoding):
@@ -343,7 +343,7 @@ def test_json_roundtrip_nonascii_context(make_stringio, nonascii_context, encodi
 
     assert 'lattice' in deserialized.__dict__
     assert deserialized == nonascii_context
-    assert deserialized.lattice == nonascii_context.lattice
+    assert deserialized.lattice._eq(nonascii_context.lattice)
 
     assert u'"Agneta F\\u00e4ltskog"' in serialized
     assert u'"Bj\\u00f6rn Ulvaeus"' in serialized

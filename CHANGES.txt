@@ -19,12 +19,6 @@ Python ``dict``. Can be (de)serialized with other tools such as pickle,
 ``pprint.pprint()`` + ``ast.literal_eval()``, yaml,, toml, xml, a database,
 etc.
 
-Add equivalence checking for ``Lattice``. Note that ``Lattice`` comparison does
-not compare their contexts (the same as ``Context`` ignore their lattices for
-equivalence checking). Lattice-comparison is mostly for unit-testing the
-implementation of this package (not meant to be efficient). Context-comparison
-should be superior in most cases.
-
 
 Version 0.8.1
 -------------
