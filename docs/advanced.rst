@@ -99,8 +99,8 @@ the resulting context:
     :align: center
 
 
-Context from ``pandas.DataFrame``
----------------------------------
+:class:`.Context` from ``pandas.DataFrame``
+-------------------------------------------
 
 .. code:: python
 
@@ -120,21 +120,27 @@ Context from ``pandas.DataFrame``
     assert c_ == c
 
 
-Long-term storage format
-------------------------
+.. _json_format:
 
-For the ``concepts.Context.fromstring(concepts.EXAMPLE)``:
+Custom serialization format
+---------------------------
+
+For the :class:`.Context` from :data:`concepts.EXAMPLE`:
 
 .. literalinclude:: ../concepts/__init__.py
     :lines: 20-27
 
-The serialization (including its ``.lattice``) looks like this (any extra keys
-will be ignored when loading):
+The serialization as Python :class:`dict` (including its
+:attr:`~.Concept.lattice` structure) looks like this:
 
 .. literalinclude:: ../tests/test_serialization.py
     :lines: 14-53
 
-Note that ``'context'`` items are references to ``'properties'`` (indexes) and
-``'lattice'`` items are 4-tuples where the first two are references to
-``'objects'`` and the last two are references to the ``'lattice'`` list (all
-integer indexes).
+Any extra keys are ignored when loading.
+
+Note that the ``'context'`` list items are (by-index) references to
+``'properties'`` (*intents*).
+The ``'lattice'`` list items are 4-tuples where the first elements are
+references to ``'objects'`` (*extents*), the second elements are references to
+``'properties'`` (*intents*), and the last two are references to the
+``'lattice'`` list itself (upper and lower neighbors, a.k.a. *cover sets*).
