@@ -400,12 +400,11 @@ class Context(object):
 
         Args:
             ingnore_lattice (bool): Omit ``'lattice'`` in result.
+                If ``None``, ``'lattice'`` is omitted if it has not
+                yet been computed.
 
         Returns:
             A new :class:`dict` with the serialized context.
-
-        If ``ignore_lattice`` is ``None``, ``'lattice'`` is omitted if it has
-        not yet been computed.
         """
         result = {
             u'objects': self.objects,
@@ -431,9 +430,8 @@ class Context(object):
             indent (int): :func:`json.dump` ``indent`` for pretty-printing.
             sort_keys (bool): :func:`json.dump` ``sort_keys`` for diffability.
             ingnore_lattice (bool): Omit ``'lattice'`` in result.
-
-        If ``ignore_lattice`` is ``None``, ``'lattice'`` is omitted if it has
-        not yet been computed.
+                If ``None``, ``'lattice'`` is omitted if it has not
+                yet been computed.
         """
         d = self.todict(ignore_lattice=ignore_lattice)
         tools.dump_json(d, path_or_fileobj, encoding=encoding,
