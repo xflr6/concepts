@@ -197,7 +197,7 @@ class Csv(Format):
         csv_writer = csv.writer
         kwargs = {}
         if PY2 and not all(isinstance(s, str) for s in objects + properties):
-            csv_writer = _compat_csv.UnicodeWriter
+            csv_writer = _compat_csv.UnicodeCsvWriter
             kwargs = {'encoding': 'utf-8'}
 
         with contextlib.closing(StringIO()) as fd:
@@ -245,7 +245,7 @@ class Csv(Format):
                 if encoding is None:
                     writer = csv.writer(fd, dialect)
                 else:
-                    writer = _compat_csv.UnicodeWriter(fd, dialect, encoding)
+                    writer = _compat_csv.UnicodeCsvWriter(fd, dialect, encoding)
                 return cls._dump(writer, objects, properties, bools)
 
         else:

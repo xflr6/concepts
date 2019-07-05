@@ -11,7 +11,7 @@ if sys.version_info.major == 2:
     except ImportError:  # pragma: no cover
         from StringIO import StringIO
 
-    __all__ = ['UnicodeCsvReader', 'UnicodeWriter']
+    __all__ = ['UnicodeCsvReader', 'UnicodeCsvWriter']
 
 
     class UnicodeCsvReader(object):
@@ -33,7 +33,7 @@ if sys.version_info.major == 2:
             return self._reader.line_num
 
 
-    class UnicodeWriter(object):
+    class UnicodeCsvWriter(object):
 
         def __init__(self, f, dialect=csv.excel, encoding='utf-8', **kwargs):
             self.queue = StringIO()
