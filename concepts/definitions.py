@@ -4,7 +4,8 @@
 
 from ._compat import zip, py3_unicode_to_str
 
-from . import formats, tools
+from . import formats
+from . import tools
 
 __all__ = ['Definition']
 

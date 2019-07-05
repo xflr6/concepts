@@ -6,7 +6,12 @@ import heapq
 
 from ._compat import py3_unicode_to_str, string_types, map
 
-from . import formats, matrices, tools, definitions, junctors, lattices
+from . import formats
+from . import matrices
+from . import tools
+from . import definitions
+from . import junctors
+from . import lattices
 
 __all__ = ['Context']
 
@@ -391,8 +396,8 @@ class Context(object):
     def __repr__(self):
         return ('<%s object mapping %d objects to %d properties'
                 ' [%s] at %#x>') % (self.__class__.__name__,
-                                    len(self._Extent._members),
-                                    len(self._Intent._members),
+                                    len(self.objects),
+                                    len(self.properties),
                                     self.crc32(), id(self))
 
     def todict(self, ignore_lattice=False):
@@ -447,15 +452,15 @@ class Context(object):
             Seralized string.
         """
         frmat = formats.Format[frmat]
-        return frmat.dumps(self._Extent._members, self._Intent._members,
-                           self._intents.bools(), **kwargs)
+        return frmat.dumps(self.objects, self.properties, self.bools,
+                           **kwargs)
 
     def tofile(self, filename, frmat='cxt', encoding='utf-8', **kwargs):
         """Save the context serialized to file in the given format."""
         frmat = formats.Format[frmat]
         return frmat.dump(filename,
-                          self._Extent._members, self._Intent._members,
-                          self._intents.bools(), encoding, **kwargs)
+                          self.objects, self.properties, self.bools,
+                          encoding, **kwargs)
 
     def crc32(self, encoding='utf-8'):
         """Return hex-encoded unsigned CRC32 over encoded context table string."""
@@ -482,9 +487,7 @@ class Context(object):
         Returns:
             New :class:`.Definition` instance.
         """
-        return definitions.Definition(self._Extent._members,
-                                      self._Intent._members,
-                                      self._intents.bools())
+        return definitions.Definition(self.objects, self.properties, self.bools)
 
     def relations(self, include_unary=False):
         """Return the logical relations between the context properties."""

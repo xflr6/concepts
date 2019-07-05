@@ -7,7 +7,8 @@ import operator
 
 from ._compat import py3_unicode_to_str, zip
 
-from . import tools, visualize
+from . import tools
+from . import visualize
 
 __all__ = ['Lattice']
 
@@ -313,8 +314,8 @@ class Lattice(object):
     def __repr__(self):
         return ('<%s object of %d atoms %d concepts %d coatoms'
                 ' at %#x>') % (self.__class__.__name__,
-                               len(self.infimum.upper_neighbors),
-                               len(self._concepts),
+                               len(self.atoms),
+                               len(self),
                                len(self.supremum.lower_neighbors),
                                id(self))
 
