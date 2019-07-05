@@ -220,14 +220,12 @@ def _call_json(funcname, path_or_fileobj, encoding, mode, **kwargs):
     close = not fallthrough
 
     try:
-        result = _compat.json_call(funcname, fp=f, encoding=encoding, **kwargs)
+        return _compat.json_call(funcname, fp=f, encoding=encoding, **kwargs)
     except (AttributeError, TypeError):
         raise TypeError('path_or_fileobj: %r' % path_or_fileobj)
     finally:
         if close:
             f.close()
-
-    return result
 
 
 def _get_fileobj(path_or_fileobj, mode, encoding):
