@@ -20,22 +20,22 @@ class Relations(list):
     """Logical relations between items from their contingent truth condition sequences.
 
     >>> Relations(['+1', '-2 -3'], [(True, False, False), (True, False, False)])
-    [<'+1' Equivalent '-2 -3'>]
+    [<Equivalent('+1', '-2 -3')>]
 
     >>> Relations(['+1', '-1'], [(True, False, False), (False, True, True)])
-    [<'+1' Complement '-1'>]
+    [<Complement('+1', '-1')>]
 
     >>> Relations(['+1', '+3'], [(True, False, False), (False, False, True)])
-    [<'+1' Incompatible '+3'>]
+    [<Incompatible('+1', '+3')>]
 
     >>> Relations(['+1', '-3'], [(True, False, False), (True, True, False)])
-    [<'+1' Implication '-3'>]
+    [<Implication('+1', '-3')>]
 
     >>> Relations(['-1', '-3'], [(False, True, True), (True, True, False)])
-    [<'-1' Subcontrary '-3'>]
+    [<Subcontrary('-1', '-3')>]
 
     >>> Relations(['+1', 'sg'], [(True, True, False, False), (True, False, True, False)])
-    [<'+1' Orthogonal 'sg'>]
+    [<Orthogonal('+1', 'sg')>]
 
 
     >>> r = Relations(['Never', 'Always', 'Possibly', 'Maybe'],
@@ -43,9 +43,9 @@ class Relations(list):
     ...     include_unary=True)
 
     >>> r  # doctest: +NORMALIZE_WHITESPACE
-    [<'Never' Contradiction>, <'Always' Tautology>,
-     <'Possibly' Contingency>, <'Maybe' Contingency>,
-     <'Possibly' Equivalent 'Maybe'>]
+    [<Contradiction('Never')>, <Tautology('Always')>,
+     <Contingency('Possibly')>, <Contingency('Maybe')>,
+     <Equivalent('Possibly', 'Maybe')>]
 
     >>> print(r)  # noqa: W291
     Never    contradiction 
@@ -133,7 +133,7 @@ class Unary(Relation):
     """Logical property of a single truth condition sequence.
 
                       |T|F|
-    Contingency   ~ 0 |X|X|
+    Contingency   ~  0|X|X|
     Contradiction t -2| |X|
     Tautology     f -1|X| |
     """
@@ -150,7 +150,7 @@ class Unary(Relation):
         return '%s %s' % (self.left, self.kind)
 
     def __repr__(self):
-        return '<%r %s>' % (self.left, self.__class__.__name__)
+        return '<%s(%r)>' % (self.__class__.__name__, self.left)
 
 
 class Binary(Relation):
@@ -176,4 +176,4 @@ class Binary(Relation):
         return '%s %s %s' % (self.left, self.kind, self.right)
 
     def __repr__(self):
-        return '<%r %s %r>' % (self.left, self.__class__.__name__, self.right)
+        return '<%s(%r, %r)>' % (self.__class__.__name__, self.left, self.right)
