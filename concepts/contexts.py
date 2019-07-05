@@ -425,7 +425,7 @@ class Context(object):
         """Write serialized context as json to path or file-like object.
 
         Args:
-            path_or_fileobj: Path, pathlike, or file-like object for reading.
+            path_or_fileobj: Path, pathlike, or file-like object for writing.
             encoding (str): Ignored for file-like objects on Python 3.
             indent (int): :func:`json.dump` ``indent`` for pretty-printing.
             sort_keys (bool): :func:`json.dump` ``sort_keys`` for diffability.
