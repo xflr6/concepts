@@ -193,8 +193,7 @@ class Context(object):
 
         if len(context) != len(objects):
             raise ValueError('mismatch: %r objects with %r'
-                             ' context rows: ' % (len(objects),
-                                                 len(context)))
+                             ' context rows: ' % (len(objects), len(context)))
 
         if require_lattice:
             try:
@@ -220,9 +219,9 @@ class Context(object):
                  for intent in map(_make_set, context)]
 
         inst = cls(objects, properties, bools)
+        assert 'lattice' not in inst.__dict__
 
         if not ignore_lattice and lattice is not None:
-            assert 'lattice' not in inst.__dict__
             inst.lattice = lattices.Lattice._fromlist(inst, lattice, raw)
         return inst
 
