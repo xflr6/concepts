@@ -396,6 +396,9 @@ def _iterunion(concepts, sortkey, next_concepts):
     seen = -1
     while heap:
         index, concept = pop(heap)
+        # requires sortkey to be an extension of the lattice order
+        # (a toplogical sort of it) in the direction of next_concepts
+        # assert index >= seen
         if index > seen:
             seen = index
             yield concept
