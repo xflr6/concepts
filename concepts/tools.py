@@ -157,7 +157,7 @@ def maximal(iterable, comparison=operator.lt, _groupkey=operator.itemgetter(0)):
     """
     iterable = set(iterable)
     if len(iterable) < 2:
-        return iterable
+        return iter(iterable)
 
     return (item
             for item, pairs in groupby(permutations(iterable, 2), key=_groupkey)
@@ -207,11 +207,20 @@ def crc32_hex(data):
 
 
 def load_json(path_or_fileobj, encoding='utf-8', mode='r', **kwargs):
+    return _call_json('load', path_or_fileobj , encoding, mode, **kwargs)
+
+
+def dump_json(obj, path_or_fileobj, encoding='utf-8', mode='w', **kwargs):
+    kwargs['obj'] = obj
+    _call_json('dump', path_or_fileobj , encoding, mode, **kwargs)
+
+
+def _call_json(funcname, path_or_fileobj, encoding, mode, **kwargs):
     f, fallthrough = _get_fileobj(path_or_fileobj, mode, encoding=encoding)
     close = not fallthrough
 
     try:
-        result = _compat.json_call('load', f, encoding=encoding, **kwargs)
+        result = _compat.json_call(funcname, fp=f, encoding=encoding, **kwargs)
     except (AttributeError, TypeError):
         raise TypeError('path_or_fileobj: %r' % path_or_fileobj)
     finally:
@@ -219,19 +228,6 @@ def load_json(path_or_fileobj, encoding='utf-8', mode='r', **kwargs):
             f.close()
 
     return result
-
-
-def dump_json(obj, path_or_fileobj, encoding='utf-8', mode='w', **kwargs):
-    f, fallthrough = _get_fileobj(path_or_fileobj, mode, encoding=encoding)
-    close = not fallthrough
-
-    try:
-        _compat.json_call('dump', obj, f, encoding=encoding, **kwargs)
-    except (AttributeError, TypeError):
-        raise TypeError('path_or_fileobj: %r' % path_or_fileobj)
-    finally:
-        if close:
-            f.close()
 
 
 def _get_fileobj(path_or_fileobj, mode, encoding):
