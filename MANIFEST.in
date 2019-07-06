@@ -3,7 +3,7 @@ include requirements.txt
 include run-tests.py visualize-examples.py
 include tox.ini
 recursive-include tests *.py
-recursive-include examples *.cxt *.csv *.txt
+recursive-include examples *.cxt *.csv *.txt *.json
 recursive-include docs *.rst *.txt *.py *.png *.svg *.ipynb
 prune docs/_build
 recursive-include profile *.py *.cxt
