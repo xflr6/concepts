@@ -128,7 +128,7 @@ Custom serialization format
 For the :class:`.Context` from :data:`concepts.EXAMPLE`:
 
 .. literalinclude:: ../concepts/__init__.py
-    :lines: 20-27
+    :lines: 20-28
 
 The serialization as Python :class:`dict` (including its
 :attr:`~.Concept.lattice` structure) looks like this:

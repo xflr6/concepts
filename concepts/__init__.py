@@ -17,14 +17,15 @@ __author__ = 'Sebastian Bank <sebastian.bank@uni-leipzig.de>'
 __license__ = 'MIT, see LICENSE.txt'
 __copyright__ = 'Copyright (c) 2013-2019 Sebastian Bank'
 
-EXAMPLE = '''\
+EXAMPLE = '''
    |+1|-1|+2|-2|+3|-3|+sg|+pl|-sg|-pl|
 1sg| X|  |  | X|  | X|  X|   |   |  X|
 1pl| X|  |  | X|  | X|   |  X|  X|   |
 2sg|  | X| X|  |  | X|  X|   |   |  X|
 2pl|  | X| X|  |  | X|   |  X|  X|   |
 3sg|  | X|  | X| X|  |  X|   |   |  X|
-3pl|  | X|  | X| X|  |   |  X|  X|   |'''
+3pl|  | X|  | X| X|  |   |  X|  X|   |
+'''
 
 
 def load(filename, encoding='utf-8', frmat=None):
