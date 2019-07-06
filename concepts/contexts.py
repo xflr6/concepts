@@ -151,8 +151,8 @@ class Context(object):
         """Return a new context from json path or file-like object.
 
         Args:
-            path_or_fileobj: Path, pathlike, or file-like object for reading.
-            encoding (str): Ignored for file-like objects on Python 3.
+            path_or_fileobj: :class:`str`, :class:`os.PathLike`, or file-like object open for reading.
+            encoding (str): Ignored for file-like objects under Python 3.
             ignore_lattice (bool): Don't load lattice from json serialization.
             require_lattice (bool): Raise if no lattice in json serialization.
             raw (bool): If set, sort so the input sequences can be in any order.
@@ -429,8 +429,8 @@ class Context(object):
         """Write serialized context as json to path or file-like object.
 
         Args:
-            path_or_fileobj: Path, pathlike, or file-like object for writing.
-            encoding (str): Ignored for file-like objects on Python 3.
+            path_or_fileobj: :class:`str`, :class:`os.PathLike`, or file-like object open for writing.
+            encoding (str): Ignored for file-like objects under Python 3.
             indent (int): :func:`json.dump` ``indent`` for pretty-printing.
             sort_keys (bool): :func:`json.dump` ``sort_keys`` for diffability.
             ingnore_lattice (bool): Omit ``'lattice'`` in result.
