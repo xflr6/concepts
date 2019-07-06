@@ -16,7 +16,7 @@ compute can be stored and loaded without the need to re-calculate the lattice.
 
 Add ``Context.todict()`` and ``Context.fromdict()`` for custom format as plain
 Python ``dict``. Can be (de)serialized with other tools such as pickle,
-``pprint.pprint()`` + ``ast.literal_eval()``, yaml,, toml, xml, a database,
+``pprint.pprint()`` + ``ast.literal_eval()``, yaml, toml, xml, a database,
 etc.
 
 

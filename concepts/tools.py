@@ -1,4 +1,4 @@
-# tools.py
+# tools.py - generic helpers
 
 import operator
 import zlib
@@ -11,7 +11,7 @@ __all__ = [
     'max_len', 'maximal',
     'lazyproperty',
     'crc32_hex',
-    'load_json', 'dump_json',
+    'dump_json', 'load_json',
 ]
 
 
@@ -80,7 +80,7 @@ class Unique(_compat.MutableSet):
         ValueError: 0 already in list
         """
         if new_item in self._seen:
-            raise ValueError('%r already in list' % new_item)
+            raise ValueError('%r already in list' % (new_item,))
 
         idx = self._items.index(item)
         self._seen.remove(item)
@@ -142,8 +142,8 @@ def max_len(iterable, minimum=0):
     try:
         result = max(map(len, iterable))
     except ValueError:
-        result = minimum
-    return minimum if result < minimum else result
+        return minimum
+    return max(result, minimum)
 
 
 def maximal(iterable, comparison=operator.lt, _groupkey=operator.itemgetter(0)):
@@ -206,13 +206,15 @@ def crc32_hex(data):
     return '%x' % (zlib.crc32(data) & 0xffffffff)
 
 
-def load_json(path_or_fileobj, encoding='utf-8', mode='r', **kwargs):
-    return _call_json('load', path_or_fileobj , encoding, mode, **kwargs)
-
-
 def dump_json(obj, path_or_fileobj, encoding='utf-8', mode='w', **kwargs):
+    """Serialize ``obj`` via :func:`json.load` to path or file-like object."""
     kwargs['obj'] = obj
-    _call_json('dump', path_or_fileobj , encoding, mode, **kwargs)
+    _call_json('dump', path_or_fileobj, encoding, mode, **kwargs)
+
+
+def load_json(path_or_fileobj, encoding='utf-8', mode='r', **kwargs):
+    """Return deserialized :func:`json.load` from path or file-like object."""
+    return _call_json('load', path_or_fileobj, encoding, mode, **kwargs)
 
 
 def _call_json(funcname, path_or_fileobj, encoding, mode, **kwargs):
@@ -222,7 +224,7 @@ def _call_json(funcname, path_or_fileobj, encoding, mode, **kwargs):
     try:
         return _compat.json_call(funcname, fp=f, encoding=encoding, **kwargs)
     except (AttributeError, TypeError):
-        raise TypeError('path_or_fileobj: %r' % path_or_fileobj)
+        raise TypeError('path_or_fileobj: %r' % (path_or_fileobj,))
     finally:
         if close:
             f.close()

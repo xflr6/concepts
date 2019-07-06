@@ -2,7 +2,6 @@
 
 from __future__ import unicode_literals
 
-import io
 import random
 
 import pytest
@@ -218,37 +217,6 @@ def test_dict_roundtrip(context, ignore_lattice):
     else:
         assert 'lattice' in result.__dict__
         assert result.lattice._eq(context.lattice)
-
-
-def test_tojson_invalid_path(context):
-    with pytest.raises(TypeError, match=r'path_or_fileobj'):
-        context.tojson(object(), ignore_lattice=True)
-
-
-def test_fromjson_invalid_path():
-    with pytest.raises(TypeError, match=r'path_or_fileobj'):
-        Context.fromjson(object(), ignore_lattice=True)
-
-
-@pytest.fixture(scope='module')
-def make_stringio(py2):
-    return io.BytesIO if py2 else io.StringIO
-
-
-@pytest.fixture(params=['str', 'pathlike', 'fileobj'])
-def path_or_fileobj(request, tmp_path, make_stringio, filename='context.json'):
-    if request.param == 'str':
-        return str(tmp_path / filename), False
-    elif request.param == 'pathlike':
-        return tmp_path / filename, False
-    elif request.param == 'fileobj':
-        return make_stringio(), True
-    raise RuntimeError
-
-
-@pytest.fixture(params=['utf-8', None])
-def encoding(request):
-    return request.param
 
 
 def test_json_roundtrip(context, path_or_fileobj, encoding):

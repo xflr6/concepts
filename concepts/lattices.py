@@ -252,24 +252,20 @@ class Lattice(object):
         if not isinstance(other, Lattice):
             return NotImplemented
 
-        if len(other._concepts) != len(self._concepts):
-            return False
-        if not all(s._eq(o) for s, o in zip(self._concepts, other._concepts)):
+        if (len(other._concepts) != len(self._concepts)
+            or not all(s._eq(o) for s, o in zip(self._concepts, other._concepts))):
             return False
 
-        if len(other._mapping) != len(self._mapping):
-            return False
-        if ({e.members() for e in other._mapping}
+        if (len(other._mapping) != len(self._mapping)
+            or {e.members() for e in other._mapping}
             != {e.members() for e in self._mapping}):
             return False
 
         for s, o in zip(self._concepts, other._concepts):
-            if o.index != s.index or o.dindex != s.dindex:
-                return False
-            if ([a._extent.members() for a in o.atoms]
-                != [a._extent.members() for a in s.atoms]):
-                return False
-            if o.objects != s.objects or o.properties != s.properties:
+            if (o.index != s.index or o.dindex != s.dindex
+                or [a._extent.members() for a in o.atoms]
+                != [a._extent.members() for a in s.atoms]
+                or o.objects != s.objects or o.properties != s.properties):
                 return False
 
         return True
@@ -590,8 +586,8 @@ class Concept(object):
         return _iterunion([self], _sortkey, _next_concepts)
 
     def downset(self,
-              _sortkey=operator.attrgetter('dindex'),
-              _next_concepts=operator.attrgetter('lower_neighbors')):
+                _sortkey=operator.attrgetter('dindex'),
+                _next_concepts=operator.attrgetter('lower_neighbors')):
         """Yield subsumed concepts including ``self``."""
         return _iterunion([self], _sortkey, _next_concepts)
 
