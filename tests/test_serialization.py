@@ -223,17 +223,17 @@ def test_json_roundtrip(context, path_or_fileobj, encoding):
     context = Context(context.objects, context.properties, context.bools)
     assert 'lattice' not in context.__dict__
 
-    f, is_fileobj = path_or_fileobj
+    is_fileobj = hasattr(path_or_fileobj, 'seek')
     kwargs = {'encoding': encoding} if encoding is not None else {}
 
-    context.tojson(f, ignore_lattice=True, **kwargs)
+    context.tojson(path_or_fileobj, ignore_lattice=True, **kwargs)
     if is_fileobj:
-        f.seek(0)
+        path_or_fileobj.seek(0)
     assert 'lattice' not in context.__dict__
 
-    deserialized = Context.fromjson(f, **kwargs)
+    deserialized = Context.fromjson(path_or_fileobj, **kwargs)
     if is_fileobj:
-        f.seek(0)
+        path_or_fileobj.seek(0)
     assert 'lattice' not in deserialized.__dict__
 
     assert deserialized == context
@@ -241,13 +241,11 @@ def test_json_roundtrip(context, path_or_fileobj, encoding):
     assert isinstance(context.lattice, Lattice)
     assert 'lattice' in context.__dict__
 
-    context.tojson(f, ignore_lattice=None, **kwargs)
+    context.tojson(path_or_fileobj, ignore_lattice=None, **kwargs)
     if is_fileobj:
-        f.seek(0)
+        path_or_fileobj.seek(0)
 
-    deserialized = Context.fromjson(f, **kwargs)
-    if is_fileobj:
-        f.close()
+    deserialized = Context.fromjson(path_or_fileobj, **kwargs)
     assert 'lattice' in deserialized.__dict__
 
     assert deserialized == context

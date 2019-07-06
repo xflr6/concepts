@@ -38,12 +38,14 @@ def lattice(context):
 @pytest.fixture(params=['str', 'pathlike', 'fileobj'])
 def path_or_fileobj(request, tmp_path, make_stringio, filename='context.json'):
     if request.param == 'str':
-        return str(tmp_path / filename), False
+        yield str(tmp_path / filename)
     elif request.param == 'pathlike':
-        return tmp_path / filename, False
+        yield tmp_path / filename
     elif request.param == 'fileobj':
-        return make_stringio(), True
-    raise RuntimeError
+        with make_stringio() as f:
+            yield f
+    else:
+        raise RuntimeError
 
 
 @pytest.fixture(params=['utf-8', None])

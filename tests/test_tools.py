@@ -21,11 +21,11 @@ def test_load_json_invalid_path():
 
 
 def test_dump_load(path_or_fileobj, encoding, obj={u'sp\xe4m': 'eggs'}):
-    f, is_fileobj = path_or_fileobj
+    is_fileobj = hasattr(path_or_fileobj, 'seek')
     kwargs = {'encoding': encoding} if encoding is not None else {}
 
-    tools.dump_json(obj, f, **kwargs)
+    tools.dump_json(obj, path_or_fileobj, **kwargs)
     if is_fileobj:
-        f.seek(0)
+        path_or_fileobj.seek(0)
 
-    assert tools.load_json(f, **kwargs) == obj
+    assert tools.load_json(path_or_fileobj, **kwargs) == obj
