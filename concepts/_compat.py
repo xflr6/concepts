@@ -2,6 +2,7 @@
 
 import io
 import json
+import locale
 import sys
 
 PY2 = (sys.version_info.major == 2)
@@ -42,6 +43,8 @@ if PY2:
         return pathobj.open('b' + mode)
 
     def json_call(funcname, *args, **kwargs):
+        if kwargs.get('encoding', object()) is None:
+            kwargs['encoding'] = locale.getpreferredencoding()
         return getattr(json, funcname)(*args, **kwargs)
 
 
