@@ -2,8 +2,8 @@ Changelog
 =========
 
 
-Version 0.9 (in development)
-----------------------------
+Version 0.9
+-----------
 
 Make the ``frmat`` argument (e.g. ``'table'``, ``'cxt'``, ``'csv'``) for
 reading/writing ``Context`` objects case-insensitive (mirroring
