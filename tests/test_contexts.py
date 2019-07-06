@@ -138,3 +138,8 @@ X..X.X.XX.
 .X.XX.X..X
 .X.XX..XX.
 '''
+
+
+def test_definition(context):
+    assert context.definition() == (context.objects, context.properties,
+                                    context.bools)

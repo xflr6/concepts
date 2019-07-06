@@ -105,9 +105,6 @@ class Context(object):
     -1  subcontrary  -2
     -1  subcontrary  -3
     -2  subcontrary  -3
-
-    >>> c.definition() == (c.objects, c.properties, c.bools)
-    True
     """
 
     @classmethod
