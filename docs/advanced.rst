@@ -134,7 +134,7 @@ The serialization as Python :class:`dict` (including its
 :attr:`~.Concept.lattice` structure) looks like this:
 
 .. literalinclude:: ../tests/test_serialization.py
-    :lines: 14-53
+    :lines: 13-52
 
 Any extra keys are ignored when loading.
 
