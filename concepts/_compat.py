@@ -42,10 +42,10 @@ if PY2:
         """Add 'b' to mode and ignore encoding under Python 2."""
         return pathobj.open('b' + mode)
 
-    def json_call(funcname, *args, **kwargs):
+    def json_call(funcname, **kwargs):
         if kwargs.get('encoding', object()) is None:
             kwargs['encoding'] = locale.getpreferredencoding()
-        return getattr(json, funcname)(*args, **kwargs)
+        return getattr(json, funcname)(**kwargs)
 
 
 else:
@@ -69,10 +69,10 @@ else:
     def json_path_open(pathobj, mode, encoding=None):
         return pathobj.open(mode, encoding=encoding)
 
-    def json_call(funcname, *args, **kwargs):
+    def json_call(funcname, **kwargs):
         """Ignore ``encoding`` kwarg under Python 3."""
         kwargs.pop('encoding', None)
-        return getattr(json, funcname)(*args, **kwargs)
+        return getattr(json, funcname)(**kwargs)
 
 
 def with_metaclass(meta, *bases):
