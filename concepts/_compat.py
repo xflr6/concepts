@@ -35,14 +35,15 @@ if PY2:
     from collections import MutableSet
 
     def json_open(path, mode, encoding=None):
-        """Ignore encoding under Python 2."""
+        """Ignore ``encoding`` under Python 2."""
         return open(path, mode)
 
     def json_path_open(pathobj, mode, encoding=None):
-        """Add 'b' to mode and ignore encoding under Python 2."""
+        """Add ``'b'`` to ``mode`` and ignore ``encoding`` under Python 2."""
         return pathobj.open('b' + mode)
 
     def json_call(funcname, **kwargs):
+        """Replace ``enocding=None`` with ``locale.getpreferredencoding()``."""
         if kwargs.get('encoding', object()) is None:
             kwargs['encoding'] = locale.getpreferredencoding()
         return getattr(json, funcname)(**kwargs)
@@ -70,7 +71,7 @@ else:
         return pathobj.open(mode, encoding=encoding)
 
     def json_call(funcname, **kwargs):
-        """Ignore ``encoding`` kwarg under Python 3."""
+        """Ignore ``encoding`` under Python 3."""
         kwargs.pop('encoding', None)
         return getattr(json, funcname)(**kwargs)
 
