@@ -28,7 +28,7 @@ if sys.version_info.major == 2:
         def next(self):
             return [unicode(v, 'utf-8') for v in self._reader.next()]
 
-        @property
+        @property  # pragma: no cover
         def line_num(self):
             return self._reader.line_num
 
