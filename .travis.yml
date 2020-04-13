@@ -8,6 +8,6 @@ python:
   - "3.7"
   - "3.8"
 install: pip install -e .[test] codecov
-script: pytest
+script: ./run-tests.py
 before_cache: rm -f $HOME/.cache/pip/log/debug.log
 after_success: codecov
