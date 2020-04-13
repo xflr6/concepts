@@ -1,9 +1,9 @@
 Concepts
 ========
 
-|PyPI version| |License| |Supported Python| |Format| |Docs|
+|PyPI version| |License| |Supported Python| |Format|
 
-|Travis| |Codecov|
+|Travis| |Codecov| |Readthedocs-stable| |Readthedocs-latest|
 
 Concepts is a simple Python implementation of **Formal Concept Analysis**
 (FCA_).
@@ -179,12 +179,16 @@ Concepts is distributed under the `MIT license`_.
 .. |Format| image:: https://img.shields.io/pypi/format/concepts.svg
     :target: https://pypi.org/project/concepts/
     :alt: Format
-.. |Docs| image:: https://readthedocs.org/projects/concepts/badge/?version=stable
-    :target: https://concepts.readthedocs.io/en/stable/
-    :alt: Readthedocs
+
 .. |Travis| image:: https://img.shields.io/travis/xflr6/concepts.svg
     :target: https://travis-ci.org/xflr6/concepts
     :alt: Travis
 .. |Codecov| image:: https://codecov.io/gh/xflr6/concepts/branch/master/graph/badge.svg
     :target: https://codecov.io/gh/xflr6/concepts
     :alt: Codecov
+.. |Readthedocs-stable| image:: https://readthedocs.org/projects/concepts/badge/?version=stable
+    :target: https://concepts.readthedocs.io/en/stable/?badge=stable
+    :alt: Readthedocs stable
+.. |Readthedocs-latest| image:: https://readthedocs.org/projects/concepts/badge/?version=latest
+    :target: https://concepts.readthedocs.io/en/latest/?badge=latest
+    :alt: Readthedocs latest
