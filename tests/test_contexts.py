@@ -106,8 +106,8 @@ def test_unicode(context):
     assert u'%s' % context == '%s' % context
 
 
-def test_tofile(tmpdir, context, filename='context.cxt', encoding='utf-8'):
-    filepath = tmpdir / filename
+def test_tofile(tmp_path, context, filename='context.cxt', encoding='utf-8'):
+    filepath = tmp_path / filename
     context.tofile(str(filepath), encoding=encoding)
     assert filepath.read_text(encoding=encoding) == '''\
 B
