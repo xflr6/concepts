@@ -2,4 +2,4 @@
 -e .[dev,test,docs]
 # exact dependency versions used in development
 bitsets==0.7.16
-graphviz==0.13.2
+graphviz==0.14
