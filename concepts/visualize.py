@@ -12,8 +12,8 @@ SORTKEYS = [lambda c: c.index]
 NAME_GETTERS = [lambda c: 'c%d' % c.index]
 
 
-def lattice(lattice, filename, directory, render, view, separators,
-            **kwargs):
+def lattice(lattice, filename, directory, render, view, object_sep,
+            property_sep, **kwargs):
     """Return graphviz source for visualizing the lattice graph."""
     dot = graphviz.Digraph(name=lattice.__class__.__name__,
                            comment=repr(lattice),
