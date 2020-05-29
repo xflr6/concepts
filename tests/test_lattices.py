@@ -151,3 +151,8 @@ def test_nonatomic():
     assert [tuple(c) for c in m] == [(('spam', 'eggs'), ('ham',))]
     t = Context(('spam', 'eggs'), ('ham',), [(False,), (False,)]).lattice
     assert [tuple(c) for c in t] == [((), ('ham',)), (('spam', 'eggs'), ())]
+
+
+def test_visualize(lattice):
+    gv = lattice.graphviz(object_sep='; ', property_sep='; ')
+    assert len(gv.body) > 0

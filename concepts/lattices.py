@@ -379,10 +379,10 @@ class Lattice(object):
                         push(heap, (c.index, c))
 
     def graphviz(self, filename=None, directory=None, render=False, view=False,
-                 **kwargs):
+                 object_sep=' ', property_sep=' ', **kwargs):
         """Return graphviz source for visualizing the lattice graph."""
         return visualize.lattice(self, filename, directory, render, view,
-                                 **kwargs)
+                                 object_sep, property_sep, **kwargs)
 
 
 def _iterunion(concepts, sortkey, next_concepts):
