@@ -379,10 +379,26 @@ class Lattice(object):
                         push(heap, (c.index, c))
 
     def graphviz(self, filename=None, directory=None, render=False, view=False,
-                 object_sep=' ', property_sep=' ', **kwargs):
-        """Return graphviz source for visualizing the lattice graph."""
+                 make_object_label=' '.join, make_property_label=' '.join,
+                 **kwargs):
+        """Return DOT source for visualizing the lattice graph.
+
+        Args:
+            filename: Path to the DOT source file for the Digraph.
+            directory: (Sub)directory for DOT source saving and rendering.
+            render (bool): Call ``.render()`` on the result.
+            view (bool): Call ``.render(view=True)`` on the result.
+            make_object_label: Callable with iterable of objects argument
+                               returning a string to be used as object label.
+            make_property_label: Callable with iterable of properties argument
+                                 returning a string to be used as object label.
+        Returns:
+            A ``graphviz.Digraph`` instance.
+        """
         return visualize.lattice(self, filename, directory, render, view,
-                                 object_sep, property_sep, **kwargs)
+                                 make_object_label=make_object_label,
+                                 make_property_label=make_property_label,
+                                 **kwargs)
 
 
 def _iterunion(concepts, sortkey, next_concepts):

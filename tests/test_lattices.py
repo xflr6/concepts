@@ -154,5 +154,13 @@ def test_nonatomic():
 
 
 def test_visualize(lattice):
-    gv = lattice.graphviz(object_sep='; ', property_sep='; ')
-    assert len(gv.body) > 0
+    dot = lattice.graphviz(make_object_label=lambda x: '{%s}' % ' '.join(x),
+                           make_property_label=', '.join)
+    src = str(dot)
+
+    assert ' headlabel="{1sg}" ' in src
+    assert ' headlabel="{1pl}" ' in src
+    assert ' taillabel="+1"' in src
+    assert ' taillabel="+2"' in src
+    assert ' taillabel="+sg, -pl"' in src
+    assert ' taillabel="+pl, -sg"' in src

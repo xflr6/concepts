@@ -12,8 +12,9 @@ SORTKEYS = [lambda c: c.index]
 NAME_GETTERS = [lambda c: 'c%d' % c.index]
 
 
-def lattice(lattice, filename, directory, render, view, object_sep,
-            property_sep, **kwargs):
+def lattice(lattice, filename, directory, render, view,
+            make_object_label=' '.join, make_property_label=' '.join,
+            **kwargs):
     """Return graphviz source for visualizing the lattice graph."""
     dot = graphviz.Digraph(name=lattice.__class__.__name__,
                            comment=repr(lattice),
@@ -33,12 +34,12 @@ def lattice(lattice, filename, directory, render, view, object_sep,
 
         if concept.objects:
             dot.edge(name, name,
-                     headlabel=object_sep.join(concept.objects),
+                     headlabel=make_object_label(concept.objects),
                      labelangle='270', color='transparent')
 
         if concept.properties:
             dot.edge(name, name,
-                     taillabel=property_sep.join(concept.properties),
+                     taillabel=make_property_label(concept.properties),
                      labelangle='90', color='transparent')
 
         dot.edges((name, node_name(c))
