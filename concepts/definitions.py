@@ -77,6 +77,9 @@ class Triple(object):
             filename: Path to the file to load the context from.
             frmat (str): Format of the file (``'table'``, ``'cxt'``, ``'csv'``).
             encoding (str): Encoding of the file (``'utf-8'``, ``'latin1'``, ``'ascii'``, ...).
+
+        Returns:
+            Definition: A new :class:`.Definition` instance.
         """
         frmat = formats.Format[frmat]
         objects, properties, bools = frmat.load(filename, encoding, **kwargs)
@@ -103,10 +106,40 @@ class Triple(object):
                        for p, b in zip(properties, boo) if b}
 
     def copy(self):
-        """Return an independent copy of the instance."""
+        """Return an independent copy of the instance.
+
+        Returns:
+            An instance of ``type(self)``. 
+        """
         return self._fromargs(self._objects.copy(),
                               self._properties.copy(),
                               self._pairs.copy())
+
+    def __eq__(self, other):
+        """Return whether two definitions are equivalent.
+
+        Args:
+            other (Definition): Another :class:`.Definition` instance.
+
+        Returns:
+            bool: ``True`` if the definitions are equal, ``False`` otherwise.
+        """
+        if isinstance(other, Triple):  # order insensitive
+            return (self._objects == other._objects
+                    and self._properties == other._properties
+                    and self._pairs == other._pairs)
+        return (self.objects, self.properties, self.bools) == other
+
+    def __ne__(self, other):
+        """Return whether two definitions are inequivalent.
+
+        Args:
+            other (Definition): Another :class:`.Definition` instance.
+
+        Returns:
+            bool: ``True`` if the definitions are inequal, ``False`` otherwise.
+        """
+        return not self == other
 
     def __iter__(self):
         """Yield ``objects``, ``properties``, and ``bools`` (e.g. for triple unpacking)."""
@@ -115,6 +148,11 @@ class Triple(object):
         yield self.bools
 
     def __getitem__(self, pair):
+        """Return the relation value for an (object, property) pair.
+
+        Returns:
+            bool: ``True`` if ``object`` has ``property`` else ``False``.
+        """
         if isinstance(pair, int):
             return list(self)[pair]
 
@@ -123,29 +161,19 @@ class Triple(object):
             raise KeyError(pair)
         return pair in self._pairs
 
-    def __eq__(self, other):
-        if isinstance(other, Triple):  # order insensitive
-            return (self._objects == other._objects
-                    and self._properties == other._properties
-                    and self._pairs == other._pairs)
-        return (self.objects, self.properties, self.bools) == other
-
-    def __ne__(self, other):
-        return not self == other
-
     @property
     def objects(self):
-        """(Names of the) objects described by the definition."""
+        """tuple[str, ...]: (Names of the) objects described by the definition."""
         return tuple(self._objects)
 
     @property
     def properties(self):
-        """(Names of the) properties that describe the objects."""
+        """tuple[str, ...]: (Names of the) properties that describe the objects."""
         return tuple(self._properties)
 
     @property
     def bools(self):
-        """Row-major list of boolean tuples."""
+        """list[tuple[bool, ...]]: Row-major :obj:`list` of boolean tuples."""
         prop = self._properties
         pairs = self._pairs
         return [tuple((o, p) in pairs for p in prop) for o in self._objects]
@@ -163,15 +191,38 @@ class Triple(object):
                                      self.bools)
 
     def tostring(self, frmat='table', **kwargs):
-        """Return the definition serialized in the given string-based format."""
+        """Return the definition serialized in the given string-based format.
+
+        Args:
+            frmat (str): Format of the string (``'table'``, ``'cxt'``, ``'csv'``).
+
+        Returns:
+            str: The definition as seralized string.
+        """
         return formats.Format[frmat].dumps(*self, **kwargs)
 
     def crc32(self, encoding='utf-8'):
-        """Return hex-encoded unsigned CRC32 over encoded definition table string."""
+        """Return hex-encoded unsigned CRC32 over encoded definition table string.
+
+        Args:
+            encoding (str): Encoding of the serialzation (``'utf-8'``, ``'latin1'``, ``'ascii'``, ...).
+
+        Returns:
+            str: The unsigned CRC32 checksum as hex-string.
+        """
         return tools.crc32_hex(self.tostring().encode(encoding))
 
     def take(self, objects=None, properties=None, reorder=False):
-        """Return a subset with given objects/properties as new definition."""
+        """Return a subset with given objects/properties as new definition.
+
+        Args:
+            objects: Iterable of object label strings.
+            properties: Iterable of property label strings.
+            reorder (bool): 
+
+        Returns:
+            Definition: A new :class:`.Definition` instance.
+        """
         if (objects and not self._objects.issuperset(objects)
             or properties and not self._properties.issuperset(properties)):
             notfound = (self._objects.rsub(objects or ())
@@ -194,12 +245,20 @@ class Triple(object):
                                if (o, p) in pairs})
 
     def transposed(self):
-        """Return a new definition swapping ``objects`` and ``properties``."""
+        """Return a new definition swapping ``objects`` and ``properties``.
+
+        Returns:
+            Definition: A new :class:`.Definition` instance.        
+        """
         return self._fromargs(self._properties.copy(), self._objects.copy(),
                               {(p, o) for (o, p) in self._pairs})
 
     def inverted(self):
-        """Return a new definition flipping all booleans."""
+        """Return a new definition flipping all booleans.
+
+        Returns:
+            Definition: A new :class:`.Definition` instance.        
+        """
         pairs = self._pairs
         return self._fromargs(self._objects.copy(), self._properties.copy(),
                               {(o, p) for o in self._objects for p in self._properties
@@ -338,25 +397,45 @@ class Definition(Triple):
     """
 
     def rename_object(self, old, new):
-        """Replace the name of an object by a new one."""
+        """Replace the name of an object by a new one.
+
+        Args:
+            old (str): Current name of the object.
+            new (str): New name for the object.
+        """
         self._objects.replace(old, new)
         pairs = self._pairs
         pairs |= {(new, p) for p in self._properties
                   if (old, p) in pairs and not pairs.remove((old, p))}
 
     def rename_property(self, old, new):
-        """Replace the name of a property by a new one."""
+        """Replace the name of a property by a new one.
+
+        Args:
+            old (str): Current name of the property.
+            new (str): New name for the property.
+        """
         self._properties.replace(old, new)
         pairs = self._pairs
         pairs |= {(o, new) for o in self._objects
                   if (o, old) in pairs and not pairs.remove((o, old))}
 
     def move_object(self, obj, index):
-        """Reorder the definition such that object is at ``index``."""
+        """Reorder the definition such that object is at ``index``.
+
+        Args:
+            obj (str): Name of the object to move.
+            index (int): Index for the object to move to.
+        """
         self._objects.move(obj, index)
 
     def move_property(self, prop, index):
-        """Reorder the definition such that property is at ``index``."""
+        """Reorder the definition such that property is at ``index``.
+
+        Args:
+            prop (str): Name of the property to move.
+            index (int): Index for the property to move to.
+        """
         self._properties.move(prop, index)
 
     def __setitem__(self, pair, value):
@@ -371,29 +450,52 @@ class Definition(Triple):
             self._pairs.discard(pair)
 
     def add_object(self, obj, properties=()):
-        """Add an object to the definition and add ``properties`` as related."""
+        """Add an object to the definition and add ``properties`` as related.
+
+        Args:
+            obj (str): Name of the object to add.
+            properties: Iterable of property name strings.
+        """
         self._objects.add(obj)
         self._properties |= properties
         self._pairs.update((obj, p) for p in properties)
 
     def add_property(self, prop, objects=()):
-        """Add a property to the definition and add ``objects`` as related."""
+        """Add a property to the definition and add ``objects`` as related.
+
+        Args:
+            obj (str): Name of the object to add.
+            objects: Iterable of object name strings.
+        """
         self._properties.add(prop)
         self._objects |= objects
         self._pairs.update((o, prop) for o in objects)
 
     def remove_object(self, obj):
-        """Remove an object from the definition."""
+        """Remove an object from the definition.
+
+        Args:
+            obj (str): Name of the object to remove.
+        """
         self._objects.remove(obj)
         self._pairs.difference_update((obj, p) for p in self._properties)
 
     def remove_property(self, prop):
-        """Remove a property from the definition."""
+        """Remove a property from the definition.
+
+        Args:
+            prop (str): Name of the property to remove.
+        """
         self._properties.remove(prop)
         self._pairs.difference_update((o, prop) for o in self._objects)
 
     def set_object(self, obj, properties):
-        """Add an object to the definition and set its ``properties``."""
+        """Add an object to the definition and set its ``properties``.
+
+        Args:
+            obj (str): Name of the object to add.
+            properties: Iterable of property name strings.
+        """
         self._objects.add(obj)
         properties = set(properties)
         self._properties |= properties
@@ -405,7 +507,13 @@ class Definition(Triple):
                 pairs.discard((obj, p))
 
     def set_property(self, prop, objects):
-        """Add a property to the definition and set its ``objects``."""
+        """Add a property to the definition and set its ``objects``.
+
+
+        Args:
+            prop (str): Name of the property to add.
+            objectss: Iterable of object name strings.
+        """
         self._properties.add(prop)
         objects = set(objects)
         self._objects |= objects
@@ -417,7 +525,12 @@ class Definition(Triple):
                 pairs.discard((o, prop))
 
     def union_update(self, other, ignore_conflicts=False):
-        """Update the definition with the union of the ``other``."""
+        """Update the definition with the union of the ``other``.
+
+        Args:
+            other (Definition): Another :class:`.Definition` instance.
+            ignore_conflicts (bool): 
+        """
         if not ignore_conflicts:
             ensure_compatible(self, other)
         self._objects |= other._objects
@@ -425,7 +538,12 @@ class Definition(Triple):
         self._pairs |= other._pairs
 
     def intersection_update(self, other, ignore_conflicts=False):
-        """Update the definition with the intersection of the ``other``."""
+        """Update the definition with the intersection of the ``other``.
+
+        Args:
+            other (Definition): Another :class:`.Definition` instance.
+            ignore_conflicts (bool): 
+        """
         if not ignore_conflicts:
             ensure_compatible(self, other)
         self._objects &= other._objects
@@ -441,13 +559,29 @@ class Definition(Triple):
         return self
 
     def union(self, other, ignore_conflicts=False):
-        """Return a new definition from the union of the definitions."""
+        """Return a new definition from the union of the definitions.
+
+        Args:
+            other (Definition): Another :class:`.Definition` instance.
+            ignore_conflicts (bool): 
+
+        Returns:
+            Definition: A new :class:`.Definition` instance.
+        """
         result = self.copy()
         result.union_update(other, ignore_conflicts)
         return result
 
     def intersection(self, other, ignore_conflicts=False):
-        """Return a new definition from the intersection of the definitions."""
+        """Return a new definition from the intersection of the definitions.
+
+        Args:
+            other (Definition): Another :class:`.Definition` instance.
+            ignore_conflicts (bool): 
+
+        Returns:
+            Definition: A new :class:`.Definition` instance.
+        """
         result = self.copy()
         result.intersection_update(other, ignore_conflicts)
         return result

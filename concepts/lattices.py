@@ -311,12 +311,16 @@ class Lattice(object):
         """Yield all concepts of the lattice.
 
         Yields:
-            Concept: :class:`.Concept` instances from this lattice.
+            All :class:`.Concept` instances from this lattice.
         """
         return iter(self._concepts)
 
     def __len__(self):
-        """Return the number of concepts in the lattice."""
+        """Return the number of concepts in the lattice.
+
+        Returns:
+            int: Number of lattice concepts.
+        """
         return len(self._concepts)
 
     def __str__(self):
@@ -345,7 +349,7 @@ class Lattice(object):
 
     @property
     def atoms(self):
-        """tuple[Concept]: The minimal non-infimum concepts of the lattice."""
+        """tuple[Concept, ...]: The minimal non-infimum concepts of the lattice."""
         return self.infimum.upper_neighbors
 
     def join(self, concepts):
@@ -355,7 +359,7 @@ class Lattice(object):
             concepts: Iterable of :class:`.Concept` instances from this lattice.
 
         Returns:
-            Concept: :class:`.Concept` instances from this lattice.
+            Concept: :class:`.Concept` instance from this lattice.
         """
         extents = (c._extent for c in concepts)
         join = self._context._Extent.reduce_or(extents)
@@ -368,7 +372,7 @@ class Lattice(object):
             concepts: Iterable of :class:`.Concept` instances from this lattice.
 
         Returns:
-            Concept: :class:`.Concept` instances from this lattice.
+            Concept: :class:`.Concept` instance from this lattice.
         """
         extents = (c._extent for c in concepts)
         meet = self._context._Extent.reduce_and(extents)
@@ -382,8 +386,8 @@ class Lattice(object):
         Args:
             concepts: Iterable of :class:`.Concept` instances from this lattice.
 
-        Returns:
-            Concept: :class:`.Concept` instances from this lattice.
+        Yields:
+            :class:`.Concept` instances from this lattice.
         """
         concepts = tools.maximal(concepts, comparison=Concept.properly_subsumes)
         return _iterunion(concepts, _sortkey, _next_concepts)
@@ -396,8 +400,8 @@ class Lattice(object):
         Args:
             concepts: Iterable of :class:`.Concept` instances from this lattice.
 
-        Returns:
-            Concept: :class:`.Concept` instances from this lattice.
+        Yields:
+            :class:`.Concept` instances from this lattice.
         """
         concepts = tools.maximal(concepts, comparison=Concept.properly_implies)
         return _iterunion(concepts, _sortkey, _next_concepts)
@@ -408,8 +412,8 @@ class Lattice(object):
         Args:
             concepts: Iterable of :class:`.Concept` instances from this lattice.
 
-        Returns:
-            Concept: :class:`.Concept` instances from this lattice.
+        Yields:
+            :class:`.Concept` instances from this lattice.
         """
         heap = [(c.index, c)
                 for c in tools.maximal(concepts,
@@ -629,66 +633,124 @@ class Concept(object):
 
     @property
     def extent(self):
-        """The objects subsumed by the concept."""
+        """tuple[str, ...] The objects subsumed by the concept."""
         return self._extent.members()
 
     @property
     def intent(self):
-        """The properties implied by the concept."""
+        """tuple[str, ...] The properties implied by the concept."""
         return self._intent.members()
 
     def minimal(self):
-        """Shortlex minimal properties generating the concept."""
+        """Shortlex minimal properties generating the concept.
+
+        Returns:
+            tuple[str, ...]: Property name strings.
+        """
         return self.lattice._context._minimal(self._extent,
                                               self._intent).members()
 
     def attributes(self):
-        """Shortlex ordered properties generating the concept."""
+        """Yield properties generating the concept in shortlex order.
+
+        Yields:
+            Tuples of property name strings.
+        """
         minimize = self.lattice._context._minimize(self._extent, self._intent)
         return (i.members() for i in minimize)
 
     def upset(self,
               _sortkey=operator.attrgetter('index'),
               _next_concepts=operator.attrgetter('upper_neighbors')):
-        """Yield implied concepts including ``self``."""
+        """Yield implied concepts including ``self``.
+
+        Yields:
+            :class:`.Concept` instances.
+        """
         return _iterunion([self], _sortkey, _next_concepts)
 
     def downset(self,
                 _sortkey=operator.attrgetter('dindex'),
                 _next_concepts=operator.attrgetter('lower_neighbors')):
-        """Yield subsumed concepts including ``self``."""
+        """Yield subsumed concepts including ``self``.
+
+        Yields:
+            :class:`.Concept` instances.
+        """
         return _iterunion([self], _sortkey, _next_concepts)
 
     def implies(self, other):
-        """Implication comparison."""
+        """Implication comparison.
+
+        Args:
+            other (Concept): :class:`.Concept` instance from the same lattice.
+
+        Returns:
+            bool: ``True`` if ``self`` implies ``other`` else ``False``.
+        """
         return self._extent & other._extent == self._extent
 
     def subsumes(self, other):
-        """Subsumption comparison."""
+        """Subsumption comparison.
+
+        Args:
+            other (Concept): :class:`.Concept` instance from the same lattice.
+
+        Returns:
+            bool: ``True`` if ``self`` subsumes ``other`` else ``False``.
+        """
         return self._extent | other._extent == self._extent
 
     __le__ = implies
     __ge__ = subsumes
 
     def properly_implies(self, other):
-        """Proper implication comparison."""
+        """Proper implication comparison.
+
+        Args:
+            other (Concept): :class:`.Concept` instance from the same lattice.
+
+        Returns:
+            bool: ``True`` if ``self`` properly implies ``other`` else ``False``.
+        """
         return self._extent & other._extent == self._extent != other._extent
 
     def properly_subsumes(self, other):
-        """Proper subsumption comparison."""
+        """Proper subsumption comparison.
+
+        Args:
+            other (Concept): :class:`.Concept` instance from the same lattice.
+
+        Returns:
+            bool: ``True`` if ``self`` properly subsumes ``other`` else ``False``.
+        """
         return self._extent | other._extent == self._extent != other._extent
 
     __lt__ = properly_implies
     __gt__ = properly_subsumes
 
     def join(self, other):
-        """Least upper bound, supremum, or, generalization."""
+        """Least upper bound, supremum, or, generalization.
+
+        Args:
+            other (Concept): :class:`.Concept` instance from the same lattice.
+
+        Returns:
+            Concept: :class:`.Concept` instance from the same lattice.
+        """
         common = self._extent | other._extent
         extent = self.lattice._context._extents.double(common)
         return self.lattice._mapping[extent]
 
     def meet(self, other):
-        """Greatest lower bound, infimum, and, unification."""
+        """Greatest lower bound, infimum, and, unification.
+
+        Args:
+            other (Concept): :class:`.Concept` instance from the same lattice.
+
+        Returns:
+            Concept: :class:`.Concept` instance from the same lattice.
+        """
         common = self._extent & other._extent
         extent = self.lattice._context._extents.double(common)
         return self.lattice._mapping[extent]
@@ -697,21 +759,49 @@ class Concept(object):
     __and__ = meet
 
     def incompatible_with(self, other):
-        """Infimum meet comparison."""
+        """Infimum meet comparison.
+
+        Args:
+            other (Concept): :class:`.Concept` instance from the same lattice.
+
+        Returns:
+            bool: ``True`` if ``self`` is incompatible with ``other`` else ``False``.
+        """
         return not self._extent & other._extent
 
     def complement_of(self, other):
-        """Infimum meet and supremum join comparison."""
+        """Infimum meet and supremum join comparison.
+
+        Args:
+            other (Concept): :class:`.Concept` instance from the same lattice.
+
+        Returns:
+            bool: ``True`` if ``self`` is the complement of ``other`` else ``False``.
+        """
         return (not self._extent & other._extent
                 and (self._extent | other._extent) == self.lattice.supremum._extent)
 
     def subcontrary_with(self, other):
-        """Non-infimum meet and supremum join comparison."""
+        """Non-infimum meet and supremum join comparison.
+
+        Args:
+            other (Concept): :class:`.Concept` instance from the same lattice.
+
+        Returns:
+            bool: ``True`` if ``self`` is the subcontrary to ``other`` else ``False``.
+        """
         return (self._extent & other._extent
                 and (self._extent | other._extent) == self.lattice.supremum._extent)
 
     def orthogonal_to(self, other):
-        """Non-infimum meet, incomparable, and non-supremum join comparison."""
+        """Non-infimum meet, incomparable, and non-supremum join comparison.
+
+        Args:
+            other (Concept): :class:`.Concept` instance from the same lattice.
+
+        Returns:
+            bool: ``True`` if ``self`` is orthogonal to ``other`` else ``False``.
+        """
         meet = self._extent & other._extent
         return (not not meet and meet != self._extent and meet != other._extent
                 and (self._extent | other._extent) != self.lattice.supremum._extent)
@@ -740,6 +830,11 @@ class Infimum(Concept):
     """Contradiction with empty ``extent`` and universal ``intent``."""
 
     def minimal(self):
+        """Shortlex minimal properties generating the concept.
+
+        Returns:
+            tuple[str, ...]: Property name strings.
+        """
         return self._intent.members()
 
 

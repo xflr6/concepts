@@ -266,14 +266,18 @@ class Context(object):
         self._Extent = self._extents.BitSet
 
     def __getstate__(self):
-        """Pickle context as ``(intents, extents)`` tuple."""
+        """Pickle context as ``(intents, extents)`` tuple.
+
+        Returns:
+            tuple[tuple[str, ...], tuple[str, ...]]: Pair of ``intents`` and ``extents``.
+        """
         return self._intents, self._extents
 
     def __setstate__(self, state):
         """Unpickle context from ``(intents, extents)`` tuple.
 
         Args:
-            state (tuple): Two-tuple of ``intents`` and ``extents``.
+            state (tuple[tuple[str, ...], tuple[str, ...]]): Pair of ``intents`` and ``extents``.
         """
         self._intents, self._extents = state
         self._Intent = self._intents.BitSet
@@ -286,7 +290,7 @@ class Context(object):
             other (Context): Another :class:`.Context` instance.
 
         Returns:
-            bool: ``True`` if the contexts are equivalent, ``False`` otherwise.
+            bool: ``True`` if the contexts are equal, ``False`` otherwise.
 
         Ignores ``self.lattice`` and ``other.lattice`` objects.
         """
@@ -298,7 +302,7 @@ class Context(object):
                 and self.bools == other.bools)
 
     def __ne__(self, other):
-        """Return whether two contexts are inequivalent.
+        """Return whether two contexts are inequal.
 
         Args:
             other (Context): Another :class:`.Context` instance.
@@ -372,7 +376,7 @@ class Context(object):
             raw (bool): Return raw intent instead of :obj:`str` tuple.
 
         Returns:
-            tuple: A tuple of :obj:`str` labels taken from ``self.properties``.
+            tuple[str, ...]: A tuple of :obj:`str` labels taken from ``self.properties``.
         """
         intent = self._Extent.frommembers(objects).prime()
         if raw:
@@ -387,7 +391,7 @@ class Context(object):
             raw (bool): Return raw extent instead of :obj:`str` tuple.
 
         Returns:
-            tuple: A tuple of :obj:`str` labels taken from ``self.objects``.
+            tuple[str, ...]: A tuple of :obj:`str` labels taken from ``self.objects``.
         """
         extent = self._Intent.frommembers(properties).prime()
         if raw:
@@ -402,7 +406,7 @@ class Context(object):
             raw (bool): Return raw ``(extent, intent)`` pairs instead of :obj:`str` tuples.
 
         Returns:
-            list: A list of upper neighbor concepts as ``(extent, intent)`` pairs.
+            list[tuple[tuple[str, ...], tuple[str, ...]]: A list of upper neighbor concepts as ``(extent, intent)`` pairs.
         """
         objects = self._Extent.frommembers(objects).double()
         if raw:
@@ -418,7 +422,7 @@ class Context(object):
             raw (bool): Return raw ``(extent, intent)`` pair instead of :obj:`str` tuples.
 
         Returns:
-            tuple: The smallest concept having all ``items`` as ``(extent, intent)`` pair.
+            tuple[tuple[str, ...], tuple[str, ...]]: The smallest concept having all ``items`` as ``(extent, intent)`` pair.
         """
         try:
             extent = self._Extent.frommembers(items)
@@ -525,17 +529,17 @@ class Context(object):
 
     @property
     def objects(self):
-        """tuple[str]: (Names of the) objects described by the context."""
+        """tuple[str, ...]: (Names of the) objects described by the context."""
         return self._Extent._members
 
     @property
     def properties(self):
-        """tuple[str]: (Names of the) properties that describe the objects."""
+        """tuple[str, ...]: (Names of the) properties that describe the objects."""
         return self._Intent._members
 
     @property
     def bools(self):
-        """tuple[tuple[bool]]: Row-wise boolean relation matrix between objects and properties."""
+        """list[tuple[bool, ...]]: Row-wise boolean relation matrix between objects and properties."""
         return self._intents.bools()
 
     def definition(self):
@@ -547,7 +551,11 @@ class Context(object):
         return definitions.Definition(self.objects, self.properties, self.bools)
 
     def relations(self, include_unary=False):
-        """Return the logical relations between the context properties."""
+        """Return the logical relations between the context properties.
+
+        Returns:
+            Relations:
+        """
         return junctors.Relations(self.properties,
                                   self._extents.bools(),
                                   include_unary)
