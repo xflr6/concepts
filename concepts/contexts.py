@@ -302,13 +302,13 @@ class Context(object):
                 and self.bools == other.bools)
 
     def __ne__(self, other):
-        """Return whether two contexts are inequal.
+        """Return whether two contexts are inequivalent.
 
         Args:
             other (Context): Another :class:`.Context` instance.
 
         Returns:
-            bool: ``True`` if the contexts are inequivalent, ``False`` otherwise.
+            bool: ``True`` if the contexts are unequal, ``False`` otherwise.
 
         Ignores ``self.lattice`` and ``other.lattice`` objects.
         """

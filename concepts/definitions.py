@@ -137,7 +137,7 @@ class Triple(object):
             other (Definition): Another :class:`.Definition` instance.
 
         Returns:
-            bool: ``True`` if the definitions are inequal, ``False`` otherwise.
+            bool: ``True`` if the definitions are unequal, ``False`` otherwise.
         """
         return not self == other
 
