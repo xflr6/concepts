@@ -21,11 +21,11 @@ import concepts
 # -- Project information -----------------------------------------------------
 
 project = 'concepts'
-copyright = '2013-2019, Sebastian Bank'
+copyright = '2013-2020, Sebastian Bank'
 author = 'Sebastian Bank'
 
 # The short X.Y version
-version = '0.9.2.dev0'
+version = '0.9.2'
 # The full version, including alpha/beta/rc tags
 release = version
 

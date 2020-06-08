@@ -2,10 +2,13 @@ Changelog
 =========
 
 
-Version 0.9.2 (in development)
-------------------------------
+Version 0.9.2
+-------------
 
-
+Add ``make_object_label`` and ``make_property_label`` keyword arguments to
+``Lattice.graphviz()`` allowing to override the formatting of object and
+property labels (e.g. ``make_object_labels=', '.join`` objects labels as
+comma-separated object lists.
 
 
 Version 0.9.1
