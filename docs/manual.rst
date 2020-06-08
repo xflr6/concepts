@@ -374,7 +374,7 @@ compute:
     >>> c
     <Context object mapping 6 objects to 10 properties [b9d20179] at 0x...>
 
-The same custom storage format is also available as plain Python :class:`dict`,
+The same custom storage format is also available as plain Python :obj:`dict`,
 e.g. to be used with other methods of (de)serialization such as :mod:`pickle`,
 :func:`pprint.pprint` + :func:`ast.literal_eval`, yaml_, toml, xml, a database,
 etc. Use :meth:`~.Context.todict` and  :meth:`.Context.fromdict`:
