@@ -38,7 +38,7 @@ def load(filename, encoding='utf-8', frmat=None):
                      If ``None`` (default), infer ``frmat`` from ``filename`` suffix.
 
     Returns:
-        New :class:`.Context` instance.
+        Context: New :class:`.Context` instance.
 
     Example:
         >>> load('examples/liveinwater.txt')  # doctest: +ELLIPSIS
@@ -55,7 +55,7 @@ def load_cxt(filename, encoding=None):
         encoding (str): Encoding of the file (``'utf-8'``, ``'latin1'``, ``'ascii'``, ...).
 
     Returns:
-        New :class:`.Context` instance.
+        Context: New :class:`.Context` instance.
 
     Example:
         >>> load_cxt('examples/digits.cxt')  # doctest: +ELLIPSIS
@@ -73,7 +73,7 @@ def load_csv(filename, dialect='excel', encoding='utf-8'):
         encoding (str): Encoding of the file (``'utf-8'``, ``'latin1'``, ``'ascii'``, ...).
 
     Returns:
-        New :class:`.Context` instance.
+        Context: New :class:`.Context` instance.
 
     Example:
         >>> load_csv('examples/vowels.csv')  # doctest: +ELLIPSIS
@@ -90,7 +90,7 @@ def make_context(source, frmat='table'):
         frmat (str): Format of the context string (``'table'``, ``'cxt'``, ``'csv'``).
 
     Returns:
-        New :class:`.Context` instance.
+        Context: New :class:`.Context` instance.
 
     Example:
         >>> make_context('''

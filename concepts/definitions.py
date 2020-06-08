@@ -71,7 +71,13 @@ class Triple(object):
 
     @classmethod
     def fromfile(cls, filename, frmat='cxt', encoding=None, **kwargs):
-        """Return a new definiton from file source in given format."""
+        """Return a new definiton from file source in given format.
+
+         Args:
+            filename: Path to the file to load the context from.
+            frmat (str): Format of the file (``'table'``, ``'cxt'``, ``'csv'``).
+            encoding (str): Encoding of the file (``'utf-8'``, ``'latin1'``, ``'ascii'``, ...).
+        """
         frmat = formats.Format[frmat]
         objects, properties, bools = frmat.load(filename, encoding, **kwargs)
         return cls(objects, properties, bools)
@@ -224,6 +230,16 @@ def ensure_compatible(left, right):
 
 class Definition(Triple):
     """Mutable triple of ``(objects, properties, bools)`` for creating a context.
+
+    Create definition from ``objects``, ``properties``, and ``bools`` correspondence.
+
+    Args:
+        objects: Iterable of object label strings.
+        properties: Iterable of property label strings.
+        bools: Iterable of ``len(objects)`` tuples of ``len(properties)`` booleans.
+
+    Returns:
+        Definition: New :class:`.Definition` instance.
 
     Example:
         >>> Definition(['man', 'woman'], ['male', 'female'], [(True, False), (False, True)])

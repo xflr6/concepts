@@ -20,6 +20,16 @@ __all__ = ['Context']
 class Context(object):
     """Formal context defining a relation between objects and properties.
 
+    Create context from ``objects``, ``properties``, and ``bools`` correspondence.
+
+    Args:
+        objects: Iterable of object label strings.
+        properties: Iterable of property label strings.
+        bools: Iterable of ``len(objects)`` tuples of ``len(properties)`` booleans.
+
+    Returns:
+        Context: New :class:`.Context` instance.
+
     Example:
         >>> Context(['man', 'woman'], ['male', 'female'], [(True, False), (False, True)])  # doctest: +ELLIPSIS
         <Context object mapping 2 objects to 2 properties [47e29724] at 0x...>
@@ -116,7 +126,7 @@ class Context(object):
             frmat (str): Format of the context string (``'table'``, ``'cxt'``, ``'csv'``).
 
         Returns:
-            New :class:`.Context` instance.
+            Context: New :class:`.Context` instance.
         """
         frmat = formats.Format[frmat]
         objects, properties, bools = frmat.loads(source, **kwargs)
@@ -133,7 +143,7 @@ class Context(object):
                          If ``None`` (default), infer ``frmat`` from ``filename`` suffix.
 
         Returns:
-            New :class:`.Context` instance.
+            Context: New :class:`.Context` instance.
         """
         if frmat is None:
             frmat = formats.Format.infer_format(filename)
@@ -148,7 +158,7 @@ class Context(object):
         """Return a new context from json path or file-like object.
 
         Args:
-            path_or_fileobj: :class:`str`, :class:`os.PathLike`, or file-like object open for reading.
+            path_or_fileobj: :obj:`str`, :class:`os.PathLike`, or file-like object open for reading.
             encoding (str): Ignored for file-like objects under Python 3.
             ignore_lattice (bool): Don't load lattice from json serialization.
             require_lattice (bool): Raise if no lattice in json serialization.
@@ -156,7 +166,7 @@ class Context(object):
                         If unset (default), assume input is already ordered for speedup
 
         Returns:
-            New :class:`.Context` instance.
+            Context: New :class:`.Context` instance.
         """
         d = tools.load_json(path_or_fileobj, encoding=encoding)
         return cls.fromdict(d,
@@ -171,9 +181,10 @@ class Context(object):
             d (dict): serialized context with optional ``'lattice'``
             ignore_lattice (bool): don't load lattice from ``d``
             require_lattice (bool): raise if no lattice in ``d``
-            raw (bool): if set, sort so the input sequences can be in any order;
-                        if unset (default), assume input is already ordered for speedup
-        Returns: new :class:`concepts.Context` instance
+            raw (bool): If set, sort so the input sequences can be in any order.
+                        If unset (default), assume input is already ordered for speedup
+        Returns:
+            Context: New :class:`.Context` instance.
         """
         required_keys = ('objects', 'properties', 'context')
         try:
@@ -223,7 +234,13 @@ class Context(object):
         return inst
 
     def __init__(self, objects, properties, bools):
-        """Create context from ``objects``, ``properties``, and correspondence."""
+        """Create context from ``objects``, ``properties``, and ``bools`` correspondence.
+
+        Args:
+            objects: Iterable of object label strings.
+            properties: Iterable of property label strings.
+            bools: Iterable of ``len(objects)`` tuples of ``len(properties)`` booleans.
+        """
         objects, properties = map(tuple, (objects, properties))
 
         for items, name in [(objects, 'objects'), (properties, 'properties')]:
@@ -253,13 +270,23 @@ class Context(object):
         return self._intents, self._extents
 
     def __setstate__(self, state):
-        """Unpickle context from ``(intents, extents)`` tuple."""
+        """Unpickle context from ``(intents, extents)`` tuple.
+
+        Args:
+            state (tuple): Two-tuple of ``intents`` and ``extents``.
+        """
         self._intents, self._extents = state
         self._Intent = self._intents.BitSet
         self._Extent = self._extents.BitSet
 
     def __eq__(self, other):
-        """Return ``True`` if two contexts are equivalent.
+        """Return whether two contexts are equivalent.
+
+        Args:
+            other (Context): Another :class:`.Context` instance.
+
+        Returns:
+            bool: ``True`` if the contexts are equivalent, ``False`` otherwise.
 
         Ignores ``self.lattice`` and ``other.lattice`` objects.
         """
@@ -271,7 +298,13 @@ class Context(object):
                 and self.bools == other.bools)
 
     def __ne__(self, other):
-        """Return ``False`` if two contexts are equivalent.
+        """Return whether two contexts are inequivalent.
+
+        Args:
+            other (Context): Another :class:`.Context` instance.
+
+        Returns:
+            bool: ``True`` if the contexts are inequivalent, ``False`` otherwise.
 
         Ignores ``self.lattice`` and ``other.lattice`` objects.
         """
@@ -335,11 +368,11 @@ class Context(object):
         """Return all properties shared by the given ``objects``.
 
         Args:
-            objects: Iterable of strings taken from ``self.objects``.
-            raw (bool): return raw intent instead of string tuple.
+            objects: Iterable of :obj:`str` labels taken from ``self.objects``.
+            raw (bool): Return raw intent instead of :obj:`str` tuple.
 
         Returns:
-            A tuple of strings taken from ``self.properties``.
+            tuple: A tuple of :obj:`str` labels taken from ``self.properties``.
         """
         intent = self._Extent.frommembers(objects).prime()
         if raw:
@@ -350,11 +383,11 @@ class Context(object):
         """Return all objects sharing the given ``properties``.
 
         Args:
-            properties: Iterable of strings taken from ``self.properties``.
-            raw (bool): return raw extent instead of string tuple.
+            properties: Iterable of :obj:`str` labels taken from ``self.properties``.
+            raw (bool): Return raw extent instead of :obj:`str` tuple.
 
         Returns:
-            A tuple of strings taken from ``self.objects``.
+            tuple: A tuple of :obj:`str` labels taken from ``self.objects``.
         """
         extent = self._Intent.frommembers(properties).prime()
         if raw:
@@ -362,7 +395,15 @@ class Context(object):
         return extent.members()
 
     def neighbors(self, objects, raw=False):
-        """Return the upper neighbors of the concept having all given ``objects``."""
+        """Return the upper neighbors of the concept having all given ``objects``.
+
+        Args:
+            objects: Iterable of :obj:`str` labels taken from ``self.objects``.
+            raw (bool): Return raw ``(extent, intent)`` pairs instead of :obj:`str` tuples.
+
+        Returns:
+            list: A list of upper neighbor concepts as ``(extent, intent)`` pairs.
+        """
         objects = self._Extent.frommembers(objects).double()
         if raw:
             return list(self._neighbors(objects))
@@ -370,7 +411,15 @@ class Context(object):
                 for extent, intent in self._neighbors(objects)]
 
     def __getitem__(self, items, raw=False):
-        """Return ``(extension, intension)`` pair by shared objects or properties."""
+        """Return ``(extension, intension)`` pair by shared objects or properties.
+
+        Args:
+            items: Iterable of :obj:`str` labels either taken from ``self.objects`` or from ``self.properties``.
+            raw (bool): Return raw ``(extent, intent)`` pair instead of :obj:`str` tuples.
+
+        Returns:
+            tuple: The smallest concept having all ``items`` as ``(extent, intent)`` pair.
+        """
         try:
             extent = self._Extent.frommembers(items)
         except KeyError:
@@ -405,7 +454,7 @@ class Context(object):
                 yet been computed.
 
         Returns:
-            A new :class:`dict` with the serialized context.
+            dict: A new :obj:`dict` with the serialized context.
         """
         result = {
             u'objects': self.objects,
@@ -426,7 +475,7 @@ class Context(object):
         """Write serialized context as json to path or file-like object.
 
         Args:
-            path_or_fileobj: :class:`str`, :class:`os.PathLike`, or file-like object open for writing.
+            path_or_fileobj: :obj:`str`, :class:`os.PathLike`, or file-like object open for writing.
             encoding (str): Ignored for file-like objects under Python 3.
             indent (int): :func:`json.dump` ``indent`` for pretty-printing.
             sort_keys (bool): :func:`json.dump` ``sort_keys`` for diffability.
@@ -444,44 +493,56 @@ class Context(object):
         Args:
             frmat (str): Format of the string (``'table'``, ``'cxt'``, ``'csv'``).
 
-        Reuturns:
-            Seralized string.
+        Returns:
+            str: The context as seralized string.
         """
         frmat = formats.Format[frmat]
         return frmat.dumps(self.objects, self.properties, self.bools,
                            **kwargs)
 
     def tofile(self, filename, frmat='cxt', encoding='utf-8', **kwargs):
-        """Save the context serialized to file in the given format."""
+        """Save the context serialized to file in the given format.
+
+         Args:
+            frmat (str): Format of the string (``'table'``, ``'cxt'``, ``'csv'``).
+            encoding (str): Encoding of the file (``'utf-8'``, ``'latin1'``, ``'ascii'``, ...).
+        """
         frmat = formats.Format[frmat]
-        return frmat.dump(filename,
-                          self.objects, self.properties, self.bools,
-                          encoding, **kwargs)
+        frmat.dump(filename,
+                   self.objects, self.properties, self.bools,
+                   encoding, **kwargs)
 
     def crc32(self, encoding='utf-8'):
-        """Return hex-encoded unsigned CRC32 over encoded context table string."""
+        """Return hex-encoded unsigned CRC32 over encoded context table string.
+
+        Args:
+            encoding (str): Encoding of the serialzation (``'utf-8'``, ``'latin1'``, ``'ascii'``, ...).
+
+        Returns:
+            str: The unsigned CRC32 checksum as hex-string.
+        """
         return tools.crc32_hex(self.tostring().encode(encoding))
 
     @property
     def objects(self):
-        """(Names of the) objects described by the context."""
+        """tuple[str]: (Names of the) objects described by the context."""
         return self._Extent._members
 
     @property
     def properties(self):
-        """(Names of the) properties that describe the objects."""
+        """tuple[str]: (Names of the) properties that describe the objects."""
         return self._Intent._members
 
     @property
     def bools(self):
-        """Row-wise boolean relation matrix between objects and properties."""
+        """tuple[tuple[bool]]: Row-wise boolean relation matrix between objects and properties."""
         return self._intents.bools()
 
     def definition(self):
         """Return ``(objects, properties, bools)`` triple as mutable object.
 
         Returns:
-            New :class:`.Definition` instance.
+            Definition: New :class:`.Definition` instance.
         """
         return definitions.Definition(self.objects, self.properties, self.bools)
 
@@ -493,5 +554,5 @@ class Context(object):
 
     @tools.lazyproperty
     def lattice(self):
-        """The concept lattice of the formal context."""
+        """Lattice: The concept lattice of the formal context."""
         return lattices.Lattice(self)

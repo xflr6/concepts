@@ -281,10 +281,10 @@ class Lattice(object):
         """Return concept having all given ``properties`` as intension.
 
         Args:
-            properties: tuple of (``str``) property names.
+            properties (tuple[str]): Tuple of property names.
 
         Returns:
-            ``Concept`` instance from this lattice.
+            Concept: :class:`.Concept` instance from this lattice.
         """
         extent = self._context.extension(properties, raw=True)
         return self._mapping[extent]
@@ -296,7 +296,7 @@ class Lattice(object):
             key: Integer index, properties tuple, or objects tuple.
 
         Returns:
-            ``Concept`` instance from this lattice.
+            Concept: :class:`.Concept` instance from this lattice.
         """
         if isinstance(key, (int, slice)):
             return self._concepts[key]
@@ -311,7 +311,7 @@ class Lattice(object):
         """Yield all concepts of the lattice.
 
         Yields:
-            ``Concept`` instances from this lattice.
+            Concept: :class:`.Concept` instances from this lattice.
         """
         return iter(self._concepts)
 
@@ -335,39 +335,27 @@ class Lattice(object):
 
     @property
     def infimum(self):
-        """The most specific concept of the lattice.
-
-        Returns:
-            ``Concept`` instance from this lattice.
-        """
+        """Concept: The most specific concept of the lattice."""
         return self._concepts[0]
 
     @property
     def supremum(self):
-        """The most general concept of the lattice.
-
-        Returns:
-            ``Concept`` instance from this lattice.
-        """
+        """Concept: The most general concept of the lattice."""
         return self._concepts[-1]
 
     @property
     def atoms(self):
-        """The minimal non-infimum concepts of the lattice.
-
-        Returns:
-            A tuple of ``Concept`` instances from this lattice.
-        """
+        """tuple[Concept]: The minimal non-infimum concepts of the lattice."""
         return self.infimum.upper_neighbors
 
     def join(self, concepts):
         """Return the nearest concept that subsumes all given concepts.
 
         Args:
-            concepts: Iterable of ``Concept`` instances from this lattice.
+            concepts: Iterable of :class:`.Concept` instances from this lattice.
 
         Returns:
-            ``Concept`` instances from this lattice.
+            Concept: :class:`.Concept` instances from this lattice.
         """
         extents = (c._extent for c in concepts)
         join = self._context._Extent.reduce_or(extents)
@@ -377,10 +365,10 @@ class Lattice(object):
         """Return the nearest concept that implies all given concepts.
 
         Args:
-            concepts: Iterable of ``Concept`` instances from this lattice.
+            concepts: Iterable of :class:`.Concept` instances from this lattice.
 
         Returns:
-            ``Concept`` instances from this lattice.
+            Concept: :class:`.Concept` instances from this lattice.
         """
         extents = (c._extent for c in concepts)
         meet = self._context._Extent.reduce_and(extents)
@@ -392,10 +380,10 @@ class Lattice(object):
         """Yield all concepts that subsume any of the given ones.
 
         Args:
-            concepts: Iterable of ``Concept`` instances from this lattice.
+            concepts: Iterable of :class:`.Concept` instances from this lattice.
 
-        Yields:
-            ``Concept`` instances from this lattice.
+        Returns:
+            Concept: :class:`.Concept` instances from this lattice.
         """
         concepts = tools.maximal(concepts, comparison=Concept.properly_subsumes)
         return _iterunion(concepts, _sortkey, _next_concepts)
@@ -406,10 +394,10 @@ class Lattice(object):
         """Yield all concepts that imply any of the given ones.
 
         Args:
-            concepts: Iterable of ``Concept`` instances from this lattice.
+            concepts: Iterable of :class:`.Concept` instances from this lattice.
 
-        Yields:
-            ``Concept`` instances from this lattice.
+        Returns:
+            Concept: :class:`.Concept` instances from this lattice.
         """
         concepts = tools.maximal(concepts, comparison=Concept.properly_implies)
         return _iterunion(concepts, _sortkey, _next_concepts)
@@ -418,10 +406,10 @@ class Lattice(object):
         """Yield all concepts that subsume only the given ones.
 
         Args:
-            concepts: Iterable of ``Concept`` instances from this lattice.
+            concepts: Iterable of :class:`.Concept` instances from this lattice.
 
-        Yields:
-            ``Concept`` instances from this lattice.
+        Returns:
+            Concept: :class:`.Concept` instances from this lattice.
         """
         heap = [(c.index, c)
                 for c in tools.maximal(concepts,
