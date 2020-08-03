@@ -434,9 +434,11 @@ class Lattice(object):
                     for c in concept.upper_neighbors:
                         push(heap, (c.index, c))
 
-    def graphviz(self, filename=None, directory=None, render=False, view=False,
-                 make_object_label=' '.join, make_property_label=' '.join,
-                 **kwargs):
+    def graphviz(self, filename=None, directory=None, render=False, view=False,node_color=None,
+                node=None,font_size=10, distance=1,**kwargs):
+        """Return graphviz source for visualizing the lattice graph."""
+        return visualize.lattice(self, filename, directory, render, view,node_color,
+                                 node,font_size,distance,**kwargs)
         """Return DOT source for visualizing the lattice graph.
 
         Args:
