@@ -434,27 +434,11 @@ class Lattice(object):
                     for c in concept.upper_neighbors:
                         push(heap, (c.index, c))
 
-    def graphviz(self, filename=None, directory=None, render=False, view=False,
-                 make_object_label=' '.join, make_property_label=' '.join,
-                 **kwargs):
-        """Return DOT source for visualizing the lattice graph.
-
-        Args:
-            filename: Path to the DOT source file for the Digraph.
-            directory: (Sub)directory for DOT source saving and rendering.
-            render (bool): Call ``.render()`` on the result.
-            view (bool): Call ``.render(view=True)`` on the result.
-            make_object_label: Callable with iterable of objects argument
-                               returning a string to be used as object label.
-            make_property_label: Callable with iterable of properties argument
-                                 returning a string to be used as object label.
-        Returns:
-            A ``graphviz.Digraph`` instance.
-        """
-        return visualize.lattice(self, filename, directory, render, view,
-                                 make_object_label=make_object_label,
-                                 make_property_label=make_property_label,
-                                 **kwargs)
+    def graphviz(self, filename=None, directory=None, render=False, view=False,node_color=None,
+                node=None,font_size=10, distance=1,**kwargs):
+        """Return graphviz source for visualizing the lattice graph."""
+        return visualize.lattice(self, filename, directory, render, view,node_color,
+                                 node,font_size,distance,**kwargs)
 
 
 def _iterunion(concepts, sortkey, next_concepts):
