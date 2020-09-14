@@ -8,7 +8,7 @@ Installation
 ------------
 
 :mod:`concepts` is a pure-python package that runs under both Python 2.7 and
-3.5+. It is `available from PyPI`_. To install it with pip_, run the following
+3.6+. It is `available from PyPI`_. To install it with pip_, run the following
 command:
 
 .. code:: bash
