@@ -311,6 +311,71 @@ For details on the resulting objects' interface, check the documentation_ of
 the `Python graphviz interface`_ used.
 
 
+Customization
+^^^^^^^^^^^^^
+
+The style of the graph can be customized by modifying the ``graph_attr``,
+``node_attr`` and ``edge_attr`` dictionaries on the returned object (see also
+`Graphviz attributes`_):
+
+.. code:: python
+
+    >>> o = Context.fromstring('''
+    ...        |property1|property2|property3|
+    ... Object1|    X    |         |    X    |
+    ... Object2|         |    X    |         |
+    ... Object3|         |    X    |    X    |
+    ... Object4|         |    X    |         |
+    ... Object5|    X    |    X    |         |
+    ... ''')
+    >>> dot = o.lattice.graphviz()
+    >>> dot
+    <graphviz.dot.Digraph object at 0x...>
+
+.. image:: _static/objects.svg
+    :align: center
+
+.. code:: python
+
+    >>> dot.node_attr = {'shape': 'circle', 'width': '0.2',
+    ...                  'style': 'filled', 'label': ''}
+    >>> dot.edge_attr = {'dir': 'none', 'labeldistance': '1',
+    ...                  'minlen': '1', 'fontsize': '10'}
+    >>> dot
+    <graphviz.dot.Digraph object at 0x...>
+
+.. image:: _static/objects_small.svg
+    :align: center
+
+.. code:: python
+
+    >>> dot.node_attr['color'] = 'yellow'
+    >>> dot
+    <graphviz.dot.Digraph object at 0x...>
+
+.. image:: _static/objects_yellow.svg
+    :align: center
+
+.. code:: python
+
+    >>> del dot.node_attr['color']
+    >>> dot.edge_attr['fontsize'] = '5'
+    >>> dot
+    <graphviz.dot.Digraph object at 0x...>
+
+.. image:: _static/objects_fontsize.svg
+    :align: center
+
+.. code:: python
+
+    >>> dot.edge_attr.update(fontsize='10', minlen='2')
+    >>> dot
+    <graphviz.dot.Digraph object at 0x...>
+
+.. image:: _static/objects_minlen.svg
+    :align: center
+
+
 Persistence
 -----------
 
@@ -413,5 +478,6 @@ With :mod:`pickle`
 
 .. _documentation: https://graphviz.readthedocs.io
 .. _Python graphviz interface: graphviz_
+.. _Graphviz attributes: https://www.graphviz.org/doc/info/attrs.html
 
 .. _yaml: https://pyyaml.org
