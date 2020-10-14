@@ -2,8 +2,8 @@ Changelog
 =========
 
 
-Version 0.9.3 (in development)
-------------------------------
+Version 0.10 (in development)
+-----------------------------
 
 Drop Python 3.5 support.
 
