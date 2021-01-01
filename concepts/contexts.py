@@ -317,35 +317,6 @@ class Context(object):
 
         return not self == other
 
-    def _minimal(self, extent, intent):
-        """Return short lexicograpically minimum intent generating extent."""
-        return next(self._minimize(extent, intent))
-
-    def _minimize(self, extent, intent):
-        """Yield short lexicograpically ordered extent generating intents."""
-        if not extent:
-            yield intent
-            return
-
-        for it in intent.powerset():
-            if it.prime() == extent:
-                yield it
-
-    def _neighbors(self, objects):
-        """Yield upper neighbors from extent (in colex order?).
-
-        cf. C. Lindig. 2000. Fast Concept Analysis.
-        """
-        doubleprime = self._extents.doubleprime
-        minimal = ~objects
-        for add in self._Extent.atomic(minimal):
-            objects_ = objects | add
-            extent, intent = doubleprime(objects_)
-            if minimal & extent & ~objects_:
-                minimal &= ~add
-            else:
-                yield extent, intent
-
     def _lattice(self, infimum=()):
         """Yield ``(extent, indent, upper, lower)`` in short lexicographic order.
 
@@ -367,6 +338,35 @@ class Context(object):
                 concept[2].append(neighbor[0])
                 neighbor[3].append(concept[0])
             yield concept  # concept[3] keeps growing until exhaustion
+
+    def _neighbors(self, objects):
+        """Yield upper neighbors from extent (in colex order?).
+
+        cf. C. Lindig. 2000. Fast Concept Analysis.
+        """
+        doubleprime = self._extents.doubleprime
+        minimal = ~objects
+        for add in self._Extent.atomic(minimal):
+            objects_ = objects | add
+            extent, intent = doubleprime(objects_)
+            if minimal & extent & ~objects_:
+                minimal &= ~add
+            else:
+                yield extent, intent
+
+    def _minimal(self, extent, intent):
+        """Return short lexicograpically minimum intent generating extent."""
+        return next(self._minimize(extent, intent))
+
+    def _minimize(self, extent, intent):
+        """Yield short lexicograpically ordered extent generating intents."""
+        if not extent:
+            yield intent
+            return
+
+        for it in intent.powerset():
+            if it.prime() == extent:
+                yield it
 
     def intension(self, objects, raw=False):
         """Return all properties shared by the given ``objects``.
