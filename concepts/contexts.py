@@ -2,6 +2,7 @@
 
 """Formal Concept Analysis contexts."""
 
+import functools
 import heapq
 
 from ._compat import py3_unicode_to_str, string_types, map
@@ -323,18 +324,23 @@ class Context(object):
         cf. C. Lindig. 2000. Fast Concept Analysis.
         """
         extent, intent = self._Extent.frommembers(infimum).doubleprime()
+
         concept = (extent, intent, [], [])
-        heap = [(extent.shortlex(), concept)]
-        push, pop = heapq.heappush, heapq.heappop
+
         mapping = {extent: concept}
+
+        heap = [(extent.shortlex(), concept)]
+        push = functools.partial(heapq.heappush, heap)
+        pop = functools.partial(heapq.heappop, heap)
+
         while heap:
-            concept = pop(heap)[1]
+            concept = pop()[1]
             for extent, intent in self._neighbors(concept[0]):
                 if extent in mapping:
                     neighbor = mapping[extent]
                 else:
                     neighbor = mapping[extent] = (extent, intent, [], [])
-                    push(heap, (extent.shortlex(), neighbor))
+                    push((extent.shortlex(), neighbor))
                 concept[2].append(neighbor[0])
                 neighbor[3].append(concept[0])
             yield concept  # concept[3] keeps growing until exhaustion
@@ -349,7 +355,7 @@ class Context(object):
         for add in self._Extent.atomic(minimal):
             objects_and_add = objects | add
             extent, intent = doubleprime(objects_and_add)
-            if minimal & extent & ~objects_and_add:
+            if extent & ~objects_and_add & minimal:
                 minimal &= ~add
             else:
                 yield extent, intent
