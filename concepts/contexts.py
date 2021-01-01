@@ -7,12 +7,12 @@ import heapq
 
 from ._compat import py3_unicode_to_str, string_types, map
 
-from . import formats
-from . import matrices
-from . import tools
 from . import definitions
+from . import formats
 from . import junctors
 from . import lattices
+from . import matrices
+from . import tools
 
 __all__ = ['Context']
 
@@ -351,7 +351,9 @@ class Context(object):
         cf. C. Lindig. 2000. Fast Concept Analysis.
         """
         doubleprime = self._extents.doubleprime
+
         minimal = ~objects
+
         for add in self._Extent.atomic(minimal):
             objects_and_add = objects | add
             extent, intent = doubleprime(objects_and_add)
@@ -466,11 +468,9 @@ class Context(object):
         Returns:
             dict: A new :obj:`dict` with the serialized context.
         """
-        result = {
-            u'objects': self.objects,
-            u'properties': self.properties,
-            u'context': self._intents.index_sets(),
-        }
+        result = {u'objects': self.objects,
+                  u'properties': self.properties,
+                  u'context': self._intents.index_sets()}
         if ignore_lattice:
             pass
         elif ignore_lattice is None and u'lattice' not in self.__dict__:
