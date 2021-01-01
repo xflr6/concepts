@@ -1,7 +1,7 @@
 # test_lattices.py
 
-import pickle
 import functools
+import pickle
 
 import pytest
 

@@ -3,8 +3,8 @@
 import sys
 
 if sys.version_info.major == 2:
-    import csv
     import codecs
+    import csv
 
     try:
         from cStringIO import StringIO

@@ -2,10 +2,10 @@
 
 """Parse and serialize formal contexts in different formats."""
 
+import contextlib
+import csv
 import io
 import os
-import csv
-import contextlib
 
 from ._compat import PY2, text_type, zip, with_metaclass, StringIO
 from . import _compat_csv

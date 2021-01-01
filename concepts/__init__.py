@@ -2,14 +2,12 @@
 
 """Formal Concept Analysis (FCA) with Python."""
 
-from .contexts import Context
 from .definitions import Definition
+from .contexts import Context
 
-__all__ = [
-    'Context', 'Definition',
-    'load', 'load_cxt', 'load_csv',
-    'make_context',
-]
+__all__ = ['Context', 'Definition',
+           'load', 'load_cxt', 'load_csv',
+           'make_context']
 
 __title__ = 'concepts'
 __version__ = '0.10.dev0'

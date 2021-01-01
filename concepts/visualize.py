@@ -1,7 +1,7 @@
 # visualize.py - convert lattice to graphviz dot
 
-import os
 import glob
+import os
 
 import graphviz
 

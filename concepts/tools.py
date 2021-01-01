@@ -1,18 +1,16 @@
 # tools.py - generic helpers
 
+from itertools import permutations, groupby, starmap
 import operator
 import zlib
-from itertools import permutations, groupby, starmap
 
 from . import _compat
 
-__all__ = [
-    'Unique',
-    'max_len', 'maximal',
-    'lazyproperty',
-    'crc32_hex',
-    'dump_json', 'load_json',
-]
+__all__ = ['Unique',
+           'max_len', 'maximal',
+           'lazyproperty',
+           'crc32_hex',
+           'dump_json', 'load_json']
 
 
 class Unique(_compat.MutableSet):

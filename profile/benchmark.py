@@ -1,7 +1,7 @@
 # benchmark.py - benchmark time to create bigger lattice and profile it
 
-import sys
 import os
+import sys
 import time
 
 sys.path.insert(1, os.pardir)
