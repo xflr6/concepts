@@ -347,9 +347,9 @@ class Context(object):
         doubleprime = self._extents.doubleprime
         minimal = ~objects
         for add in self._Extent.atomic(minimal):
-            objects_ = objects | add
-            extent, intent = doubleprime(objects_)
-            if minimal & extent & ~objects_:
+            objects_and_add = objects | add
+            extent, intent = doubleprime(objects_and_add)
+            if minimal & extent & ~objects_and_add:
                 minimal &= ~add
             else:
                 yield extent, intent
