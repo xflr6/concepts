@@ -16,7 +16,7 @@ class Vectors(bitsets.series.Tuple):
 
     def _pair_with(self, relation, index, other):
         if hasattr(self, 'prime'):
-            raise RuntimeError('%r attempt _pair_with %r' % (self, other))
+            raise RuntimeError(f'{self!r} attempt _pair_with {other!r}')
 
         self.relation = relation
         self.relation_index = index
@@ -121,7 +121,7 @@ class Relation(tuple):
     __call__ = tuple.__getitem__
 
     def __repr__(self):
-        return '<%s(%r, %r)>' % (self.__class__.__name__, self[0], self[1])
+        return f'<{self.__class__.__name__}({self[0]!r}, {self[1]!r})>'
 
     def __reduce__(self):
         X, Y = (v.BitSet for v in self)  # noqa: N806

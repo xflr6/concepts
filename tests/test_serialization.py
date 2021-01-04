@@ -87,14 +87,14 @@ def d_invalid():
                          ['objects', 'properties', 'context', 'lattice'])
 def test_fromdict_missing(d_invalid, missing):
     del d_invalid[missing]
-    with pytest.raises(ValueError, match=r'missing .*%s' % missing):
+    with pytest.raises(ValueError, match=rf'missing .*{missing}'):
         Context.fromdict(d_invalid, require_lattice=(missing == 'lattice'))
 
 
 @pytest.mark.parametrize('nonstring', ['objects', 'properties'])
 def test_fromdict_nonstring(d_invalid, nonstring):
     d_invalid[nonstring] = (42,) + d_invalid[nonstring][1:]
-    with pytest.raises(ValueError, match=r'non-string %s' % nonstring):
+    with pytest.raises(ValueError, match=rf'non-string {nonstring}'):
         Context.fromdict(d_invalid)
 
 
@@ -102,7 +102,7 @@ def test_fromdict_nonstring(d_invalid, nonstring):
 def test_fromdict_mismatch(d_invalid, short):
     d_invalid[short] = d_invalid[short][1:]
     lens = (5, 6) if short == 'objects' else (6, 5)
-    match = r'mismatch: %d objects with %d context' % lens
+    match = r'mismatch: {:d} objects with {:d} context'.format(*lens)
     with pytest.raises(ValueError, match=match):
         Context.fromdict(d_invalid)
 

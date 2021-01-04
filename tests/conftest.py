@@ -27,7 +27,7 @@ def lattice(context):
 @pytest.fixture(params=['str', 'bytes', 'pathlike', 'fileobj'])
 def path_or_fileobj(request, tmp_path, filename='context.json'):
     if request.param == 'str':
-        yield '%s' % (tmp_path / filename)
+        yield str(tmp_path / filename)
     elif request.param == 'bytes':
         yield str(tmp_path / filename).encode('ascii')
     elif request.param == 'pathlike':

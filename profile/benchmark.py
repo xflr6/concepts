@@ -10,7 +10,7 @@ import concepts  # noqa: E402
 
 start = time.time()
 c = concepts.load_cxt('segments.cxt', encoding='utf-8')
-print('%r' % c.lattice)
+print(repr(c.lattice))
 print(time.time() - start)
 
 

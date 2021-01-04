@@ -9,7 +9,7 @@ __all__ = ['lattice', 'render_all']
 
 SORTKEYS = [lambda c: c.index]
 
-NAME_GETTERS = [lambda c: 'c%d' % c.index]
+NAME_GETTERS = [lambda c: f'c{c.index:d}']
 
 
 def lattice(lattice, filename, directory, render, view,
@@ -58,7 +58,7 @@ def render_all(filepattern='*.cxt', encoding=None,
         c = concepts.load(cxtfile, encoding=encoding)
         l = c.lattice
 
-        filename = '%s.gv' % os.path.splitext(cxtfile)[0]
+        filename = f'{os.path.splitext(cxtfile)[0]}.gv'
         if directory is not None:
             filename = os.path.basename(filename)
 

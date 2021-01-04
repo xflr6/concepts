@@ -189,17 +189,17 @@ class Context(object):
             args = [d[k] for k in required_keys]
         except KeyError:
             missing = [k for k in required_keys if k not in d]
-            raise ValueError('missing required keys in fromdict: %r' % missing)
+            raise ValueError(f'missing required keys in fromdict: {missing!r}')
         else:
             objects, properties, context = args
 
         for name, values in zip(['objects', 'properties'], args[:2]):
             if not all(isinstance(v, str) for v in values):
-                raise ValueError('non-string %s in %r' % (name, values))
+                raise ValueError(f'non-string {name} in {values!r}')
 
         if len(context) != len(objects):
-            raise ValueError('mismatch: %r objects with %r'
-                             ' context rows: ' % (len(objects), len(context)))
+            raise ValueError(f'mismatch: {len(objects)} objects'
+                             f' with {len(context)} context rows')
 
         if require_lattice:
             try:
@@ -243,18 +243,18 @@ class Context(object):
 
         for items, name in [(objects, 'objects'), (properties, 'properties')]:
             if not items:
-                raise ValueError('empty %s' % name)
+                raise ValueError(f'empty {name}')
             if len(set(items)) != len(items):
-                raise ValueError('duplicate %s: %r' % (name, items))
+                raise ValueError(f'duplicate {name}: {items!r}')
 
         if not set(objects).isdisjoint(properties):
-            raise ValueError('objects and properties overlap: '
-                             '%r' % (set(objects) & set(properties)))
+            common = set(objects) & set(properties)
+            raise ValueError(f'objects and properties overlap: {common!r}')
 
         if (len(bools) != len(objects)
             or {len(b) for b in bools} != {len(properties)}):
-            raise ValueError('bools is not %d items '
-                             'of length %d' % (len(objects), len(properties)))
+            raise ValueError(f'bools is not {len(objects)} items'
+                             f' of length {len(properties)}')
 
         self._intents, self._extents = matrices.Relation('Intent', 'Extent',
                                                          properties, objects,
@@ -442,14 +442,13 @@ class Context(object):
         return extent.members(), intent.members()
 
     def __str__(self):
-        return '%r\n%s' % (self, self.tostring(indent=4))
+        return f'{self!r}\n{self.tostring(indent=4)}'
 
     def __repr__(self):
-        return ('<%s object mapping %d objects to %d properties'
-                ' [%s] at %#x>') % (self.__class__.__name__,
-                                    len(self.objects),
-                                    len(self.properties),
-                                    self.crc32(), id(self))
+        return (f'<{self.__class__.__name__} object'
+                f' mapping {len(self.objects)} objects'
+                f' to {len(self.properties)} properties'
+                f' [{self.crc32()}] at {id(self):#x}>')
 
     def todict(self, ignore_lattice=False):
         """Return serialized context with optional lattice.

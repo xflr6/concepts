@@ -46,8 +46,8 @@ class Unique(collections.abc.MutableSet):
         return item in self._seen
 
     def __repr__(self):
-        return '%s(%s)' % (self.__class__.__name__,
-                           repr(self._items) if self._items else '')
+        arg = repr(self._items) if self._items else ''
+        return f'{self.__class__.__name__}({arg})'
 
     def add(self, item):
         if item not in self._seen:
@@ -78,7 +78,7 @@ class Unique(collections.abc.MutableSet):
         ValueError: 0 already in list
         """
         if new_item in self._seen:
-            raise ValueError('%r already in list' % (new_item,))
+            raise ValueError(f'{new_item!r} already in list')
 
         idx = self._items.index(item)
         self._seen.remove(item)
@@ -201,7 +201,8 @@ def crc32_hex(data):
     >>> crc32_hex(b'spam')
     '43daff3d'
     """
-    return '%x' % (zlib.crc32(data) & 0xffffffff)
+    value = zlib.crc32(data) & 0xffffffff
+    return f'{value:x}'
 
 
 def dump_json(obj, path_or_fileobj, encoding='utf-8', mode='w', **kwargs):
@@ -222,7 +223,7 @@ def _call_json(funcname, path_or_fileobj, encoding, mode, **kwargs):
     try:
         return getattr(json,funcname)(fp=f, **kwargs)
     except (AttributeError, TypeError):
-        raise TypeError('path_or_fileobj: %r' % (path_or_fileobj,))
+        raise TypeError('path_or_fileobj: {path_or_fileobj!r}')
     finally:
         if close:
             f.close()

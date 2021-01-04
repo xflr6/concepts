@@ -90,7 +90,7 @@ Iterate over the **concept lattice** of all objects-properties pairs:
 .. code:: python
 
     >>> for extent, intent in c.lattice:
-    ...     print('%r %r' % (extent, intent))
+    ...     print(f'{extent!r} {intent!r}')
     () ('human', 'knight', 'king', 'mysterious')
     ('King Arthur',) ('human', 'knight', 'king')
     ('holy grail',) ('mysterious',)

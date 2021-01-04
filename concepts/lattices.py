@@ -321,15 +321,15 @@ class Lattice(object):
         return len(self._concepts)
 
     def __str__(self):
-        return '%r\n%s' % (self, '\n'.join('    %s' % c for c in self._concepts))
+        concepts = '\n'.join(f'    {c}' for c in self._concepts)
+        return f'{self!r}\n{concepts}'
 
     def __repr__(self):
-        return ('<%s object of %d atoms %d concepts %d coatoms'
-                ' at %#x>') % (self.__class__.__name__,
-                               len(self.atoms),
-                               len(self),
-                               len(self.supremum.lower_neighbors),
-                               id(self))
+        return (f'<{self.__class__.__name__} object'
+                f' of {len(self.atoms)} atoms'
+                f' {len(self)} concepts'
+                f' {len(self.supremum.lower_neighbors)} coatoms'
+                f' at {id(self):#x}>')
 
     @property
     def infimum(self):
@@ -802,12 +802,12 @@ class Concept(object):
     def __str__(self):
         extent = ', '.join(self._extent.members())
         intent = ' '.join(self._intent.members())
-        objects = ' <=> %s' % ' '.join(self.objects) if self.objects else ''
-        properties = ' <=> %s' % ' '.join(self.properties) if self.properties else ''
-        return '{%s} <-> [%s]%s%s' % (extent, intent, objects, properties)
+        objects = ' <=> {}'.format(' '.join(self.objects)) if self.objects else ''
+        properties = ' <=> {}'.format(' '.join(self.properties)) if self.properties else ''
+        return f'{{{extent}}} <-> [{intent}]{objects}{properties}'
 
     def __repr__(self):
-        return '<%s %s>' % (self.__class__.__name__, self)
+        return f'<{self.__class__.__name__} {self}>'
 
 
 class Infimum(Concept):

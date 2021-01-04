@@ -145,10 +145,10 @@ class Unary(Relation):
         self.bools = bools
 
     def __str__(self):
-        return '%s %s' % (self.left, self.kind)
+        return f'{self.left} {self.kind}'
 
     def __repr__(self):
-        return '<%s(%r)>' % (self.__class__.__name__, self.left)
+        return f'<{self.__class__.__name__}({self.left!r})>'
 
 
 class Binary(Relation):
@@ -171,7 +171,7 @@ class Binary(Relation):
         self.right = right
 
     def __str__(self):
-        return '%s %s %s' % (self.left, self.kind, self.right)
+        return f'{self.left} {self.kind} {self.right}'
 
     def __repr__(self):
-        return '<%s(%r, %r)>' % (self.__class__.__name__, self.left, self.right)
+        return f'<{self.__class__.__name__}({self.left!r}, {self.right!r})>'

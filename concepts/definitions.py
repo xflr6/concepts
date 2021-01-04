@@ -93,11 +93,11 @@ class Triple(object):
     def __init__(self, objects=(), properties=(), bools=()):
         self._objects = tools.Unique(objects)
         if len(self._objects) != len(objects):
-            raise ValueError('duplicate objects: %r' % (objects,))
+            raise ValueError(f'duplicate objects: {objects!r}')
 
         self._properties = tools.Unique(properties)
         if len(self._properties) != len(properties):
-            raise ValueError('duplicate properties: %r' % (properties,))
+            raise ValueError(f'duplicate properties: {properties!r}')
 
         self._pairs = {(o, p) for o, boo in zip(objects, bools)
                        for p, b in zip(properties, boo) if b}
@@ -179,10 +179,9 @@ class Triple(object):
         return self.tostring()
 
     def __repr__(self):
-        return '<%s(%r, %r, %r)>' % (self.__class__.__name__,
-                                     self._objects._items,
-                                     self._properties._items,
-                                     self.bools)
+        return (f'<{self.__class__.__name__}('
+                f'{self._objects._items!r}, {self._properties._items!r},'
+                f' {self.bools!r})>')
 
     def tostring(self, frmat='table', **kwargs):
         """Return the definition serialized in the given string-based format.
@@ -278,7 +277,7 @@ def ensure_compatible(left, right):
     conflicts = list(conflicting_pairs(left, right))
     if conflicts:
         raise ValueError('conflicting values for object/property pairs:'
-                         ' %r' % conflicts)
+                         f' {conflicts!r}')
 
 
 class Definition(Triple):

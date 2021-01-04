@@ -31,7 +31,7 @@ class FormatMeta(type):
         try:
             return self._map[name.lower()]
         except KeyError:
-            raise KeyError('%r unknown format: %r' % (self, name))
+            raise KeyError(f'{self!r} unknown format: {name!r}')
 
     def infer_format(self, filename, frmat=None):  # noqa: N804
         _, suffix = os.path.splitext(filename)
@@ -39,7 +39,7 @@ class FormatMeta(type):
             return self.by_suffix[suffix.lower()]
         except KeyError:
             raise ValueError('cannot infer file format from filename suffix'
-                             ' %r, please specify ``frmat``' % (suffix,))
+                             f' {suffix!r}, please specify ``frmat``')
 
 
 class Format(metaclass=FormatMeta):
@@ -103,7 +103,7 @@ class Cxt(Format):
 
     @staticmethod
     def dumps(objects, properties, bools):
-        result = ['B', '', '%d' % len(objects), '%d' % len(properties), '']
+        result = ['B', '', f'{len(objects)}', f'{len(properties)}', '']
         result.extend(objects)
         result.extend(properties)
         result.extend(''.join('X' if b else '.' for b in intent)
@@ -133,7 +133,7 @@ class Table(Format):
     def dumps(objects, properties, bools, indent=0):
         wd = [tools.max_len(objects)]
         wd.extend(map(len, properties))
-        tmpl = ' ' * indent + '|'.join('%%-%ds' % w for w in wd) + '|'
+        tmpl = ' ' * indent + '|'.join(f'%-{w:d}s' for w in wd) + '|'
         result = [tmpl % (('',) + tuple(properties))]
         result.extend(tmpl % ((o,) + tuple('X' if b else '' for b in intent))
                       for o, intent in zip(objects, bools))
@@ -218,10 +218,10 @@ class WikiTable(Format):
     @staticmethod
     def dumps(objects, properties, bools):
         result = ['{| class="featuresystem"', '!',
-                  '!%s' % '!!'.join(properties)]
+                  '!{}'.format('!!'.join(properties))]
         wp = list(map(len, properties))
         for o, intent in zip(objects, bools):
             bcells = (('X' if b else '').ljust(w) for w, b in zip(wp, intent))
-            result += ['|-', '!%s' % o, '|%s' % '||'.join(bcells)]
+            result += ['|-', f'!{o}', '|{}'.format('||'.join(bcells))]
         result.append('|}')
         return '\n'.join(result)

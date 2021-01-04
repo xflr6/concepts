@@ -170,7 +170,7 @@ visit all concepts:
     <Lattice object of 2 atoms 5 concepts 2 coatoms at 0x...>
 
     >>> for extent, intent in l:
-    ...     print('%r %r' % (extent, intent))
+    ...     print(f'{extent!r} {intent!r}')
     () ('human', 'knight', 'king', 'mysterious')
     ('King Arthur',) ('human', 'knight', 'king')
     ('holy grail',) ('mysterious',)
