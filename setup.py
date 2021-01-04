@@ -21,7 +21,7 @@ setup(
     },
     packages=find_packages(),
     platforms='any',
-    python_requires='>=2.7,!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*,!=3.4.*,!=3.5.*',
+    python_requires='>=3.6',
     install_requires=[
         'bitsets~=0.7',
         'graphviz~=0.7',
@@ -38,8 +38,6 @@ setup(
         'Intended Audience :: Science/Research',
         'License :: OSI Approved :: MIT License',
         'Operating System :: OS Independent',
-        'Programming Language :: Python :: 2',
-        'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',

@@ -13,7 +13,7 @@ __title__ = 'concepts'
 __version__ = '0.10.dev0'
 __author__ = 'Sebastian Bank <sebastian.bank@uni-leipzig.de>'
 __license__ = 'MIT, see LICENSE.txt'
-__copyright__ = 'Copyright (c) 2013-2020 Sebastian Bank'
+__copyright__ = 'Copyright (c) 2013-2021 Sebastian Bank'
 
 EXAMPLE = '''
    |+1|-1|+2|-2|+3|-3|+sg|+pl|-sg|-pl|

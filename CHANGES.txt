@@ -5,6 +5,8 @@ Changelog
 Version 0.10 (in development)
 -----------------------------
 
+Drop Python 2 support.
+
 Drop Python 3.5 support and tag Python3.9 support.
 
 
