@@ -1,10 +1,10 @@
 # tools.py - generic helpers
 
+import collections.abc
 from itertools import permutations, groupby, starmap
+import json
 import operator
 import zlib
-
-from . import _compat
 
 __all__ = ['Unique',
            'max_len', 'maximal',
@@ -13,7 +13,7 @@ __all__ = ['Unique',
            'dump_json', 'load_json']
 
 
-class Unique(_compat.MutableSet):
+class Unique(collections.abc.MutableSet):
     """Unique items preserving order.
 
     >>> Unique([3, 2, 1, 3, 2, 1, 0])
@@ -22,7 +22,7 @@ class Unique(_compat.MutableSet):
 
     @classmethod
     def _fromargs(cls, _seen, _items):
-        inst = super(Unique, cls).__new__(cls)
+        inst = super().__new__(cls)
         inst._seen = _seen
         inst._items = _items
         return inst
@@ -109,7 +109,7 @@ class Unique(_compat.MutableSet):
         >>> Unique(['spam', 'eggs']).issuperset(['spam', 'spam', 'spam'])
         True
         """
-        return all(_compat.map(self._seen.__contains__, items))
+        return all(map(self._seen.__contains__, items))
 
     def rsub(self, items):
         """Return order preserving unique items not in this collection.
@@ -220,7 +220,7 @@ def _call_json(funcname, path_or_fileobj, encoding, mode, **kwargs):
     close = not fallthrough
 
     try:
-        return _compat.json_call(funcname, fp=f, encoding=encoding, **kwargs)
+        return getattr(json,funcname)(fp=f, **kwargs)
     except (AttributeError, TypeError):
         raise TypeError('path_or_fileobj: %r' % (path_or_fileobj,))
     finally:
@@ -232,10 +232,10 @@ def _get_fileobj(path_or_fileobj, mode, encoding):
     fallthrough = False
 
     try:
-        f = _compat.json_open(path_or_fileobj, mode, encoding=encoding)
+        f = open(path_or_fileobj, mode, encoding=encoding)
     except TypeError:
         try:
-            f = _compat.json_path_open(path_or_fileobj, mode, encoding=encoding)
+            f = path_or_fileobj.open(mode, encoding=encoding)
         except AttributeError:
             f = path_or_fileobj
             fallthrough = True

@@ -11,8 +11,6 @@ https://commons.wikimedia.org/wiki/File:Logic_matrix;_operations.svg
 
 from itertools import combinations, chain
 
-from ._compat import zip, with_metaclass
-
 __all__ = ['Relations']
 
 
@@ -72,7 +70,7 @@ class Relations(list):
 
         members = chain(unary, binary) if include_unary else binary
 
-        super(Relations, self).__init__(members)
+        super().__init__(members)
         self.sort(key=lambda r: r.order)
 
     def __str__(self):
@@ -122,10 +120,10 @@ class RelationMeta(type):
         elif self is Replication:
             self = Implication
             left, right = right, left
-        return super(RelationMeta, self).__call__(left, right)
+        return super().__call__(left, right)
 
 
-class Relation(with_metaclass(RelationMeta, object)):
+class Relation(metaclass=RelationMeta):
     """Logical characteristics of truth condition sequences."""
 
 

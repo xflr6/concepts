@@ -20,7 +20,7 @@ def test_load_json_invalid_path():
         tools.load_json(object())
 
 
-def test_dump_load(path_or_fileobj, encoding, obj={u'sp\xe4m': 'eggs'}):
+def test_dump_load(path_or_fileobj, encoding, obj={'sp\xe4m': 'eggs'}):
     tools.dump_json(obj, path_or_fileobj, encoding=encoding)
     if hasattr(path_or_fileobj, 'seek'):
         path_or_fileobj.seek(0)

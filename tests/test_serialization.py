@@ -1,7 +1,6 @@
 # test_serialization.py
 
-from __future__ import unicode_literals
-
+import io
 import random
 
 import pytest
@@ -252,11 +251,11 @@ def test_json_roundtrip(context, path_or_fileobj, encoding):
     assert deserialized.lattice._eq(context.lattice)
 
 
-def test_tojson_indent4(make_stringio, context, encoding):
+def test_tojson_indent4(context, encoding):
     assert 'lattice' not in context.__dict__
     kwargs = {'encoding': encoding} if encoding is not None else {}
 
-    with make_stringio() as f:
+    with io.StringIO() as f:
         context.tojson(f, indent=4, sort_keys=True, ignore_lattice=True, **kwargs)
         assert 'lattice' not in context.__dict__
 
@@ -265,11 +264,11 @@ def test_tojson_indent4(make_stringio, context, encoding):
     assert serialized.startswith('{\n    "context": [')
 
 
-def test_tojson_newlinedelmited(make_stringio, context, encoding):
+def test_tojson_newlinedelmited(context, encoding):
     assert 'lattice' not in context.__dict__
     kwargs = {'encoding': encoding} if encoding is not None else {}
 
-    with make_stringio() as f:
+    with io.StringIO() as f:
         context.tojson(f, sort_keys=True, ignore_lattice=True, **kwargs)
         assert 'lattice' not in context.__dict__
         f.write(str('\n'))
@@ -286,26 +285,26 @@ def test_tojson_newlinedelmited(make_stringio, context, encoding):
 
 
 @pytest.fixture(scope='module')
-def nonascii_context(abba=(u'Agneta F\xe4ltskog', u'Anni-Frid Lyngstat',
-                           u'Benny Andersson', u'Bj\xf6rn Ulvaeus')):
+def nonascii_context(abba=('Agneta F\xe4ltskog', 'Anni-Frid Lyngstat',
+                           'Benny Andersson', 'Bj\xf6rn Ulvaeus')):
     d = Definition()
     for o in abba:
-        d.add_object(o, [u'human', u'singer'])
-    d.add_property(u'female', abba[:2])
-    d.add_property(u'male', abba[2:])
-    d.add_property(u'keyboarder', [abba[2]])
-    d.add_property(u'guitarrist', [abba[3]])
-    d.add_property(u'sch\xf6n', abba[::2])
+        d.add_object(o, ['human', 'singer'])
+    d.add_property('female', abba[:2])
+    d.add_property('male', abba[2:])
+    d.add_property('keyboarder', [abba[2]])
+    d.add_property('guitarrist', [abba[3]])
+    d.add_property('sch\xf6n', abba[::2])
 
     return Context(*d)
 
 
-def test_json_roundtrip_nonascii_context(make_stringio, nonascii_context, encoding):
+def test_json_roundtrip_nonascii_context(nonascii_context, encoding):
     assert isinstance(nonascii_context.lattice, Lattice)
     assert 'lattice' in nonascii_context.__dict__
     kwargs = {'encoding': encoding} if encoding is not None else {}
 
-    with make_stringio() as f:
+    with io.StringIO() as f:
         nonascii_context.tojson(f, **kwargs)
         serialized = f.getvalue()
         f.seek(0)
@@ -316,6 +315,6 @@ def test_json_roundtrip_nonascii_context(make_stringio, nonascii_context, encodi
     assert deserialized == nonascii_context
     assert deserialized.lattice._eq(nonascii_context.lattice)
 
-    assert u'"Agneta F\\u00e4ltskog"' in serialized
-    assert u'"Bj\\u00f6rn Ulvaeus"' in serialized
-    assert u'"sch\\u00f6n"' in serialized
+    assert '"Agneta F\\u00e4ltskog"' in serialized
+    assert '"Bj\\u00f6rn Ulvaeus"' in serialized
+    assert '"sch\\u00f6n"' in serialized

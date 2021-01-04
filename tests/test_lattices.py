@@ -88,11 +88,6 @@ def test_len(lattice):
     assert len(lattice) == 22
 
 
-def test_unicode(lattice):
-    assert all(ord(c) < 128 for c in str(lattice))
-    assert u'%s' % lattice == '%s' % lattice
-
-
 @pytest.mark.parametrize('concepts, expected', [
     ([('+1',), ('+2',)], [('+1',), ('+2',),
                           ('-3',), ('-2',), ('-1',),

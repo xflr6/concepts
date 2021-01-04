@@ -101,11 +101,6 @@ def test_raw(context):
          (Extent('100010'), Intent('0001001001'))]
 
 
-def test_unicode(context):
-    assert all(ord(c) < 128 for c in str(context))
-    assert u'%s' % context == '%s' % context
-
-
 def test_tofile(tmp_path, context, filename='context.cxt', encoding='utf-8'):
     filepath = tmp_path / filename
     context.tofile(str(filepath), encoding=encoding)

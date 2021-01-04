@@ -2,15 +2,12 @@
 
 """Mutable formal context creation arguments with set-like operations."""
 
-from ._compat import zip, py3_unicode_to_str
-
 from . import formats
 from . import tools
 
 __all__ = ['Definition']
 
 
-@py3_unicode_to_str
 class Triple(object):
     """Triple of ``(objects, properties, bools)`` for creating a context.
 
@@ -87,7 +84,7 @@ class Triple(object):
 
     @classmethod
     def _fromargs(cls, _objects, _properties, _pairs):
-        inst = super(Triple, cls).__new__(cls)
+        inst = super().__new__(cls)
         inst._objects = _objects
         inst._properties = _properties
         inst._pairs = _pairs
@@ -179,9 +176,6 @@ class Triple(object):
         return [tuple((o, p) in pairs for p in prop) for o in self._objects]
 
     def __str__(self):
-        return self.tostring(escape=True)
-
-    def __unicode__(self):
         return self.tostring()
 
     def __repr__(self):

@@ -5,8 +5,6 @@
 import functools
 import heapq
 
-from ._compat import py3_unicode_to_str, string_types, map
-
 from . import definitions
 from . import formats
 from . import junctors
@@ -17,7 +15,6 @@ from . import tools
 __all__ = ['Context']
 
 
-@py3_unicode_to_str
 class Context(object):
     """Formal context defining a relation between objects and properties.
 
@@ -197,7 +194,7 @@ class Context(object):
             objects, properties, context = args
 
         for name, values in zip(['objects', 'properties'], args[:2]):
-            if not all(isinstance(v, string_types) for v in values):
+            if not all(isinstance(v, str) for v in values):
                 raise ValueError('non-string %s in %r' % (name, values))
 
         if len(context) != len(objects):
@@ -445,9 +442,6 @@ class Context(object):
         return extent.members(), intent.members()
 
     def __str__(self):
-        return '%r\n%s' % (self, self.tostring(escape=True, indent=4))
-
-    def __unicode__(self):
         return '%r\n%s' % (self, self.tostring(indent=4))
 
     def __repr__(self):
@@ -468,15 +462,15 @@ class Context(object):
         Returns:
             dict: A new :obj:`dict` with the serialized context.
         """
-        result = {u'objects': self.objects,
-                  u'properties': self.properties,
-                  u'context': self._intents.index_sets()}
+        result = {'objects': self.objects,
+                  'properties': self.properties,
+                  'context': self._intents.index_sets()}
         if ignore_lattice:
             pass
-        elif ignore_lattice is None and u'lattice' not in self.__dict__:
+        elif ignore_lattice is None and 'lattice' not in self.__dict__:
             pass
         else:
-            result[u'lattice'] = self.lattice._tolist()
+            result['lattice'] = self.lattice._tolist()
         return result
 
     def tojson(self, path_or_fileobj, encoding='utf-8',

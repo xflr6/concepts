@@ -4,8 +4,6 @@
 
 import bitsets
 
-from ._compat import zip
-
 __all__ = ['Relation']
 
 
@@ -113,7 +111,7 @@ class Relation(tuple):
         x = X.Tuple.frombools(xbools)
         y = Y.Tuple.frombools(zip(*x.bools()))
 
-        self = super(Relation, cls).__new__(cls, (x, y))
+        self = super().__new__(cls, (x, y))
 
         x._pair_with(self, 0, y)
         y._pair_with(self, 1, x)

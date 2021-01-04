@@ -5,15 +5,12 @@
 import heapq
 import operator
 
-from ._compat import py3_unicode_to_str, zip
-
 from . import tools
 from . import visualize
 
 __all__ = ['Lattice']
 
 
-@py3_unicode_to_str
 class Lattice(object):
     """Formal concept lattice as directed acyclic graph of concepts.
 
@@ -326,9 +323,6 @@ class Lattice(object):
     def __str__(self):
         return '%r\n%s' % (self, '\n'.join('    %s' % c for c in self._concepts))
 
-    def __unicode__(self):
-        return '%r\n%s' % (self, '\n'.join(u'    %s' % c for c in self._concepts))
-
     def __repr__(self):
         return ('<%s object of %d atoms %d concepts %d coatoms'
                 ' at %#x>') % (self.__class__.__name__,
@@ -474,7 +468,6 @@ def _iterunion(concepts, sortkey, next_concepts):
                 push(heap, (sortkey(c), c))
 
 
-@py3_unicode_to_str
 class Concept(object):
     """Formal concept as pair of extent and intent.
 
@@ -807,15 +800,6 @@ class Concept(object):
                 and (self._extent | other._extent) != self.lattice.supremum._extent)
 
     def __str__(self):
-        extent = ', '.join(self._extent.members()).encode('unicode_escape')
-        intent = ' '.join(self._intent.members()).encode('unicode_escape')
-        objects = (' <=> %s' % ' '.join(self.objects).encode('unicode_escape')
-                   if self.objects else '')
-        properties = (' <=> %s' % ' '.join(self.properties).encode('unicode_escape')
-                      if self.properties else '')
-        return '{%s} <-> [%s]%s%s' % (extent, intent, objects, properties)
-
-    def __unicode__(self):
         extent = ', '.join(self._extent.members())
         intent = ' '.join(self._intent.members())
         objects = ' <=> %s' % ' '.join(self.objects) if self.objects else ''

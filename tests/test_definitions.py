@@ -34,11 +34,6 @@ def definition():
     return Definition(('spam', 'eggs'), ('ni',), [(True,), (False,)])
 
 
-def test_unicode(definition):
-    assert all(ord(c) < 128 for c in str(definition))
-    assert u'%s' % definition == '%s' % definition
-
-
 def test_ne(definition):
     assert not (definition != definition)
 

@@ -87,7 +87,7 @@ class Ascii(LoadsDumps):
 
 class Unicode(LoadsDumps):
 
-    objects = (u'M\xf8\xf8se', 'Llama')
+    objects = ('M\xf8\xf8se', 'Llama')
     properties = ('majestic', 'bites')
     bools = [(True, True), (False, False)]
 
@@ -103,7 +103,7 @@ class TestCxtAscii(unittest.TestCase, Ascii):
 class TextCxtUnicode(unittest.TestCase, Unicode):
 
     format = Cxt
-    result = u'B\n\n2\n2\n\nM\xf8\xf8se\nLlama\nmajestic\nbites\nXX\n..\n'
+    result = 'B\n\n2\n2\n\nM\xf8\xf8se\nLlama\nmajestic\nbites\nXX\n..\n'
 
 
 class TestTableAscii(unittest.TestCase, Ascii):
@@ -117,9 +117,9 @@ class TestTableAscii(unittest.TestCase, Ascii):
 class TestTableUnicode(unittest.TestCase, Unicode):
 
     format = Table
-    result = (u'     |majestic|bites|\n'
-              u'M\xf8\xf8se|X       |X    |\n'
-              u'Llama|        |     |')
+    result = ('     |majestic|bites|\n'
+              'M\xf8\xf8se|X       |X    |\n'
+              'Llama|        |     |')
 
 
 class TestCsvAscii(unittest.TestCase, Ascii):
@@ -133,9 +133,9 @@ class TestCsvAscii(unittest.TestCase, Ascii):
 class TestCsvUnicode(unittest.TestCase, Unicode):
 
     format = Csv
-    result = (u',majestic,bites\r\n'
-              u'M\xf8\xf8se,X,X\r\n'
-              u'Llama,,\r\n')
+    result = (',majestic,bites\r\n'
+              'M\xf8\xf8se,X,X\r\n'
+              'Llama,,\r\n')
 
 
 class TestWikitableAscii(unittest.TestCase, Ascii):
@@ -156,12 +156,12 @@ class TestWikitableAscii(unittest.TestCase, Ascii):
 class TestWikitableUnicode(unittest.TestCase, Unicode):
 
     format = WikiTable
-    result = (u'{| class="featuresystem"\n'
-              u'!\n'
-              u'!majestic!!bites\n'
-              u'|-\n'
-              u'!M\xf8\xf8se\n|X       ||X    \n'
-              u'|-\n'
-              u'!Llama\n'
-              u'|        ||     \n'
-              u'|}')
+    result = ('{| class="featuresystem"\n'
+              '!\n'
+              '!majestic!!bites\n'
+              '|-\n'
+              '!M\xf8\xf8se\n|X       ||X    \n'
+              '|-\n'
+              '!Llama\n'
+              '|        ||     \n'
+              '|}')

@@ -7,9 +7,6 @@ import csv
 import io
 import os
 
-from ._compat import PY2, text_type, zip, with_metaclass, StringIO
-from . import _compat_csv
-
 from . import tools
 
 __all__ = ['Format']
@@ -45,7 +42,7 @@ class FormatMeta(type):
                              ' %r, please specify ``frmat``' % (suffix,))
 
 
-class Format(with_metaclass(FormatMeta, object)):
+class Format(metaclass=FormatMeta):
     """Parse and serialize formal contexts in a specific string format."""
 
     __abstract__ = True
@@ -70,7 +67,7 @@ class Format(with_metaclass(FormatMeta, object)):
         if encoding is None:
             encoding = cls.encoding
 
-        with io.open(filename, 'r', encoding=encoding) as fd:
+        with open(filename, 'r', encoding=encoding) as fd:
             source = fd.read()
 
         if cls.normalize_newlines:
@@ -84,10 +81,8 @@ class Format(with_metaclass(FormatMeta, object)):
             encoding = cls.encoding
 
         source = cls.dumps(objects, properties, bools)
-        if PY2:
-            source = unicode(source)
 
-        with io.open(filename, 'w', encoding=encoding) as fd:
+        with open(filename, 'w', encoding=encoding) as fd:
             fd.write(source)
 
 
@@ -123,10 +118,6 @@ class Table(Format):
     suffix = '.txt'
 
     @staticmethod
-    def escape(item):
-        return text_type(item).encode('ascii', 'backslashreplace')
-
-    @staticmethod
     def loads(source):
         lines = (l.partition('#')[0].strip() for l in source.splitlines())
         lines = list(filter(None, lines))
@@ -139,10 +130,7 @@ class Table(Format):
         return objects, properties, bools
 
     @staticmethod
-    def dumps(objects, properties, bools, escape=False, indent=0):
-        if escape:
-            objects = list(map(Table.escape, objects))
-            properties = list(map(Table.escape, properties))
+    def dumps(objects, properties, bools, indent=0):
         wd = [tools.max_len(objects)]
         wd.extend(map(len, properties))
         tmpl = ' ' * indent + '|'.join('%%-%ds' % w for w in wd) + '|'
@@ -182,10 +170,8 @@ class Csv(Format):
             dialect = cls.dialect
 
         csv_reader = csv.reader
-        if PY2 and isinstance(source, unicode):
-            csv_reader = _compat_csv.UnicodeCsvReader
 
-        with contextlib.closing(StringIO(source)) as fd:
+        with io.StringIO(source) as fd:
             reader = csv_reader(fd, dialect)
             return cls._load(reader)
 
@@ -194,19 +180,10 @@ class Csv(Format):
         if dialect is None:
             dialect = cls.dialect
 
-        csv_writer = csv.writer
-        kwargs = {}
-        if PY2 and not all(isinstance(s, str) for s in objects + properties):
-            csv_writer = _compat_csv.UnicodeCsvWriter
-            kwargs = {'encoding': 'utf-8'}
-
-        with contextlib.closing(StringIO()) as fd:
-            writer = csv_writer(fd, dialect, **kwargs)
+        with io.StringIO() as fd:
+            writer = csv.writer(fd, dialect)
             cls._dump(writer, objects, properties, bools)
             result = fd.getvalue()
-
-        if 'encoding' in kwargs:
-            result = result.decode(kwargs['encoding'])
 
         return result
 
@@ -218,19 +195,9 @@ class Csv(Format):
         if dialect is None:
             dialect = cls.dialect
 
-        if PY2:
-            if encoding is None:
-                with open(filename, 'rb') as fd:
-                    reader = csv.reader(fd, dialect)
-                    return cls._load(reader)
-            else:
-                with io.open(filename, 'r', encoding=encoding, newline='') as fd:
-                    reader = _compat_csv.UnicodeCsvReader(fd, dialect)
-                    return cls._load(reader)
-        else:
-            with io.open(filename, 'r', encoding=encoding, newline='') as fd:
-                reader = csv.reader(fd, dialect)
-                return cls._load(reader)
+        with open(filename, 'r', encoding=encoding, newline='') as fd:
+            reader = csv.reader(fd, dialect)
+            return cls._load(reader)
 
     @classmethod
     def dump(cls, filename, objects, properties, bools, encoding, dialect=None):
@@ -240,18 +207,9 @@ class Csv(Format):
         if dialect is None:
             dialect = cls.dialect
 
-        if PY2:
-            with open(filename, 'wb') as fd:
-                if encoding is None:
-                    writer = csv.writer(fd, dialect)
-                else:
-                    writer = _compat_csv.UnicodeCsvWriter(fd, dialect, encoding)
-                return cls._dump(writer, objects, properties, bools)
-
-        else:
-            with io.open(filename, 'w', encoding=encoding, newline='') as fd:
-                writer = csv.writer(fd, dialect)
-                return cls._dump(writer, objects, properties, bools)
+        with open(filename, 'w', encoding=encoding, newline='') as fd:
+            writer = csv.writer(fd, dialect)
+            return cls._dump(writer, objects, properties, bools)
 
 
 class WikiTable(Format):
