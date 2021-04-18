@@ -2,9 +2,7 @@
 
 """Formal Concept Analysis contexts."""
 
-import functools
-import heapq
-
+from . import algorithms
 from . import definitions
 from . import formats
 from . import junctors
@@ -320,44 +318,14 @@ class Context(object):
 
         cf. C. Lindig. 2000. Fast Concept Analysis.
         """
-        extent, intent = self._Extent.frommembers(infimum).doubleprime()
-
-        concept = (extent, intent, [], [])
-
-        mapping = {extent: concept}
-
-        heap = [(extent.shortlex(), concept)]
-        push = functools.partial(heapq.heappush, heap)
-        pop = functools.partial(heapq.heappop, heap)
-
-        while heap:
-            concept = pop()[1]
-            for extent, intent in self._neighbors(concept[0]):
-                if extent in mapping:
-                    neighbor = mapping[extent]
-                else:
-                    neighbor = mapping[extent] = (extent, intent, [], [])
-                    push((extent.shortlex(), neighbor))
-                concept[2].append(neighbor[0])
-                neighbor[3].append(concept[0])
-            yield concept  # concept[3] keeps growing until exhaustion
+        return algorithms.lattice(self._Extent, infimum=infimum)
 
     def _neighbors(self, objects):
         """Yield upper neighbors from extent (in colex order?).
 
         cf. C. Lindig. 2000. Fast Concept Analysis.
         """
-        doubleprime = self._extents.doubleprime
-
-        minimal = ~objects
-
-        for add in self._Extent.atomic(minimal):
-            objects_and_add = objects | add
-            extent, intent = doubleprime(objects_and_add)
-            if extent & ~objects_and_add & minimal:
-                minimal &= ~add
-            else:
-                yield extent, intent
+        return algorithms.neighbors(objects, Extent=self._Extent)
 
     def _minimal(self, extent, intent):
         """Return short lexicograpically minimum intent generating extent."""
