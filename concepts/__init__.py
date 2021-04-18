@@ -2,6 +2,8 @@
 
 """Formal Concept Analysis (FCA) with Python."""
 
+import typing
+
 from .definitions import Definition
 from .contexts import Context
 
@@ -26,7 +28,7 @@ EXAMPLE = '''
 '''
 
 
-def load(filename, encoding='utf-8', frmat=None):
+def load(filename, encoding: str = 'utf-8', frmat: typing.Optional[str] = None):
     """Load and return formal context from file.
 
     Args:
@@ -45,7 +47,7 @@ def load(filename, encoding='utf-8', frmat=None):
     return Context.fromfile(filename, frmat, encoding)
 
 
-def load_cxt(filename, encoding=None):
+def load_cxt(filename, encoding: typing.Optional[str] = None):
     """Load and return formal context from CXT file.
 
     Args:
@@ -62,7 +64,7 @@ def load_cxt(filename, encoding=None):
     return Context.fromfile(filename, 'cxt', encoding)
 
 
-def load_csv(filename, dialect='excel', encoding='utf-8'):
+def load_csv(filename, dialect='excel', encoding: str = 'utf-8'):
     """Load and return formal context from CSV file.
 
     Args:
@@ -80,7 +82,7 @@ def load_csv(filename, dialect='excel', encoding='utf-8'):
     return Context.fromfile(filename, 'csv', encoding, dialect=dialect)
 
 
-def make_context(source, frmat='table'):
+def make_context(source: str, frmat: str = 'table'):
     """Return a new context from source string in the given format.
 
     Args:

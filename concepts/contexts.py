@@ -2,6 +2,8 @@
 
 """Formal Concept Analysis contexts."""
 
+import typing
+
 from . import algorithms
 from . import definitions
 from . import formats
@@ -13,7 +15,7 @@ from . import tools
 __all__ = ['Context']
 
 
-class Context(object):
+class Context:
     """Formal context defining a relation between objects and properties.
 
     Create context from ``objects``, ``properties``, and ``bools`` correspondence.
@@ -114,7 +116,8 @@ class Context(object):
     """
 
     @classmethod
-    def fromstring(cls, source, frmat='table', **kwargs):
+    def fromstring(cls, source: str, frmat: str = 'table',
+                   **kwargs) -> 'Context':
         """Return a new context from string ``source`` in given format.
 
         Args:
@@ -129,7 +132,9 @@ class Context(object):
         return cls(objects, properties, bools)
 
     @classmethod
-    def fromfile(cls, filename, frmat='cxt', encoding=None, **kwargs):
+    def fromfile(cls, filename, frmat: str = 'cxt',
+                 encoding: typing.Optional[str] = None,
+                 **kwargs) -> 'Context':
         """Return a new context from file source in given format.
 
         Args:
@@ -149,8 +154,10 @@ class Context(object):
         return cls(objects, properties, bools)
 
     @classmethod
-    def fromjson(cls, path_or_fileobj, encoding='utf-8',
-                 ignore_lattice=False, require_lattice=False, raw=False):
+    def fromjson(cls, path_or_fileobj, encoding: str = 'utf-8',
+                 ignore_lattice: bool = False,
+                 require_lattice: bool = False,
+                 raw: bool = False) -> 'Context':
         """Return a new context from json path or file-like object.
 
         Args:
@@ -170,7 +177,9 @@ class Context(object):
                             require_lattice=require_lattice, raw=raw)
 
     @classmethod
-    def fromdict(cls, d, ignore_lattice=False, require_lattice=False, raw=False):
+    def fromdict(cls, d: dict, ignore_lattice: bool = False,
+                 require_lattice: bool = False,
+                 raw: bool = False) -> 'Context':
         """Return a new context from dict ``d``.
 
         Args:
@@ -229,7 +238,10 @@ class Context(object):
             inst.lattice = lattices.Lattice._fromlist(inst, lattice, raw)
         return inst
 
-    def __init__(self, objects, properties, bools):
+    def __init__(self,
+                 objects: typing.Iterable[str],
+                 properties: typing.Iterable[str],
+                 bools: typing.Iterable[typing.Tuple[bool,...]]) -> None:
         """Create context from ``objects``, ``properties``, and ``bools`` correspondence.
 
         Args:
@@ -279,7 +291,7 @@ class Context(object):
         self._Intent = self._intents.BitSet
         self._Extent = self._extents.BitSet
 
-    def __eq__(self, other):
+    def __eq__(self, other: 'Context'):
         """Return whether two contexts are equivalent.
 
         Args:
@@ -297,7 +309,7 @@ class Context(object):
                 and self.properties == other.properties
                 and self.bools == other.bools)
 
-    def __ne__(self, other):
+    def __ne__(self, other: 'Context'):
         """Return whether two contexts are inequivalent.
 
         Args:
@@ -341,7 +353,8 @@ class Context(object):
             if it.prime() == extent:
                 yield it
 
-    def intension(self, objects, raw=False):
+    def intension(self, objects: typing.Iterable[str],
+                  raw: bool = False):
         """Return all properties shared by the given ``objects``.
 
         Args:
@@ -356,7 +369,8 @@ class Context(object):
             return intent
         return intent.members()
 
-    def extension(self, properties, raw=False):
+    def extension(self, properties: typing.Iterable[str],
+                  raw: bool = False):
         """Return all objects sharing the given ``properties``.
 
         Args:
@@ -371,7 +385,8 @@ class Context(object):
             return extent
         return extent.members()
 
-    def neighbors(self, objects, raw=False):
+    def neighbors(self, objects: typing.Iterable[str],
+                  raw: bool = False):
         """Return the upper neighbors of the concept having all given ``objects``.
 
         Args:
@@ -387,7 +402,8 @@ class Context(object):
         return [(extent.members(), intent.members())
                 for extent, intent in self._neighbors(objects)]
 
-    def __getitem__(self, items, raw=False):
+    def __getitem__(self, items: typing.Iterable[str],
+                    raw: bool = False):
         """Return ``(extension, intension)`` pair by shared objects or properties.
 
         Args:
@@ -409,16 +425,16 @@ class Context(object):
             return extent, intent
         return extent.members(), intent.members()
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f'{self!r}\n{self.tostring(indent=4)}'
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return (f'<{self.__class__.__name__} object'
                 f' mapping {len(self.objects)} objects'
                 f' to {len(self.properties)} properties'
                 f' [{self.crc32()}] at {id(self):#x}>')
 
-    def todict(self, ignore_lattice=False):
+    def todict(self, ignore_lattice: bool = False):
         """Return serialized context with optional lattice.
 
         Args:
@@ -440,9 +456,10 @@ class Context(object):
             result['lattice'] = self.lattice._tolist()
         return result
 
-    def tojson(self, path_or_fileobj, encoding='utf-8',
-               indent=None, sort_keys=True,
-               ignore_lattice=False):
+    def tojson(self, path_or_fileobj, encoding: str = 'utf-8',
+               indent: typing.Optional[int] = None,
+               sort_keys: bool = True,
+               ignore_lattice: bool = False):
         """Write serialized context as json to path or file-like object.
 
         Args:
@@ -458,7 +475,7 @@ class Context(object):
         tools.dump_json(d, path_or_fileobj, encoding=encoding,
                         indent=indent, sort_keys=sort_keys)
 
-    def tostring(self, frmat='table', **kwargs):
+    def tostring(self, frmat: str = 'table', **kwargs):
         """Return the context serialized in the given string-based format.
 
         Args:
@@ -471,7 +488,8 @@ class Context(object):
         return frmat.dumps(self.objects, self.properties, self.bools,
                            **kwargs)
 
-    def tofile(self, filename, frmat='cxt', encoding='utf-8', **kwargs):
+    def tofile(self, filename, frmat: str = 'cxt',
+               encoding: str = 'utf-8', **kwargs):
         """Save the context serialized to file in the given format.
 
          Args:
@@ -483,7 +501,7 @@ class Context(object):
                    self.objects, self.properties, self.bools,
                    encoding, **kwargs)
 
-    def crc32(self, encoding='utf-8'):
+    def crc32(self, encoding: str = 'utf-8'):
         """Return hex-encoded unsigned CRC32 over encoded context table string.
 
         Args:
@@ -509,7 +527,7 @@ class Context(object):
         """list[tuple[bool, ...]]: Row-wise boolean relation matrix between objects and properties."""
         return self._intents.bools()
 
-    def definition(self):
+    def definition(self) -> 'definitions.Definition':
         """Return ``(objects, properties, bools)`` triple as mutable object.
 
         Returns:
@@ -517,7 +535,7 @@ class Context(object):
         """
         return definitions.Definition(self.objects, self.properties, self.bools)
 
-    def relations(self, include_unary=False):
+    def relations(self, include_unary: bool = False) -> 'junctors.Relations':
         """Return the logical relations between the context properties.
 
         Returns:
@@ -528,6 +546,6 @@ class Context(object):
                                   include_unary)
 
     @tools.lazyproperty
-    def lattice(self):
+    def lattice(self) -> 'lattices.Lattice':
         """Lattice: The concept lattice of the formal context."""
         return lattices.Lattice(self)

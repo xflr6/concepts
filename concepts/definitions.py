@@ -2,13 +2,15 @@
 
 """Mutable formal context creation arguments with set-like operations."""
 
+import typing
+
 from . import formats
 from . import tools
 
 __all__ = ['Definition']
 
 
-class Triple(object):
+class Triple:
     """Triple of ``(objects, properties, bools)`` for creating a context.
 
     >>> t = Triple(['Mr. Praline', 'parrot'], ['alive', 'dead'],
@@ -67,7 +69,8 @@ class Triple(object):
     """
 
     @classmethod
-    def fromfile(cls, filename, frmat='cxt', encoding=None, **kwargs):
+    def fromfile(cls, filename, frmat: str = 'cxt',
+                 encoding: typing.Optional[str] = None, **kwargs) -> 'Triple':
         """Return a new definiton from file source in given format.
 
          Args:

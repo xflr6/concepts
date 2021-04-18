@@ -162,7 +162,7 @@ def maximal(iterable, comparison=operator.lt, _groupkey=operator.itemgetter(0)):
             if not any(starmap(comparison, pairs)))
 
 
-class lazyproperty(object):  # noqa: N801
+class lazyproperty:  # noqa: N801
     """Non-data descriptor caching the computed result as instance attribute.
 
     >>> class Spam(object):

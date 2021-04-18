@@ -5,13 +5,14 @@
 import heapq
 import operator
 
+from . import contexts
 from . import tools
 from . import visualize
 
 __all__ = ['Lattice']
 
 
-class Lattice(object):
+class Lattice:
     """Formal concept lattice as directed acyclic graph of concepts.
 
     Usage:
@@ -153,7 +154,7 @@ class Lattice(object):
         cls._init(inst, context, concepts)
         return inst
 
-    def __init__(self, context, infimum=()):
+    def __init__(self, context: 'contexts.Context', infimum=()):
         """Create lattice from context."""
         concepts = [Concept(self, *args) for args in context._lattice(infimum)]
         mapping = self._make_mapping(concepts)
@@ -174,7 +175,10 @@ class Lattice(object):
         return {c._extent: c for c in concepts}
 
     @staticmethod
-    def _init(inst, context, concepts, mapping=None, unpickle=False):
+    def _init(inst,
+              context: 'contexts.Context',
+              concepts,
+              mapping=None, unpickle=False):
         inst._context = context
         inst._concepts = concepts
 
@@ -468,7 +472,7 @@ def _iterunion(concepts, sortkey, next_concepts):
                 push(heap, (sortkey(c), c))
 
 
-class Concept(object):
+class Concept:
     """Formal concept as pair of extent and intent.
 
     Usage:
@@ -594,7 +598,12 @@ class Concept(object):
 
     properties = ()
 
-    def __init__(self, lattice, extent, intent, upper, lower):
+    def __init__(self,
+                 lattice: Lattice,
+                 extent,
+                 intent,
+                 upper,
+                 lower) -> None:
         self.lattice = lattice  #: The lattice containing the concept.
         self._extent = extent
         self._intent = intent
