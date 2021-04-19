@@ -62,6 +62,7 @@ class Vectors(bitsets.series.Tuple):
                     prime >>= 1
                 else:
                     break
+
             return _double(double)
 
         def doubleprime(bitset):
