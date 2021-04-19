@@ -31,10 +31,11 @@ class Vectors(bitsets.series.Tuple):
             """FCA derivation operator (extent->intent, intent->extent)."""
             prime = Prime
             for o in other:
-                if bitset & 1:
-                    prime &= o
-                bitset >>= 1
-                if not bitset:
+                if bitset:
+                    if bitset & 1:
+                        prime &= o
+                    bitset >>= 1
+                else:
                     break
             return _prime(prime)
 
@@ -42,17 +43,19 @@ class Vectors(bitsets.series.Tuple):
             """FCA double derivation operator (extent->extent, intent->intent)."""
             prime = Prime
             for o in other:
-                if bitset & 1:
-                    prime &= o
-                bitset >>= 1
-                if not bitset:
+                if bitset:
+                    if bitset & 1:
+                        prime &= o
+                    bitset >>= 1
+                else:
                     break
             double = Double
             for s in self:
-                if prime & 1:
-                    double &= s
-                prime >>= 1
-                if not prime:
+                if prime:
+                    if prime & 1:
+                        double &= s
+                    prime >>= 1
+                else:
                     break
             return _double(double)
 
@@ -60,18 +63,20 @@ class Vectors(bitsets.series.Tuple):
             """FCA single and double derivation (extent->extent+intent, intent->intent+extent)."""
             prime = Prime
             for o in other:
-                if bitset & 1:
-                    prime &= o
-                bitset >>= 1
-                if not bitset:
+                if bitset:
+                    if bitset & 1:
+                        prime &= o
+                    bitset >>= 1
+                else:
                     break
             bitset = prime
             double = Double
             for s in self:
-                if bitset & 1:
-                    double &= s
-                bitset >>= 1
-                if not bitset:
+                if bitset:
+                    if bitset & 1:
+                        double &= s
+                    bitset >>= 1
+                else:
                     break
             return _double(double), _prime(prime)
 
