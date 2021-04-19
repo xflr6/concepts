@@ -30,6 +30,7 @@ class Vectors(bitsets.series.Tuple):
         def prime(bitset):
             """FCA derivation operator (extent->intent, intent->extent)."""
             prime = Prime
+
             for o in other:
                 if bitset:
                     if bitset & 1:
@@ -37,11 +38,13 @@ class Vectors(bitsets.series.Tuple):
                     bitset >>= 1
                 else:
                     break
+
             return _prime(prime)
 
         def double(bitset):
             """FCA double derivation operator (extent->extent, intent->intent)."""
             prime = Prime
+
             for o in other:
                 if bitset:
                     if bitset & 1:
@@ -49,7 +52,9 @@ class Vectors(bitsets.series.Tuple):
                     bitset >>= 1
                 else:
                     break
+
             double = Double
+
             for s in self:
                 if prime:
                     if prime & 1:
@@ -62,6 +67,7 @@ class Vectors(bitsets.series.Tuple):
         def doubleprime(bitset):
             """FCA single and double derivation (extent->extent+intent, intent->intent+extent)."""
             prime = Prime
+
             for o in other:
                 if bitset:
                     if bitset & 1:
@@ -69,8 +75,10 @@ class Vectors(bitsets.series.Tuple):
                     bitset >>= 1
                 else:
                     break
+
             bitset = prime
             double = Double
+
             for s in self:
                 if bitset:
                     if bitset & 1:
@@ -78,6 +86,7 @@ class Vectors(bitsets.series.Tuple):
                     bitset >>= 1
                 else:
                     break
+
             return _double(double), _prime(prime)
 
         self.prime = self.BitSet.prime = prime
