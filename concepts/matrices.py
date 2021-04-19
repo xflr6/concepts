@@ -12,7 +12,10 @@ Vector = bitsets.bases.MemberBits
 
 
 class Vectors(bitsets.series.Tuple):
-    """Paired collection of rows or columns of a boolean matrix relation."""
+    """Paired collection of rows or columns of a boolean matrix relation.
+
+    Trailing zeros see https://stackoverflow.com/q/63917579/3456664
+    """
 
     def _pair_with(self, relation, index, other):
         if hasattr(self, 'prime'):
