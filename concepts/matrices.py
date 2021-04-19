@@ -31,11 +31,17 @@ class Vectors(bitsets.series.Tuple):
             """FCA derivation operator (extent->intent, intent->extent)."""
             prime = Prime
 
-            for o in other:
+            i = 0
+            while i < len(other):
                 if bitset:
-                    if bitset & 1:
-                        prime &= o
-                    bitset >>= 1
+                    trailing_zeros = (bitset & -bitset).bit_length() - 1
+                    if trailing_zeros:
+                        bitset >>= trailing_zeros
+                        i += trailing_zeros
+                    else:
+                        prime &= other[i]
+                        bitset >>= 1
+                        i += 1
                 else:
                     break
 
@@ -45,21 +51,33 @@ class Vectors(bitsets.series.Tuple):
             """FCA double derivation operator (extent->extent, intent->intent)."""
             prime = Prime
 
-            for o in other:
+            i = 0
+            while i < len(other):
                 if bitset:
-                    if bitset & 1:
-                        prime &= o
-                    bitset >>= 1
+                    trailing_zeros = (bitset & -bitset).bit_length() - 1
+                    if trailing_zeros:
+                        bitset >>= trailing_zeros
+                        i += trailing_zeros
+                    else:
+                        prime &= other[i]
+                        bitset >>= 1
+                        i += 1
                 else:
                     break
 
             double = Double
 
-            for s in self:
+            i = 0
+            while i < len(self):
                 if prime:
-                    if prime & 1:
-                        double &= s
-                    prime >>= 1
+                    trailing_zeros = (prime & -prime).bit_length() - 1
+                    if trailing_zeros:
+                        prime >>= trailing_zeros
+                        i += trailing_zeros
+                    else:
+                        double &= self[i]
+                        prime >>= 1
+                        i += 1
                 else:
                     break
 
@@ -69,22 +87,34 @@ class Vectors(bitsets.series.Tuple):
             """FCA single and double derivation (extent->extent+intent, intent->intent+extent)."""
             prime = Prime
 
-            for o in other:
+            i = 0
+            while i < len(other):
                 if bitset:
-                    if bitset & 1:
-                        prime &= o
-                    bitset >>= 1
+                    trailing_zeros = (bitset & -bitset).bit_length() - 1
+                    if trailing_zeros:
+                        bitset >>= trailing_zeros
+                        i += trailing_zeros
+                    else:
+                        prime &= other[i]
+                        bitset >>= 1
+                        i += 1
                 else:
                     break
 
             bitset = prime
             double = Double
 
-            for s in self:
+            i = 0
+            while i < len(self):
                 if bitset:
-                    if bitset & 1:
-                        double &= s
-                    bitset >>= 1
+                    trailing_zeros = (bitset & -bitset).bit_length() - 1
+                    if trailing_zeros:
+                        bitset >>= trailing_zeros
+                        i += trailing_zeros
+                    else:
+                        double &= self[i]
+                        bitset >>= 1
+                        i += 1
                 else:
                     break
 
