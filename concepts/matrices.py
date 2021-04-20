@@ -36,10 +36,8 @@ class Vectors(bitsets.series.Tuple):
 
             i = 0
             while bitset:
-                trailing_zeros = (bitset & -bitset).bit_length() - 1
-                if trailing_zeros:
-                    shift = trailing_zeros
-                else:
+                shift = (bitset & -bitset).bit_length() - 1  # trailing zero(s)
+                if not shift:
                     prime &= other[i]
                     shift = 1
                 bitset >>= shift
@@ -53,10 +51,8 @@ class Vectors(bitsets.series.Tuple):
 
             i = 0
             while bitset:
-                trailing_zeros = (bitset & -bitset).bit_length() - 1
-                if trailing_zeros:
-                    shift = trailing_zeros
-                else:
+                shift = (bitset & -bitset).bit_length() - 1
+                if not shift:
                     prime &= other[i]
                     shift = 1
                 bitset >>= shift
@@ -66,10 +62,8 @@ class Vectors(bitsets.series.Tuple):
 
             i = 0
             while prime:
-                trailing_zeros = (prime & -prime).bit_length() - 1
-                if trailing_zeros:
-                    shift = trailing_zeros
-                else:
+                shift = (prime & -prime).bit_length() - 1
+                if not shift:
                     double &= self[i]
                     shift = 1
                 prime >>= shift
@@ -83,10 +77,8 @@ class Vectors(bitsets.series.Tuple):
 
             i = 0
             while bitset:
-                trailing_zeros = (bitset & -bitset).bit_length() - 1
-                if trailing_zeros:
-                    shift = trailing_zeros
-                else:
+                shift = (bitset & -bitset).bit_length() - 1
+                if not shift:
                     prime &= other[i]
                     shift = 1
                 bitset >>= shift
@@ -97,10 +89,8 @@ class Vectors(bitsets.series.Tuple):
 
             i = 0
             while bitset:
-                trailing_zeros = (bitset & -bitset).bit_length() - 1
-                if trailing_zeros:
-                    shift = trailing_zeros
-                else:
+                shift = (bitset & -bitset).bit_length() - 1
+                if not shift:
                     double &= self[i]
                     shift = 1
                 bitset >>= shift
