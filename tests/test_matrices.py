@@ -19,3 +19,10 @@ def test_pair_with(relation):
     vx, vy = relation
     with pytest.raises(RuntimeError, match=r'attempt _pair_with'):
         vx._pair_with(relation, 1, vy)
+
+
+def test_prime_infimum(relation):
+    vx, vy = relation
+
+    assert vx.prime(0) == vy.BitSet.supremum
+    assert vy.prime(0) == vx.BitSet.supremum
