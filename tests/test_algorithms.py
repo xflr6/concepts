@@ -1,9 +1,14 @@
+import datetime
+
+import pytest
+
+import concepts
 from concepts import algorithms
 
 
-def test_lattice(context):
+def test_lattice(lattice):
     pairs = [f'{x._extent.bits()} <-> {x._intent.bits()}'
-             for x in context.lattice]
+             for x in lattice]
 
     assert pairs == ['000000 <-> 1111111111',
                      '100000 <-> 1001011001',
@@ -29,7 +34,7 @@ def test_lattice(context):
                      '111111 <-> 0000000000']
 
 
-def test_lattice(context):
+def test_fcbo(context):
     concepts = list(algorithms.fcbo(context))
 
     pairs = [f'{extent.bits()} <-> {intent.bits()}'
