@@ -35,18 +35,15 @@ class Vectors(bitsets.series.Tuple):
             prime = Prime
 
             i = 0
-            while i < len(other):
-                if bitset:
-                    trailing_zeros = (bitset & -bitset).bit_length() - 1
-                    if trailing_zeros:
-                        shift = trailing_zeros
-                    else:
-                        prime &= other[i]
-                        shift = 1
-                    bitset >>= shift
-                    i += shift
+            while bitset:
+                trailing_zeros = (bitset & -bitset).bit_length() - 1
+                if trailing_zeros:
+                    shift = trailing_zeros
                 else:
-                    break
+                    prime &= other[i]
+                    shift = 1
+                bitset >>= shift
+                i += shift
 
             return _prime(prime)
 
@@ -55,34 +52,28 @@ class Vectors(bitsets.series.Tuple):
             prime = Prime
 
             i = 0
-            while i < len(other):
-                if bitset:
-                    trailing_zeros = (bitset & -bitset).bit_length() - 1
-                    if trailing_zeros:
-                        shift = trailing_zeros
-                    else:
-                        prime &= other[i]
-                        shift = 1
-                    bitset >>= shift
-                    i += shift
+            while bitset:
+                trailing_zeros = (bitset & -bitset).bit_length() - 1
+                if trailing_zeros:
+                    shift = trailing_zeros
                 else:
-                    break
+                    prime &= other[i]
+                    shift = 1
+                bitset >>= shift
+                i += shift
 
             double = Double
 
             i = 0
-            while i < len(self):
-                if prime:
-                    trailing_zeros = (prime & -prime).bit_length() - 1
-                    if trailing_zeros:
-                        shift = trailing_zeros
-                    else:
-                        double &= self[i]
-                        shift = 1
-                    prime >>= shift
-                    i += shift
+            while prime:
+                trailing_zeros = (prime & -prime).bit_length() - 1
+                if trailing_zeros:
+                    shift = trailing_zeros
                 else:
-                    break
+                    double &= self[i]
+                    shift = 1
+                prime >>= shift
+                i += shift
 
             return _double(double)
 
@@ -91,35 +82,29 @@ class Vectors(bitsets.series.Tuple):
             prime = Prime
 
             i = 0
-            while i < len(other):
-                if bitset:
-                    trailing_zeros = (bitset & -bitset).bit_length() - 1
-                    if trailing_zeros:
-                        shift = trailing_zeros
-                    else:
-                        prime &= other[i]
-                        shift = 1
-                    bitset >>= shift
-                    i += shift
+            while bitset:
+                trailing_zeros = (bitset & -bitset).bit_length() - 1
+                if trailing_zeros:
+                    shift = trailing_zeros
                 else:
-                    break
+                    prime &= other[i]
+                    shift = 1
+                bitset >>= shift
+                i += shift
 
             bitset = prime
             double = Double
 
             i = 0
-            while i < len(self):
-                if bitset:
-                    trailing_zeros = (bitset & -bitset).bit_length() - 1
-                    if trailing_zeros:
-                        shift = trailing_zeros
-                    else:
-                        double &= self[i]
-                        shift = 1
-                    bitset >>= shift
-                    i += shift
+            while bitset:
+                trailing_zeros = (bitset & -bitset).bit_length() - 1
+                if trailing_zeros:
+                    shift = trailing_zeros
                 else:
-                    break
+                    double &= self[i]
+                    shift = 1
+                bitset >>= shift
+                i += shift
 
             return _double(double), _prime(prime)
 
