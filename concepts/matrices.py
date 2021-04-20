@@ -40,8 +40,8 @@ class Vectors(bitsets.series.Tuple):
                 if not shift:
                     shift = 1
                     prime &= other[i]
-                bitset >>= shift
                 i += shift
+                bitset >>= shift
 
             return _prime(prime)
 
@@ -55,8 +55,8 @@ class Vectors(bitsets.series.Tuple):
                 if not shift:
                     shift = 1
                     prime &= other[i]
-                bitset >>= shift
                 i += shift
+                bitset >>= shift
 
             double = Double
 
@@ -66,8 +66,8 @@ class Vectors(bitsets.series.Tuple):
                 if not shift:
                     shift = 1
                     double &= self[i]
-                prime >>= shift
                 i += shift
+                prime >>= shift
 
             return _double(double)
 
@@ -81,8 +81,8 @@ class Vectors(bitsets.series.Tuple):
                 if not shift:
                     shift = 1
                     prime &= other[i]
-                bitset >>= shift
                 i += shift
+                bitset >>= shift
 
             bitset = prime
             double = Double
@@ -93,8 +93,8 @@ class Vectors(bitsets.series.Tuple):
                 if not shift:
                     shift = 1
                     double &= self[i]
-                bitset >>= shift
                 i += shift
+                bitset >>= shift
 
             return _double(double), _prime(prime)
 
