@@ -12,7 +12,10 @@ Vector = bitsets.bases.MemberBits
 
 
 class Vectors(bitsets.series.Tuple):
-    """Paired collection of rows or columns of a boolean matrix relation."""
+    """Paired collection of rows or columns of a boolean matrix relation.
+
+    Trailing zeros see https://stackoverflow.com/q/63917579/3456664
+    """
 
     def _pair_with(self, relation, index, other):
         if hasattr(self, 'prime'):
@@ -30,92 +33,68 @@ class Vectors(bitsets.series.Tuple):
         def prime(bitset):
             """FCA derivation operator (extent->intent, intent->extent)."""
             prime = Prime
-            i = 0
 
-            while i < len(other):
-                if bitset:
-                    trailing_zeros = (bitset & -bitset).bit_length() - 1
-                    if trailing_zeros:
-                        bitset >>= trailing_zeros
-                        i += trailing_zeros
-                    else:
-                        prime &= other[i]
-                        bitset >>= 1
-                        i += 1
-                else:
-                    break
+            i = 0
+            while bitset:
+                shift = (bitset & -bitset).bit_length() - 1  # trailing zero(s)
+                if not shift:
+                    shift = 1
+                    prime &= other[i]
+                i += shift
+                bitset >>= shift
+
             return _prime(prime)
 
         def double(bitset):
             """FCA double derivation operator (extent->extent, intent->intent)."""
             prime = Prime
-            i = 0
 
-            while i < len(other):
-                if bitset:
-                    trailing_zeros = (bitset & -bitset).bit_length() - 1
-                    if trailing_zeros:
-                        bitset >>= trailing_zeros
-                        i += trailing_zeros
-                    else:
-                        prime &= other[i]
-                        bitset >>= 1
-                        i += 1
-                else:
-                    break
+            i = 0
+            while bitset:
+                shift = (bitset & -bitset).bit_length() - 1
+                if not shift:
+                    shift = 1
+                    prime &= other[i]
+                i += shift
+                bitset >>= shift
 
             double = Double
-            i = 0
 
-            while i < len(self):
-                if prime:
-                    trailing_zeros = (prime & -prime).bit_length() - 1
-                    if trailing_zeros:
-                        prime >>= trailing_zeros
-                        i += trailing_zeros
-                    else:
-                        double &= self[i]
-                        prime >>= 1
-                        i += 1
-                else:
-                    break
+            i = 0
+            while prime:
+                shift = (prime & -prime).bit_length() - 1
+                if not shift:
+                    shift = 1
+                    double &= self[i]
+                i += shift
+                prime >>= shift
 
             return _double(double)
 
         def doubleprime(bitset):
             """FCA single and double derivation (extent->extent+intent, intent->intent+extent)."""
             prime = Prime
-            i = 0
 
-            while i < len(other):
-                if bitset:
-                    trailing_zeros = (bitset & -bitset).bit_length() - 1
-                    if trailing_zeros:
-                        bitset >>= trailing_zeros
-                        i += trailing_zeros
-                    else:
-                        prime &= other[i]
-                        bitset >>= 1
-                        i += 1
-                else:
-                    break
+            i = 0
+            while bitset:
+                shift = (bitset & -bitset).bit_length() - 1
+                if not shift:
+                    shift = 1
+                    prime &= other[i]
+                i += shift
+                bitset >>= shift
 
             bitset = prime
             double = Double
-            i = 0
 
-            while i < len(self):
-                if bitset:
-                    trailing_zeros = (bitset & -bitset).bit_length() - 1
-                    if trailing_zeros:
-                        bitset >>= trailing_zeros
-                        i += trailing_zeros
-                    else:
-                        double &= self[i]
-                        bitset >>= 1
-                        i += 1
-                else:
-                    break
+            i = 0
+            while bitset:
+                shift = (bitset & -bitset).bit_length() - 1
+                if not shift:
+                    shift = 1
+                    double &= self[i]
+                i += shift
+                bitset >>= shift
 
             return _double(double), _prime(prime)
 
