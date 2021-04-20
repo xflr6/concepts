@@ -10,7 +10,12 @@ __all__ = ['lattice', 'neighbors',
 def lattice(Extent, *, infimum):
     """Yield ``(extent, indent, upper, lower)`` in short lexicographic order.
 
-    cf. C. Lindig. 2000. Fast Concept Analysis.
+    cf. C. Lindig.
+    Fast Concept Analysis.
+    In Gerhard Stumme, editor,
+    Working with Conceptual Structures - Contributions to ICCS 2000,
+    Shaker Verlag, Aachen, Germany, 2000.
+    http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.143.948
     """
     extent, intent = Extent.frommembers(infimum).doubleprime()
 
@@ -42,7 +47,12 @@ def lattice(Extent, *, infimum):
 def neighbors(objects, *, Extent):
     """Yield upper neighbors from extent (in colex order?).
 
-    cf. C. Lindig. 2000. Fast Concept Analysis.
+    cf. C. Lindig.
+    Fast Concept Analysis.
+    In Gerhard Stumme, editor,
+    Working with Conceptual Structures - Contributions to ICCS 2000,
+    Shaker Verlag, Aachen, Germany, 2000.
+    http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.143.948
     """
     doubleprime = Extent.doubleprime
 
@@ -81,7 +91,13 @@ def iterunion(concepts, sortkey, next_concepts):
 
 
 def fcbo(context):
-    """Yield ``(extent, intent)`` pairs from ``context``."""
+    """Yield ``(extent, intent)`` pairs from ``context``.
+
+    cf. J. Outrata, and V. Vychodil.
+    Fast algorithm for computing fixpoints of Galois connections induced by object-attribute relational data.
+    Information Sciences 185.1 (2012): 114-127.
+    https://doi.org/10.1016/j.ins.2011.09.023
+    """
     Extent = context._Extent
     Intent = context._Intent
 
@@ -93,9 +109,11 @@ def fcbo(context):
     queue = collections.deque([(concept, 0, object_sets)])
 
     while queue:
-        (extent, intent), obj_index, object_sets = queue.popleft()
+        concept, obj_index, object_sets = queue.popleft()
 
-        yield Extent.fromint(extent), Intent.fromint(intent)
+        yield concept
+
+        extent, intent = concept
 
         if extent == Extent.supremum or obj_index >= n_objects:
             continue
@@ -103,26 +121,21 @@ def fcbo(context):
         next_object_sets = object_sets.copy()
 
         for j in range(obj_index, n_objects):
-            yj = 1 << j
+            j_object = 1 << j
 
-            if extent & yj:
+            if extent & j_object:
                 continue
 
-            yj -= 1
+            mask = j_object - 1
 
-            x = object_sets[j] & yj
+            x = object_sets[j] & mask
 
-            y = extent & yj
+            if x & extent == x:
+                j_intent = intent & context._intents[j]
+                j_extent = Intent.prime(j_intent)
 
-            if x & y == x:
-                c = intent & context._intents[j]
-                d = Intent.prime(c)
-
-                k = extent & yj
-
-                l = d & yj
-
-                if k == l:
-                    queue.append(((d, c), j + 1, next_object_sets))
+                if j_extent & mask == extent & mask:
+                    concept = (Extent.fromint(j_extent), Intent.fromint(j_intent))
+                    queue.append((concept, j + 1, next_object_sets))
                 else:
-                    next_object_sets[j] = d
+                    next_object_sets[j] = j_extent
