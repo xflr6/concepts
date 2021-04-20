@@ -39,12 +39,12 @@ class Vectors(bitsets.series.Tuple):
                 if bitset:
                     trailing_zeros = (bitset & -bitset).bit_length() - 1
                     if trailing_zeros:
-                        bitset >>= trailing_zeros
-                        i += trailing_zeros
+                        shift = trailing_zeros
                     else:
                         prime &= other[i]
-                        bitset >>= 1
-                        i += 1
+                        shift = 1
+                    bitset >>= shift
+                    i += shift
                 else:
                     break
 
