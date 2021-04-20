@@ -38,8 +38,8 @@ class Vectors(bitsets.series.Tuple):
             while bitset:
                 shift = (bitset & -bitset).bit_length() - 1  # trailing zero(s)
                 if not shift:
-                    prime &= other[i]
                     shift = 1
+                    prime &= other[i]
                 bitset >>= shift
                 i += shift
 
@@ -53,8 +53,8 @@ class Vectors(bitsets.series.Tuple):
             while bitset:
                 shift = (bitset & -bitset).bit_length() - 1
                 if not shift:
-                    prime &= other[i]
                     shift = 1
+                    prime &= other[i]
                 bitset >>= shift
                 i += shift
 
@@ -64,8 +64,8 @@ class Vectors(bitsets.series.Tuple):
             while prime:
                 shift = (prime & -prime).bit_length() - 1
                 if not shift:
-                    double &= self[i]
                     shift = 1
+                    double &= self[i]
                 prime >>= shift
                 i += shift
 
@@ -79,8 +79,8 @@ class Vectors(bitsets.series.Tuple):
             while bitset:
                 shift = (bitset & -bitset).bit_length() - 1
                 if not shift:
-                    prime &= other[i]
                     shift = 1
+                    prime &= other[i]
                 bitset >>= shift
                 i += shift
 
@@ -91,8 +91,8 @@ class Vectors(bitsets.series.Tuple):
             while bitset:
                 shift = (bitset & -bitset).bit_length() - 1
                 if not shift:
-                    double &= self[i]
                     shift = 1
+                    double &= self[i]
                 bitset >>= shift
                 i += shift
 
