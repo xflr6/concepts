@@ -118,8 +118,6 @@ def fcbo(context):
         if extent == Extent.supremum or obj_index >= n_objects:
             continue
 
-        next_object_sets = object_sets.copy()
-
         for j in range(obj_index, n_objects):
             j_object = 1 << j
 
@@ -128,7 +126,9 @@ def fcbo(context):
 
             mask = j_object - 1
 
-            x = object_sets[j] & mask
+            next_object_sets = object_sets.copy()
+
+            x = next_object_sets[j] & mask
 
             if x & extent == x:
                 j_intent = intent & context._intents[j]
