@@ -26,6 +26,8 @@ FLAGS = {'0': False, '1': True}
 
 CXT = CSV.with_suffix('.cxt')
 
+CSV_CONTEXT = CSV.with_name(f'{CSV.stem}-cxt{CSV.suffix}')
+
 
 def read_episodes(path, *, dialect: str = DIALECT):
     with path.open(**OPEN_KWARGS) as f:
@@ -40,7 +42,7 @@ if not CSV.exists():
     urllib.request.urlretrieve(URL, CSV)
     assert CSV.stat().st_size
 
-if not CXT.exists():
+if not all(path.exists() for path in (CXT, CSV_CONTEXT)):
     header, *episodes = read_episodes(CSV)
     bools = [bools for _, *bools in episodes]
     lines = formats.iter_cxt_lines(objects=[e[0] for e in episodes],
@@ -55,5 +57,7 @@ context = concepts.load_cxt(CXT)
 assert len(context.objects) == 403
 
 assert len(context.properties) == 67
+
+context.tofile(CSV_CONTEXT, frmat='csv')
 
 shutil.copy(CXT, pathlib.Path('..') / 'examples' / 'bob_ross.cxt')
