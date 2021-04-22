@@ -1,16 +1,27 @@
 # tools.py - generic helpers
 
 import collections.abc
+import csv
+import functools
+import hashlib
 from itertools import permutations, groupby, starmap
 import json
 import operator
+import typing
 import zlib
 
 __all__ = ['Unique',
            'max_len', 'maximal',
            'lazyproperty',
            'crc32_hex',
+           'sha256sum',
+           'write_lines',
+           'write_csv',
            'dump_json', 'load_json']
+
+CSV_DIALECT = 'excel'
+
+DEFAULT_ENCODING = 'utf-8'
 
 
 class Unique(collections.abc.MutableSet):
@@ -205,13 +216,49 @@ def crc32_hex(data):
     return f'{value:x}'
 
 
-def dump_json(obj, path_or_fileobj, encoding='utf-8', mode='w', **kwargs):
+def sha256sum(filepath, bufsize: int = 32_768) -> str:
+    """Return SHA-256 hexdigest from reading ``filepath``."""
+    h = hashlib.sha256()
+    with open(filepath, 'rb') as f:
+        for data in iter(functools.partial(f.read, bufsize), b''):
+            h.update(data)
+    return h.hexdigest()
+
+
+def write_lines(path, lines: typing.Iterable[str],
+                *, encoding: str = DEFAULT_ENCODING,
+                newline: typing.Optional[str] = None):
+    """Write ``lines`` to ``path``."""
+    with open(path, 'w', encoding=encoding, newline=newline) as f:
+        write = functools.partial(print, file=f)
+        for line in lines:
+            write(line)
+
+
+def write_csv(path, rows,
+              *, header: typing.Optional[typing.Iterable[str]] = None,
+              dialect: str = CSV_DIALECT,
+              encoding: str = DEFAULT_ENCODING,
+              newline: typing.Optional[str] = ''):
+    """Write ``rows`` as CSV to ``path`` with optional ``header``."""
+    with open(path, 'w', encoding=encoding, newline=newline) as f:
+        writer = csv.writer(f, dialect=dialect)
+        if header is not None:
+            writer.writerow(header)
+        writer.writerows(rows)
+
+
+def dump_json(obj, path_or_fileobj,
+              *, encoding: str = DEFAULT_ENCODING,
+              mode: str = 'w', **kwargs):
     """Serialize ``obj`` via :func:`json.load` to path or file-like object."""
     kwargs['obj'] = obj
     _call_json('dump', path_or_fileobj, encoding, mode, **kwargs)
 
 
-def load_json(path_or_fileobj, encoding='utf-8', mode='r', **kwargs):
+def load_json(path_or_fileobj,
+              *,  encoding: str = DEFAULT_ENCODING,
+              mode: str = 'r', **kwargs):
     """Return deserialized :func:`json.load` from path or file-like object."""
     return _call_json('load', path_or_fileobj, encoding, mode, **kwargs)
 

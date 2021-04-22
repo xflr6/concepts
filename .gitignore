@@ -16,9 +16,11 @@ __pycache__/
 /htmlcov/
 /.tox/
 
+.ipynb_checkpoints/
+
 Thumbs.db
 
+/scripts/*.csv
+/scripts/*.cxt
 /test-output/
 /visualize-output/
-
-.ipynb_checkpoints/
