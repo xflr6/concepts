@@ -101,15 +101,59 @@ def fcbo(context):
     Extent = context._Extent
     Intent = context._Intent
 
-    concept = Extent.infimum.doubleprime()
+    n_attributes = len(context.properties)
+    attribute_sets = [Intent.infimum] * n_attributes
+
+    concept = Extent.supremum, Intent.infimum
+
+    stack = [(concept, 0, attribute_sets)]
+
+    while stack:
+        concept, attribute_index, attribute_sets = stack.pop()
+
+        yield concept
+
+        extent, intent = concept
+
+        if extent == Extent.infimum or attribute_index >= n_attributes:
+            continue
+
+        for j in reversed(range(attribute_index, n_attributes)):
+            j_attribute = 1 << j
+
+            if j_attribute & intent:
+                continue
+
+            mask = j_attribute - 1
+
+            next_attribute_sets = attribute_sets.copy()
+
+            x = next_attribute_sets[j] & mask
+
+            if x & intent == x:
+                j_extent = extent & context._extents[j]
+                j_intent = Extent.prime(j_extent)
+
+                if j_intent & mask == intent & mask:
+                    concept = (Extent.fromint(j_extent), Intent.fromint(j_intent))
+                    stack.append((concept, j + 1, next_attribute_sets))
+                else:
+                    next_attribute_sets[j] = j_intent
+
+
+def fcbo_dual(context):
+    Extent = context._Extent
+    Intent = context._Intent
 
     n_objects = len(context.objects)
     object_sets = [Extent.infimum] * n_objects
 
-    queue = collections.deque([(concept, 0, object_sets)])
+    concept = Extent.infimum, Intent.supremum
 
-    while queue:
-        concept, obj_index, object_sets = queue.popleft()
+    stack = [(concept, 0, object_sets)]
+
+    while stack:
+        concept, obj_index, object_sets = stack.pop()
 
         yield concept
 
@@ -118,7 +162,7 @@ def fcbo(context):
         if extent == Extent.supremum or obj_index >= n_objects:
             continue
 
-        for j in range(obj_index, n_objects):
+        for j in reversed(range(obj_index, n_objects)):
             j_object = 1 << j
 
             if extent & j_object:
@@ -136,6 +180,6 @@ def fcbo(context):
 
                 if j_extent & mask == extent & mask:
                     concept = (Extent.fromint(j_extent), Intent.fromint(j_intent))
-                    queue.append((concept, j + 1, next_object_sets))
+                    stack.append((concept, j + 1, next_object_sets))
                 else:
                     next_object_sets[j] = j_extent
