@@ -5,7 +5,8 @@ import sys
 
 import pytest
 
-ARGS = [#'tests/slow',
+ARGS = ['--capture=no',  # a.k.a. -s
+        #'tests/slow',
         #'tests',
         #'--collect-only',
         #'--verbose',

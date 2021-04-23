@@ -7,7 +7,7 @@ import pytest
 
 from concepts import formats
 
-from conftest import DIRECTORY
+from conftest import TEST_OUTPUT
 
 
 @pytest.mark.parametrize('name, expected', [
@@ -55,7 +55,7 @@ class LoadsDumps:
         result = self.format.dumps(self.objects, self.properties, self.bools)
         self.assertEqual(result, self.result)
 
-    def test_dump_load(self, outdir=DIRECTORY):
+    def test_dump_load(self, outdir=TEST_OUTPUT):
         if not outdir.exists():
             outdir.mkdir()
 

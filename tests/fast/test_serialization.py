@@ -9,8 +9,6 @@ import pytest
 from concepts import Context, Definition
 from concepts.lattices import Lattice
 
-from conftest import DIRECTORY
-
 SERIALIZED = {
     'objects': (
         '1sg', '1pl', '2sg', '2pl', '3sg', '3pl',
@@ -283,7 +281,7 @@ def test_dict_roundtrip(context, ignore_lattice):
   ],
 }
 ''')])
-def test_tostring_python_literal(context, with_lattice,
+def test_tostring_python_literal(test_output, context, with_lattice,
                                  expected_doc, expected_str, to_file):
     if with_lattice:
         context = context.copy()
@@ -291,7 +289,7 @@ def test_tostring_python_literal(context, with_lattice,
 
     if to_file:
         modifier = '-lattice' if with_lattice else ''
-        path = DIRECTORY / f'example-serialized{modifier}.py'
+        path = test_output / f'example-serialized{modifier}.py'
         context.tofile(path, frmat='pythonliteral')
         result = path.read_text(encoding='utf-8')
     else:

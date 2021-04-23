@@ -5,7 +5,19 @@ import pytest
 
 import concepts
 
-DIRECTORY = pathlib.Path('test-output')
+TEST_OUTPUT = pathlib.Path('test-output')
+
+TEST_EXAMPLES = pathlib.Path('examples')
+
+
+@pytest.fixture(scope='session')
+def test_output():
+    return TEST_OUTPUT
+
+
+@pytest.fixture(scope='session')
+def test_examples():
+    return TEST_EXAMPLES
 
 
 @pytest.fixture(scope='session')

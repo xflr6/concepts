@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 # bob_ross.py - download Bob Ross dataset and save as examples/bob_ross.cxt
 
 import csv
