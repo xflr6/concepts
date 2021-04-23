@@ -5,13 +5,17 @@ import sys
 
 import pytest
 
-ARGS = [
-    #'--pdb',
-    #'--exitfirst',
-]
+ARGS = [#'tests/slow',
+        #'tests',
+        #'--collect-only',
+        #'--verbose',
+        #'--pdb',
+        #'--exitfirst',  # a.k.a. -x
+        #'-W', 'error',
+        ]
 
 if platform.system() == 'Windows':
     if 'idlelib' in sys.modules:
-        ARGS.extend(['--capture=sys', '--color=no'])
+        ARGS += ['--capture=sys', '--color=no']
 
 sys.exit(pytest.main(ARGS + sys.argv[1:]))
