@@ -1,10 +1,11 @@
-# conftest.py
-
 import io
+import pathlib
 
 import pytest
 
 import concepts
+
+DIRECTORY = pathlib.Path('test-output')
 
 
 @pytest.fixture(scope='session')

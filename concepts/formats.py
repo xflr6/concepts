@@ -2,14 +2,40 @@
 
 """Parse and serialize formal contexts in different formats."""
 
+import ast
 import contextlib
 import csv
+import functools
 import io
 import os
+import typing
 
 from . import tools
 
 __all__ = ['Format']
+
+
+class ContextArgs(typing.NamedTuple):
+    """Return value of ``.loads()`` and ``.load()``."""
+
+    objects: typing.List[str]
+
+    properties: typing.List[str]
+
+    bools: typing.List[typing.Tuple[bool, ...]]
+
+    serialized: typing.Optional['SerializedType'] = None
+
+
+LatticeType = typing.List[typing.Tuple[typing.Tuple[int],
+                                       typing.Tuple[int],
+                                       typing.Tuple[int],
+                                       typing.Tuple[int]]]
+
+
+class SerializedArgs(ContextArgs):
+
+    lattice: typing.Optional[LatticeType] = None
 
 
 class FormatMeta(type):
@@ -52,17 +78,17 @@ class Format(metaclass=FormatMeta):
     normalize_newlines = True
 
     @staticmethod
-    def loads(source, **kwargs):
-        """Parse source string and return ``(objects, properties, bools)``."""
+    def loads(source, **kwargs) -> ContextArgs:
+        """Parse source string and return ``ContextArgs``."""
         raise NotImplementedError  # pragma: no cover
 
     @staticmethod
-    def dumps(objects, properties, bools, **kwargs):
+    def dumps(objects, properties, bools, *, _serialized=None, **kwargs):
         """Serialize ``(objects, properties, bools)`` and return string."""
         raise NotImplementedError  # pragma: no cover
 
     @classmethod
-    def load(cls, filename, encoding):
+    def load(cls, filename, encoding) -> ContextArgs:
         """Load and parse serialized objects, properties, bools from file."""
         if encoding is None:
             encoding = cls.encoding
@@ -75,12 +101,14 @@ class Format(metaclass=FormatMeta):
         return cls.loads(source)
 
     @classmethod
-    def dump(cls, filename, objects, properties, bools, encoding):
+    def dump(cls, filename, objects, properties, bools,
+             *, encoding: typing.Optional[str], _serialized=None):
         """Write serialized objects, properties, bools to file."""
         if encoding is None:
             encoding = cls.encoding
 
-        source = cls.dumps(objects, properties, bools)
+        source = cls.dumps(objects, properties, bools,
+                           _serialized=_serialized)
 
         with open(filename, 'w', encoding=encoding) as fd:
             fd.write(source)
@@ -99,10 +127,10 @@ class Cxt(Format):
         objects = lines[:y]
         properties = lines[y:y + x]
         bools = [tuple(f == 'X' for f in l) for l in lines[y + x:]]
-        return objects, properties, bools
+        return ContextArgs(objects, properties, bools)
 
     @staticmethod
-    def dumps(objects, properties, bools):
+    def dumps(objects, properties, bools, *, _serialized=None):
         lines = iter_cxt_lines(objects, properties, bools,
                                end_with_empty_line=True)
         return '\n'.join(lines)
@@ -146,10 +174,10 @@ class Table(Format):
             for obj, flags in
                 (objflags.partition('|')[::2] for objflags in lines[1:])]
         objects, bools = zip(*table)
-        return objects, properties, bools
+        return ContextArgs(objects, properties, bools)
 
     @staticmethod
-    def dumps(objects, properties, bools, indent=0):
+    def dumps(objects, properties, bools, *, indent=0, _serialized=None):
         wd = [tools.max_len(objects)]
         wd.extend(map(len, properties))
         tmpl = ' ' * indent + '|'.join(f'%-{w:d}s' for w in wd) + '|'
@@ -167,14 +195,14 @@ class Csv(Format):
     dialect = csv.excel
 
     @staticmethod
-    def _load(reader):
+    def _load(reader) -> ContextArgs:
         objects, bools = [], []
         properties = next(reader)[1:]
         for cols in reader:
             objects.append(cols[0])
             bools.append(tuple(c == 'X' for c in cols[1:]))
 
-        return objects, properties, bools
+        return ContextArgs(objects, properties, bools)
 
     @staticmethod
     def _dump(writer, objects, properties, bools):
@@ -184,7 +212,7 @@ class Csv(Format):
             for o, bs in zip(objects, bools))
 
     @classmethod
-    def loads(cls, source, dialect=None):
+    def loads(cls, source, *, dialect=None) -> ContextArgs:
         if dialect is None:
             dialect = cls.dialect
 
@@ -195,7 +223,7 @@ class Csv(Format):
             return cls._load(reader)
 
     @classmethod
-    def dumps(cls, objects, properties, bools, dialect=None):
+    def dumps(cls, objects, properties, bools, *, dialect=None, _serialized=None):
         if dialect is None:
             dialect = cls.dialect
 
@@ -207,7 +235,7 @@ class Csv(Format):
         return result
 
     @classmethod
-    def load(cls, filename, encoding, dialect=None):
+    def load(cls, filename, *, encoding, dialect=None) -> ContextArgs:
         if encoding is None:
             encoding = cls.encoding
 
@@ -219,7 +247,8 @@ class Csv(Format):
             return cls._load(reader)
 
     @classmethod
-    def dump(cls, filename, objects, properties, bools, encoding, dialect=None):
+    def dump(cls, filename, objects, properties, bools, *, encoding,
+             dialect=None, _serialized=None):
         if encoding is None:
             encoding = cls.encoding
 
@@ -235,7 +264,7 @@ class WikiTable(Format):
     """Formal context as MediaWiki markup table."""
 
     @staticmethod
-    def dumps(objects, properties, bools):
+    def dumps(objects, properties, bools, *,  _serialized=None):
         result = ['{| class="featuresystem"', '!',
                   '!{}'.format('!!'.join(properties))]
         wp = list(map(len, properties))
@@ -244,3 +273,70 @@ class WikiTable(Format):
             result += ['|-', f'!{o}', '|{}'.format('||'.join(bcells))]
         result.append('|}')
         return '\n'.join(result)
+
+
+class PythonLiteral(Format):
+    """Format context as input for ``ast.literal_eval()``."""
+
+    suffix = '.py'
+
+    @staticmethod
+    def loads(python_source) -> SerializedArgs:
+        args = ast.literal_eval(python_source)
+        assert args is not None
+        assert isinstance(args, dict)
+
+        objects = args['objects']
+        properties = args['properties']
+
+        bools = [[False for _ in args['properties']]
+                 for _ in args['objects']]
+        for row, true_indexes in zip(bools, args['context']):
+            for i in true_indexes:
+                row[i] = True
+        bools = [tuple(row) for row in bools]
+
+        return SerializedArgs(objects, properties, bools, serialized=args)
+
+    @staticmethod
+    def dumps(objects, properties, bools, *, _serialized=None):
+        if _serialized is None:
+            doc = {'objects': objects,
+                   'properties': properties,
+                   'context': [tuple(i for i, b in enumerate(row) if b)
+                               for row in bools]}
+        else:
+            doc = _serialized
+            assert isinstance(doc, dict)
+            keys = ('objects', 'properties', 'context')
+            assert all(k in doc for k in keys)
+
+        indent = ' ' * 2
+
+        def itersection(key, lines, value_list: bool = False):
+            start, end = ('[', ']') if value_list else ('(', ')')
+
+            yield f'{indent}{key!r}: {start}'
+            yield from lines
+            yield f'{indent}{end},'
+            
+        def iterlines(doc):
+            yield '{'
+
+            for key in ('objects', 'properties'):
+                line = ', '.join(map(repr, doc[key]))
+                yield from itersection(key, [f'{indent * 2}{line},'])
+
+            for key in ('context',) + (('lattice',) if 'lattice' in doc else ()):
+                lines = [f'{indent * 2}{line},' for line in map(repr, doc[key])]
+                yield from itersection(key, lines, value_list=True)
+
+            yield '}'
+
+        with io.StringIO() as buf:
+            write = functools.partial(print, file=buf)
+            for line in iterlines(doc):
+                write(line)
+            result = buf.getvalue()
+
+        return result

@@ -1,28 +1,28 @@
 # test_formats.py
 
-import os
+import pathlib
 import unittest
 
 import pytest
 
-from concepts.formats import Format, Cxt, Table, Csv, WikiTable
+from concepts import formats
 
-DIRECTORY = 'test-output'
+from conftest import DIRECTORY
 
 
 @pytest.mark.parametrize('name, expected', [
-    ('table', Table),
-    ('cxt', Cxt),
-    ('csv', Csv),
-    ('wikitable', WikiTable),
+    ('table', formats.Table),
+    ('cxt', formats.Cxt),
+    ('csv', formats.Csv),
+    ('wikitable', formats.WikiTable),
 ])
 def test_getitem(name, expected):
-    assert Format[name] is expected is Format[name.upper()]
+    assert formats.Format[name] is expected is formats.Format[name.upper()]
 
 
 def test_getitem_invalid():
     with pytest.raises(KeyError):
-        Format['spam']
+        formats.Format['spam']
 
 
 @pytest.mark.parametrize('filename, expected', [
@@ -31,55 +31,56 @@ def test_getitem_invalid():
     ('spam.spam.csv', 'csv')
 ])
 def test_infer_format(filename, expected):
-    assert Format.infer_format(filename) == expected
+    assert formats.Format.infer_format(filename) == expected
 
 
 def test_infer_format_invalid():
     with pytest.raises(ValueError, match=r'filename suffix'):
-        Format.infer_format('spam.spam')
+        formats.Format.infer_format('spam.spam')
 
 
-class LoadsDumps(object):
+class LoadsDumps:
 
     def test_loads(self):
         try:
-            objects, properties, bools = self.format.loads(self.result)
+            args = self.format.loads(self.result)
         except NotImplementedError:
             pass
         else:
-            self.assertSequenceEqual(objects, self.objects)
-            self.assertSequenceEqual(properties, self.properties)
-            self.assertSequenceEqual(bools, self.bools)
+            self.assertSequenceEqual(args.objects, self.objects)
+            self.assertSequenceEqual(args.properties, self.properties)
+            self.assertSequenceEqual(args.bools, self.bools)
 
     def test_dumps(self):
         result = self.format.dumps(self.objects, self.properties, self.bools)
         self.assertEqual(result, self.result)
 
     def test_dump_load(self, outdir=DIRECTORY):
-        if not os.path.exists(outdir):
-            os.mkdir(outdir)
+        if not outdir.exists():
+            outdir.mkdir()
 
         extension = getattr(self.format, 'extension', '.txt')
-        filepath = os.path.join(outdir, self.__class__.__name__ + extension)
-        self.format.dump(filepath,
+        filepath = (outdir / self.__class__.__name__).with_suffix(extension)
+        self.format.dump(str(filepath),
                          self.objects, self.properties, self.bools,
-                         self.encoding)
+                         encoding=self.encoding)
 
         try:
-            objects, properties, bools = self.format.load(filepath,
-                                                          self.encoding)
+            args = self.format.load(filepath, encoding=self.encoding)
         except NotImplementedError:
             pass
         else:
-            self.assertSequenceEqual(objects, self.objects)
-            self.assertSequenceEqual(properties, self.properties)
-            self.assertSequenceEqual(bools, self.bools)
+            self.assertSequenceEqual(args.objects, self.objects)
+            self.assertSequenceEqual(args.properties, self.properties)
+            self.assertSequenceEqual(args.bools, self.bools)
 
 
 class Ascii(LoadsDumps):
 
     objects = ('Cheddar', 'Limburger')
+
     properties = ('in_stock', 'sold_out')
+
     bools = [(False, True), (False, True)]
 
     encoding = None
@@ -88,7 +89,9 @@ class Ascii(LoadsDumps):
 class Unicode(LoadsDumps):
 
     objects = ('M\xf8\xf8se', 'Llama')
+
     properties = ('majestic', 'bites')
+
     bools = [(True, True), (False, False)]
 
     encoding = 'utf-8'
@@ -96,19 +99,22 @@ class Unicode(LoadsDumps):
 
 class TestCxtAscii(unittest.TestCase, Ascii):
 
-    format = Cxt
+    format = formats.Cxt
+
     result = 'B\n\n2\n2\n\nCheddar\nLimburger\nin_stock\nsold_out\n.X\n.X\n'
 
 
 class TextCxtUnicode(unittest.TestCase, Unicode):
 
-    format = Cxt
+    format = formats.Cxt
+
     result = 'B\n\n2\n2\n\nM\xf8\xf8se\nLlama\nmajestic\nbites\nXX\n..\n'
 
 
 class TestTableAscii(unittest.TestCase, Ascii):
 
-    format = Table
+    format = formats.Table
+
     result = ('         |in_stock|sold_out|\n'
               'Cheddar  |        |X       |\n'
               'Limburger|        |X       |')
@@ -116,7 +122,8 @@ class TestTableAscii(unittest.TestCase, Ascii):
 
 class TestTableUnicode(unittest.TestCase, Unicode):
 
-    format = Table
+    format =formats.Table
+
     result = ('     |majestic|bites|\n'
               'M\xf8\xf8se|X       |X    |\n'
               'Llama|        |     |')
@@ -124,7 +131,8 @@ class TestTableUnicode(unittest.TestCase, Unicode):
 
 class TestCsvAscii(unittest.TestCase, Ascii):
 
-    format = Csv
+    format = formats.Csv
+
     result = (',in_stock,sold_out\r\n'
               'Cheddar,,X\r\n'
               'Limburger,,X\r\n')
@@ -132,7 +140,8 @@ class TestCsvAscii(unittest.TestCase, Ascii):
 
 class TestCsvUnicode(unittest.TestCase, Unicode):
 
-    format = Csv
+    format = formats.Csv
+
     result = (',majestic,bites\r\n'
               'M\xf8\xf8se,X,X\r\n'
               'Llama,,\r\n')
@@ -140,7 +149,8 @@ class TestCsvUnicode(unittest.TestCase, Unicode):
 
 class TestWikitableAscii(unittest.TestCase, Ascii):
 
-    format = WikiTable
+    format = formats.WikiTable
+
     result = ('{| class="featuresystem"\n'
               '!\n'
               '!in_stock!!sold_out\n'
@@ -155,7 +165,8 @@ class TestWikitableAscii(unittest.TestCase, Ascii):
 
 class TestWikitableUnicode(unittest.TestCase, Unicode):
 
-    format = WikiTable
+    format = formats.WikiTable
+
     result = ('{| class="featuresystem"\n'
               '!\n'
               '!majestic!!bites\n'
@@ -165,3 +176,23 @@ class TestWikitableUnicode(unittest.TestCase, Unicode):
               '!Llama\n'
               '|        ||     \n'
               '|}')
+
+
+class TestPythonLiteral(unittest.TestCase, Ascii):
+
+    format = formats.PythonLiteral
+
+    result = '''\
+{
+  'objects': (
+    'Cheddar', 'Limburger',
+  ),
+  'properties': (
+    'in_stock', 'sold_out',
+  ),
+  'context': [
+    (1,),
+    (1,),
+  ],
+}
+'''

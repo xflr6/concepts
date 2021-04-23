@@ -128,8 +128,10 @@ class Context:
             Context: New :class:`.Context` instance.
         """
         frmat = formats.Format[frmat]
-        objects, properties, bools = frmat.loads(source, **kwargs)
-        return cls(objects, properties, bools)
+        args = frmat.loads(source, **kwargs)
+        if args.serialized is not None:
+            return cls.fromdict(args.serialized)
+        return cls(args.objects, args.properties, args.bools)
 
     @classmethod
     def fromfile(cls, filename, frmat: str = 'cxt',
@@ -150,8 +152,10 @@ class Context:
             frmat = formats.Format.infer_format(filename)
 
         frmat = formats.Format[frmat]
-        objects, properties, bools = frmat.load(filename, encoding, **kwargs)
-        return cls(objects, properties, bools)
+        args = frmat.load(filename, encoding=encoding, **kwargs)
+        if args.serialized is not None:
+            return cls.fromdict(args.serialized)
+        return cls(args.objects, args.properties, args.bools)
 
     @classmethod
     def fromjson(cls, path_or_fileobj, encoding: str = 'utf-8',
@@ -290,6 +294,10 @@ class Context:
         self._intents, self._extents = state
         self._Intent = self._intents.BitSet
         self._Extent = self._extents.BitSet
+
+    def copy(self):
+        """Return a fresh copy of the context (omits lattice)."""
+        return Context(self.objects, self.properties, self.bools)
 
     def __eq__(self, other: 'Context'):
         """Return whether two contexts are equivalent.
@@ -485,8 +493,12 @@ class Context:
             str: The context as seralized string.
         """
         frmat = formats.Format[frmat]
-        return frmat.dumps(self.objects, self.properties, self.bools,
-                           **kwargs)
+
+        assert '_serialized' not in kwargs
+        if frmat is formats.PythonLiteral:
+            kwargs['_serialized'] = self.todict(ignore_lattice=None)
+
+        return frmat.dumps(self.objects, self.properties, self.bools, **kwargs)
 
     def tofile(self, filename, frmat: str = 'cxt',
                encoding: str = 'utf-8', **kwargs):
@@ -497,9 +509,14 @@ class Context:
             encoding (str): Encoding of the file (``'utf-8'``, ``'latin1'``, ``'ascii'``, ...).
         """
         frmat = formats.Format[frmat]
+
+        assert '_serialized' not in kwargs
+        if frmat is formats.PythonLiteral:
+            kwargs['_serialized'] = self.todict(ignore_lattice=None)
+
         frmat.dump(filename,
                    self.objects, self.properties, self.bools,
-                   encoding, **kwargs)
+                   encoding=encoding, **kwargs)
 
     def crc32(self, encoding: str = 'utf-8'):
         """Return hex-encoded unsigned CRC32 over encoded context table string.
