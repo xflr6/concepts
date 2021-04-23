@@ -103,13 +103,32 @@ class Cxt(Format):
 
     @staticmethod
     def dumps(objects, properties, bools):
-        result = ['B', '', f'{len(objects)}', f'{len(properties)}', '']
-        result.extend(objects)
-        result.extend(properties)
-        result.extend(''.join('X' if b else '.' for b in intent)
-                      for intent in bools)
-        result.append('')
-        return '\n'.join(result)
+        lines = iter_cxt_lines(objects, properties, bools,
+                               end_with_empty_line=True)
+        return '\n'.join(lines)
+
+
+def iter_cxt_lines(objects, properties, bools,
+                   *, end_with_empty_line: bool = False):
+    assert len(objects) == len(bools)
+    assert {len(properties)} == set(map(len, bools))
+    
+    yield 'B'
+    yield ''
+    yield f'{len(objects):d}'
+    yield f'{len(properties):d}'
+    yield ''
+
+    yield from objects
+    yield from properties
+
+    flags = {False: '.', True: 'X'}
+
+    for row in bools:
+        yield ''.join(flags[value] for value in row)
+
+    if end_with_empty_line:
+        yield ''
 
 
 class Table(Format):
