@@ -236,3 +236,13 @@ class TestPythonLiteral(unittest.TestCase, Ascii):
     (1,),
   ],
 }'''
+
+
+class TestFimi(unittest.TestCase, Ascii):
+
+    format = formats.Fimi
+
+    result = '''\
+1
+1
+'''
