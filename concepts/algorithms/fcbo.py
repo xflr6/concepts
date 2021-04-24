@@ -38,7 +38,7 @@ def fast_generate_from(context):
 
         extent, intent = concept
 
-        if extent == Extent.infimum or attribute_index >= n_attributes:
+        if extent == Extent.infimum or attribute_index == n_attributes:
             continue
 
         next_attribute_sets = attribute_sets.copy()
@@ -82,7 +82,7 @@ def fcbo_dual(context):
 
         extent, intent = concept
 
-        if extent == Extent.supremum or object_index >= n_objects:
+        if extent == Extent.supremum or object_index == n_objects:
             continue
 
         next_object_sets = object_sets.copy()
