@@ -159,6 +159,7 @@ def bob_ross(test_examples, filename=BOB_ROSS):
 
 
 @pytest.mark.slow
+@pytest.mark.no_cover
 def test_lattice_bob_ross(test_examples, test_output, stopwatch, bob_ross):
     with stopwatch() as timing:
         lattice = bob_ross.lattice
