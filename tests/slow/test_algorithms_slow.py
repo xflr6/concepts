@@ -21,7 +21,7 @@ def bob_ross(test_examples, filename=BOB_ROSS):
     assert len(context.objects) == 403
     assert len(context.properties) == 67
 
-    return context
+    return context.copy()
 
 
 @contextlib.contextmanager

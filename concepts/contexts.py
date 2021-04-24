@@ -277,6 +277,10 @@ class Context:
         self._Intent = self._intents.BitSet
         self._Extent = self._extents.BitSet
 
+    def copy(self):
+        """Return a fresh copy of the context (omits lattice)."""
+        return Context(self.objects, self.properties, self.bools)
+
     def __getstate__(self):
         """Pickle context as ``(intents, extents)`` tuple.
 
@@ -294,10 +298,6 @@ class Context:
         self._intents, self._extents = state
         self._Intent = self._intents.BitSet
         self._Extent = self._extents.BitSet
-
-    def copy(self):
-        """Return a fresh copy of the context (omits lattice)."""
-        return Context(self.objects, self.properties, self.bools)
 
     def __eq__(self, other: 'Context'):
         """Return whether two contexts are equivalent.

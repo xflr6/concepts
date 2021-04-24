@@ -51,6 +51,16 @@ def test_init():
     assert c.bools == [(True, False), (False, True)]
 
 
+def test_copy(context):
+    context = Context(context.objects, context.properties, context.bools)
+    assert context.lattice is not None
+
+    copy = context.copy()
+
+    assert copy == context
+    assert 'lattice' not in copy.__dict__
+
+
 def test_eq_noncontext(context):
     assert not (context == object())
 
