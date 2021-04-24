@@ -27,7 +27,7 @@ CSV_DIALECT = 'excel'
 DEFAULT_ENCODING = 'utf-8'
 
 
-def snakify(name: str, *, sep: str='_',
+def snakify(name: str, *, sep: str = '_',
             _re_upper=re.compile(r'([A-Z])')) -> str:
     """Lowercase ``name`` adding ``sep`` before in-word-uppercase letters.
 
@@ -285,7 +285,7 @@ def dump_json(obj, path_or_fileobj,
 
 
 def load_json(path_or_fileobj,
-              *,  encoding: str = DEFAULT_ENCODING,
+              *, encoding: str = DEFAULT_ENCODING,
               mode: str = 'r', **kwargs):
     """Return deserialized :func:`json.load` from path or file-like object."""
     return _call_json('load', path_or_fileobj, encoding, mode, **kwargs)
@@ -296,7 +296,7 @@ def _call_json(funcname, path_or_fileobj, encoding, mode, **kwargs):
     close = not fallthrough
 
     try:
-        return getattr(json,funcname)(fp=f, **kwargs)
+        return getattr(json, funcname)(fp=f, **kwargs)
     except (AttributeError, TypeError):
         raise TypeError('path_or_fileobj: {path_or_fileobj!r}')
     finally:

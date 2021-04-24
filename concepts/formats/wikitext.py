@@ -5,7 +5,7 @@ from .base import Format
 __all__ = ['WikiTable']
 
 
-def dump_file(file, objects, properties, bools, *,  _serialized=None):
+def dump_file(file, objects, properties, bools, *, _serialized=None):
     write = functools.partial(print, file=file)
     write('{| class="featuresystem"')
     write('!')

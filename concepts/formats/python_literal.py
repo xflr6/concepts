@@ -45,7 +45,7 @@ def dump_file(file, objects, properties, bools, *, _serialized=None) -> None:
         yield f'{indent}{key!r}: {start}'
         yield from lines
         yield f'{indent}{end},'
-        
+
     def iterlines(doc):
         yield '{'
 
@@ -62,7 +62,6 @@ def dump_file(file, objects, properties, bools, *, _serialized=None) -> None:
     write = functools.partial(print, file=file)
     for line in iterlines(doc):
         write(line)
-
 
 
 class PythonLiteral(Format):

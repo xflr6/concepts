@@ -109,7 +109,7 @@ class Triple:
         """Return an independent copy of the instance.
 
         Returns:
-            An instance of ``type(self)``. 
+            An instance of ``type(self)``.
         """
         return self._fromargs(self._objects.copy(),
                               self._properties.copy(),

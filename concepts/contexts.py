@@ -245,7 +245,7 @@ class Context:
     def __init__(self,
                  objects: typing.Iterable[str],
                  properties: typing.Iterable[str],
-                 bools: typing.Iterable[typing.Tuple[bool,...]]) -> None:
+                 bools: typing.Iterable[typing.Tuple[bool, ...]]) -> None:
         """Create context from ``objects``, ``properties``, and ``bools`` correspondence.
 
         Args:
@@ -280,7 +280,7 @@ class Context:
     def copy(self, include_lattice: typing.Optional[bool] = False):
         """Return a fresh copy of the context (omits lattice)."""
         if include_lattice:  # pragma: no cover
-            raise NotImplementedError(f'.copy(include_lattice={include_latttice!r})')
+            raise NotImplementedError(f'.copy(include_lattice={include_lattice!r})')
         return Context(self.objects, self.properties, self.bools)
 
     def __getstate__(self):

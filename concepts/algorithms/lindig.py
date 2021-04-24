@@ -8,7 +8,6 @@ Shaker Verlag, Aachen, Germany, 2000.
 http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.143.948
 """
 
-import collections
 import functools
 import heapq
 

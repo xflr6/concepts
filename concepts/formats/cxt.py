@@ -13,7 +13,7 @@ def iter_cxt_lines(objects, properties, bools,
                    symbols: typing.Mapping[bool, str] = SYMBOLS):
     assert len(objects) == len(bools)
     assert {len(properties)} == set(map(len, bools))
-    
+
     yield 'B'
     yield ''
     yield f'{len(objects):d}'

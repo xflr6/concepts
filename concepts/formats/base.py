@@ -19,7 +19,7 @@ class ContextArgs(typing.NamedTuple):
 
     bools: typing.List[typing.Tuple[bool, ...]]
 
-    serialized: typing.Optional['SerializedType'] = None
+    serialized: typing.Optional['SerializedArgs'] = None
 
 
 LatticeType = typing.List[typing.Tuple[typing.Tuple[int],
@@ -84,7 +84,6 @@ class Format(metaclass=FormatMeta):
 
         with open(filename, encoding=encoding, newline=cls.newline) as f:
             return cls.loadf(f, **kwargs)
-        return cls.loads(source)
 
     @classmethod
     def loads(cls, source, **kwargs) -> ContextArgs:

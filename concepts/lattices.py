@@ -456,6 +456,3 @@ class Lattice:
                                  make_object_label=make_object_label,
                                  make_property_label=make_property_label,
                                  **kwargs)
-
-
-

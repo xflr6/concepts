@@ -24,7 +24,7 @@ class FimiDialect(csv.Dialect):
     strict = True
 
 
-def dump_file(file, objects, properties, bools, *,  _serialized=None):
+def dump_file(file, objects, properties, bools, *, _serialized=None):
     rows = iter_fimi_rows(bools)
     tools.write_csv_file(file, rows, dialect=FimiDialect)
 
