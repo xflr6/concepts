@@ -10,6 +10,7 @@ import urllib.parse
 import urllib.request
 
 sys.path.insert(0, os.pardir)
+import concepts  # noqa: E402
 from concepts import formats  # noqa: E402
 from concepts import tools  # noqa: E402
 
@@ -29,9 +30,11 @@ DATA_SHA256 = 'e65d082030501a3ebcbcd7c9f7c71aa9d28fdfff463bf4cf4716a3fe13ac360e'
 
 ENCODING = 'ascii'
 
+CSV = MUSHROOM.with_suffix('.csv')
+
 CXT = MUSHROOM.with_suffix('.cxt')
 
-CSV = MUSHROOM.with_suffix('.csv')
+DAT = MUSHROOM.with_suffix('.dat')
 
 ATTRIBUTES = re.compile(r'''
                         ^7\.[ ]Attribute[ ]Information:
@@ -112,8 +115,8 @@ for path, hexdigest in [(NAMES, NAMES_SHA256), (DATA, DATA_SHA256)]:
         print(url)
         urllib.request.urlretrieve(url, path)
         assert path.stat().st_size
+        print(path.name, f'{path.stat().st_size:_d} bytes')
 
-    print(path.name, f'{path.stat().st_size:_d} bytes')
     assert tools.sha256sum(path) == hexdigest
 
 attributes = parse_attributes(NAMES.read_text(encoding=ENCODING))
@@ -123,15 +126,19 @@ properties = list(iterproperties(attributes))
 print(properties)
 assert len(properties) == 128
 
-if not all(path.exists() for path in (CXT, CSV)):
+if not all(path.exists() for path in (CXT, CSV, DAT)):
     data = list(tools.csv_iterrows(DATA))
     assert len(data) == 8124
+
+    tools.write_csv(CSV, iterrows(attributes, data), header=[MUSHROOM.stem] + properties,
+                    encoding=ENCODING)
+    print(CSV, f'{CSV.stat().st_size:_d} bytes')
 
     tools.write_lines(CXT, iter_cxt_lines(attributes, data),
                       encoding=ENCODING, newline='\n')
 
     print(CXT, f'{CXT.stat().st_size:_d} bytes')
 
-    tools.write_csv(CSV, iterrows(attributes, data), header=[MUSHROOM.stem] + properties,
-                    encoding=ENCODING)
-    print(CSV, f'{CSV.stat().st_size:_d} bytes')
+    context = concepts.load(str(CXT))
+    context.tofile(DAT, frmat='fimi')
+    print(DAT, f'{DAT.stat().st_size:_d} bytes')
