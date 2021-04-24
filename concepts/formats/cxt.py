@@ -9,8 +9,7 @@ SYMBOLS = {False: '.', True: 'X'}
 
 
 def iter_cxt_lines(objects, properties, bools,
-                   *, end_with_empty_line: bool = False,
-                   symbols: typing.Mapping[bool, str] = SYMBOLS):
+                   *, symbols: typing.Mapping[bool, str] = SYMBOLS):
     assert len(objects) == len(bools)
     assert {len(properties)} == set(map(len, bools))
 
@@ -25,9 +24,6 @@ def iter_cxt_lines(objects, properties, bools,
 
     for row in bools:
         yield ''.join(symbols[value] for value in row)
-
-    if end_with_empty_line:
-        yield ''
 
 
 class Cxt(Format):
@@ -57,6 +53,5 @@ class Cxt(Format):
     def dumpf(cls, file, objects, properties, bools, *, _serialized=None):
         write = functools.partial(print, file=file)
         for line in iter_cxt_lines(objects, properties, bools,
-                                   end_with_empty_line=False,
                                    symbols=cls.symbols):
             write(line)
