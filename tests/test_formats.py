@@ -96,81 +96,113 @@ class TestCxtAscii(unittest.TestCase, Ascii):
 
     format = formats.Cxt
 
-    result = 'B\n\n2\n2\n\nCheddar\nLimburger\nin_stock\nsold_out\n.X\n.X\n'
+    result = '''\
+B
+
+2
+2
+
+Cheddar
+Limburger
+in_stock
+sold_out
+.X
+.X
+'''
 
 
 class TextCxtUnicode(unittest.TestCase, Unicode):
 
     format = formats.Cxt
 
-    result = 'B\n\n2\n2\n\nM\xf8\xf8se\nLlama\nmajestic\nbites\nXX\n..\n'
+    result = '''\
+B
+
+2
+2
+
+Møøse
+Llama
+majestic
+bites
+XX
+..
+'''
 
 
 class TestTableAscii(unittest.TestCase, Ascii):
 
     format = formats.Table
 
-    result = ('         |in_stock|sold_out|\n'
-              'Cheddar  |        |X       |\n'
-              'Limburger|        |X       |')
+    result = '''\
+         |in_stock|sold_out|
+Cheddar  |        |X       |
+Limburger|        |X       |'''
 
 
 class TestTableUnicode(unittest.TestCase, Unicode):
 
     format =formats.Table
 
-    result = ('     |majestic|bites|\n'
-              'M\xf8\xf8se|X       |X    |\n'
-              'Llama|        |     |')
+    result = '''\
+     |majestic|bites|
+Møøse|X       |X    |
+Llama|        |     |'''
 
 
 class TestCsvAscii(unittest.TestCase, Ascii):
 
     format = formats.Csv
 
-    result = (',in_stock,sold_out\r\n'
-              'Cheddar,,X\r\n'
-              'Limburger,,X\r\n')
-
+    result = '''\
+,in_stock,sold_out\r
+Cheddar,,X\r
+Limburger,,X\r
+'''
 
 class TestCsvUnicode(unittest.TestCase, Unicode):
 
     format = formats.Csv
 
-    result = (',majestic,bites\r\n'
-              'M\xf8\xf8se,X,X\r\n'
-              'Llama,,\r\n')
+    result = '''\
+,majestic,bites\r
+Møøse,X,X\r
+Llama,,\r
+'''
 
 
 class TestWikitableAscii(unittest.TestCase, Ascii):
 
     format = formats.WikiTable
 
-    result = ('{| class="featuresystem"\n'
-              '!\n'
-              '!in_stock!!sold_out\n'
-              '|-\n'
-              '!Cheddar\n'
-              '|        ||X       \n'
-              '|-\n'
-              '!Limburger\n'
-              '|        ||X       \n'
-              '|}')
+    result = '''\
+{| class="featuresystem"
+!
+!in_stock!!sold_out
+|-
+!Cheddar
+|        ||X       
+|-
+!Limburger
+|        ||X       
+|}'''
 
 
 class TestWikitableUnicode(unittest.TestCase, Unicode):
 
     format = formats.WikiTable
 
-    result = ('{| class="featuresystem"\n'
-              '!\n'
-              '!majestic!!bites\n'
-              '|-\n'
-              '!M\xf8\xf8se\n|X       ||X    \n'
-              '|-\n'
-              '!Llama\n'
-              '|        ||     \n'
-              '|}')
+    result = '''\
+{| class="featuresystem"
+!
+!majestic!!bites
+|-
+!Møøse
+|X       ||X    
+|-
+!Llama
+|        ||     
+|}'''
 
 
 class TestPythonLiteral(unittest.TestCase, Ascii):
