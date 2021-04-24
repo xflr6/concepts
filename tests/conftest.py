@@ -34,13 +34,16 @@ def pytest_collection_modifyitems(config, items):
 
 
 @pytest.fixture(scope='session')
-def test_examples():
-    return TEST_EXAMPLES
+def test_examples(path=TEST_EXAMPLES):
+    assert path.exists()
+    return path
 
 
 @pytest.fixture(scope='session')
-def test_output():
-    return TEST_OUTPUT
+def test_output(path=TEST_OUTPUT):
+    if not path.exists():
+        path.mkdir()
+    return path
 
 
 @pytest.fixture(scope='session')

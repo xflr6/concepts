@@ -54,9 +54,6 @@ class LoadsDumps:
         self.assertEqual(result, self.result)
 
     def test_dump_load(self, outdir=TEST_OUTPUT):
-        if not outdir.exists():
-            outdir.mkdir()
-
         extension = getattr(self.format, 'extension', '.txt')
         filepath = (outdir / self.__class__.__name__).with_suffix(extension)
         self.format.dump(str(filepath),
