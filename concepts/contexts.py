@@ -277,8 +277,10 @@ class Context:
         self._Intent = self._intents.BitSet
         self._Extent = self._extents.BitSet
 
-    def copy(self):
+    def copy(self, include_lattice: typing.Optional[bool] = False):
         """Return a fresh copy of the context (omits lattice)."""
+        if inlcude_lattice:  # pragma: no cover
+            raise NotImplementedError(f'.copy(include_lattice={include_latttice!r})')
         return Context(self.objects, self.properties, self.bools)
 
     def __getstate__(self):
