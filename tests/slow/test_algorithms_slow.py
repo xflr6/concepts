@@ -1,34 +1,53 @@
+import contextlib
 import pathlib
 import time
+import types
 
 import pytest
 
 import concepts
 
+BOB_ROSS = pathlib.Path('bob_ross.cxt')
+
 ENCODING = 'utf-8'
 
 
-def test_lattice_bob_rows(test_output, test_examples, filename='bob_ross.cxt'):
-    filename = pathlib.Path(filename)
-    source = test_examples / filename
+@pytest.fixture
+def bob_ross(test_examples, filename=BOB_ROSS):
+    path = test_examples / filename
 
-    context = concepts.load_cxt(str(source))
+    context = concepts.load_cxt(str(path))
 
     assert len(context.objects) == 403
     assert len(context.properties) == 67
 
-    start = time.perf_counter()
+    return context
 
-    lattice = context.lattice
 
-    duration = time.perf_counter() - start
-    print(duration)
+@contextlib.contextmanager
+def stopwatch(*, quiet: bool = False):
+    """Context manager that measures and prints the execution wall time."""
+    timing = types.SimpleNamespace(start=None, end=None, duration=None)
+    timing.start = time.perf_counter()
+
+    yield timing
+
+    timing.end = time.perf_counter()
+    timing.duration = timing.end - timing.start
+
+    if not quiet:
+        print(timing.duration)
+
+
+def test_lattice_bob_rows(test_examples, test_output, bob_ross):
+    with stopwatch() as timing:
+        lattice = bob_ross.lattice
 
     assert lattice is not None
     assert len(lattice) == 3_463
 
-    target = test_output / f'{filename.stem}-serialized.py'
-    context.tofile(str(target), frmat='pythonliteral')
+    target = test_output / f'{BOB_ROSS.stem}-serialized.py'
+    bob_ross.tofile(str(target), frmat='pythonliteral')
     result = target.read_text(encoding=ENCODING)
 
     example = test_examples / target.name
@@ -36,4 +55,4 @@ def test_lattice_bob_rows(test_output, test_examples, filename='bob_ross.cxt'):
 
     assert result == expected
 
-    assert duration < 60
+    assert timing.duration < 60
