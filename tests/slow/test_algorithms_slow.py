@@ -21,7 +21,7 @@ def bob_ross(test_examples, filename=BOB_ROSS):
     assert len(context.objects) == 403
     assert len(context.properties) == 67
 
-    return context.copy()
+    return context
 
 
 @contextlib.contextmanager
@@ -39,7 +39,7 @@ def stopwatch(*, quiet: bool = False):
         print(timing.duration)
 
 
-def test_lattice_bob_rows(test_examples, test_output, bob_ross):
+def test_lattice_bob_ross(test_examples, test_output, bob_ross):
     with stopwatch() as timing:
         lattice = bob_ross.lattice
 
