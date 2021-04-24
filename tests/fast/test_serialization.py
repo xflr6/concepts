@@ -1,5 +1,3 @@
-# test_serialization.py
-
 import ast
 import io
 import random

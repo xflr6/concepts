@@ -1,11 +1,9 @@
-# test_lattices.py
-
 import functools
 import pickle
 
 import pytest
 
-from concepts.contexts import Context
+from concepts import Context
 from concepts.lattices import Concept
 
 

@@ -1,8 +1,6 @@
-# test_definitions.py
-
 import pytest
 
-from concepts.definitions import Definition
+from concepts import Definition
 
 
 def test_fromfile(filename='examples/gewaesser.cxt'):

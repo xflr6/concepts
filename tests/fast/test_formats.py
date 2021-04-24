@@ -1,5 +1,3 @@
-# test_formats.py
-
 import pathlib
 import unittest
 

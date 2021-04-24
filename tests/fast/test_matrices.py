@@ -1,5 +1,3 @@
-# test_matrices.py
-
 import pytest
 
 from concepts.matrices import Relation

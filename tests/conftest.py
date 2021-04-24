@@ -1,3 +1,5 @@
+"""pytest fixtures."""
+
 import io
 import pathlib
 

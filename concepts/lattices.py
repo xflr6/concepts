@@ -6,8 +6,8 @@ import heapq
 import operator
 
 from . import algorithms
-from .concepts import Concept, Infimum, Atom, Supremum
 from . import contexts
+from .lattice_concepts import Concept, Infimum, Atom, Supremum
 from . import tools
 from . import visualize
 

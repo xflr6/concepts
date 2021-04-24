@@ -1,8 +1,6 @@
-# test_contexts.py
-
 import pytest
 
-from concepts.contexts import Context
+from concepts import Context
 
 
 def test_empty_objects():
