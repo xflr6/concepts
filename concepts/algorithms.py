@@ -118,6 +118,8 @@ def fcbo(context):
         if extent == Extent.infimum or attribute_index >= n_attributes:
             continue
 
+        next_attribute_sets = attribute_sets.copy()
+
         for j in reversed(range(attribute_index, n_attributes)):
             j_attribute = 1 << j
 
@@ -125,8 +127,6 @@ def fcbo(context):
                 continue
 
             mask = j_attribute - 1
-
-            next_attribute_sets = attribute_sets.copy()
 
             x = next_attribute_sets[j] & mask
 
@@ -162,6 +162,8 @@ def fcbo_dual(context):
         if extent == Extent.supremum or obj_index >= n_objects:
             continue
 
+        next_object_sets = object_sets.copy()
+
         for j in reversed(range(obj_index, n_objects)):
             j_object = 1 << j
 
@@ -169,8 +171,6 @@ def fcbo_dual(context):
                 continue
 
             mask = j_object - 1
-
-            next_object_sets = object_sets.copy()
 
             x = next_object_sets[j] & mask
 
