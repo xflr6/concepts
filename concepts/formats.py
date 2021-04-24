@@ -48,10 +48,12 @@ class FormatMeta(type):
     def __init__(self, name, bases, dct):  # noqa: N804
         if not dct.get('__abstract__'):
             if 'name' not in dct:
-                self.name = name.lower()
+                self.name = tools.snakify(name, sep='-')
             if 'suffix' in dct:
                 self.by_suffix[self.suffix] = self.name
             self._map[self.name] = self
+            if 'aliases' in dct:
+                self._map.update(dict.fromkeys(dct['aliases'], self))
 
     def __getitem__(self, name):  # noqa: N804
         try:
@@ -262,6 +264,8 @@ class Csv(Format):
 
 class WikiTable(Format):
     """Formal context as MediaWiki markup table."""
+
+    aliases = ['wikitable']
 
     @staticmethod
     def dumps(objects, properties, bools, *,  _serialized=None):

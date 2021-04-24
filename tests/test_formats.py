@@ -12,7 +12,7 @@ from conftest import TEST_OUTPUT
     ('table', formats.Table),
     ('cxt', formats.Cxt),
     ('csv', formats.Csv),
-    ('wikitable', formats.WikiTable),
+    ('wiki-table', formats.WikiTable),
 ])
 def test_getitem(name, expected):
     assert formats.Format[name] is expected is formats.Format[name.upper()]

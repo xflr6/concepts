@@ -7,10 +7,12 @@ import hashlib
 from itertools import permutations, groupby, starmap
 import json
 import operator
+import re
 import typing
 import zlib
 
-__all__ = ['Unique',
+__all__ = ['snakify',
+           'Unique',
            'max_len', 'maximal',
            'lazyproperty',
            'crc32_hex',
@@ -22,6 +24,16 @@ __all__ = ['Unique',
 CSV_DIALECT = 'excel'
 
 DEFAULT_ENCODING = 'utf-8'
+
+
+def snakify(name: str, *, sep: str='_',
+            _re_upper=re.compile(r'([A-Z])')) -> str:
+    """Lowercase ``name`` adding ``sep`` before in-word-uppercase letters.
+
+    >>> snakify('CamelCase')
+    'camel_case'
+    """
+    return (name[:1] + _re_upper.sub(rf'{sep}\1', name[1:])).lower()
 
 
 class Unique(collections.abc.MutableSet):

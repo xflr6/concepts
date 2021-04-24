@@ -167,7 +167,7 @@ def test_lattice_bob_ross(test_examples, test_output, stopwatch, bob_ross):
     assert len(lattice) == 3_463
 
     target = test_output / f'{BOB_ROSS.stem}-serialized.py'
-    bob_ross.tofile(str(target), frmat='pythonliteral')
+    bob_ross.tofile(str(target), frmat='python-literal')
     result = target.read_text(encoding=ENCODING)
 
     example = test_examples / target.name

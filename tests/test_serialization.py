@@ -288,10 +288,10 @@ def test_tostring_python_literal(test_output, context, with_lattice,
     if to_file:
         modifier = '-lattice' if with_lattice else ''
         path = test_output / f'example-serialized{modifier}.py'
-        context.tofile(path, frmat='pythonliteral')
+        context.tofile(path, frmat='python-literal')
         result = path.read_text(encoding='utf-8')
     else:
-        result = context.tostring(frmat='pythonliteral')
+        result = context.tostring(frmat='python-literal')
 
     assert result is not None
     assert isinstance(result, str)
