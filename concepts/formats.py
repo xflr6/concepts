@@ -138,22 +138,26 @@ class Cxt(Format):
 
     symbols = {False: '.', True: 'X'}
 
-    @staticmethod
-    def loadf(file):
+    values = {s: b for b, s in symbols.items()}
+
+    @classmethod
+    def loadf(cls, file):
         source = file.read().strip()
         b, yx, table = source.split('\n\n')
-        y, x = (int(i) for i in yx.split())
+        y, x = map(int, yx.split())
         lines = [l.strip() for l in table.strip().split('\n')]
         objects = lines[:y]
         properties = lines[y:y + x]
-        bools = [tuple(f == 'X' for f in l) for l in lines[y + x:]]
+        bools = [tuple(map(cls.values.__getitem__, l))
+                 for l in lines[y + x:]]
         return ContextArgs(objects, properties, bools)
 
-    @staticmethod
-    def dumpf(file, objects, properties, bools, *, _serialized=None):
+    @classmethod
+    def dumpf(cls, file, objects, properties, bools, *, _serialized=None):
         write = functools.partial(print, file=file)
         for line in iter_cxt_lines(objects, properties, bools,
-                                   end_with_empty_line=False):
+                                   end_with_empty_line=False,
+                                   symbols=cls.symbols):
             write(line)
 
 
@@ -223,6 +227,9 @@ class Csv(Format):
 
     symbols = {False: '', True: 'X'}
 
+    values = {s: b for b, s in symbols.items()}
+    values.update({'0': False, '1': True})
+
     @classmethod
     def loadf(cls, file, *, dialect: typing.Optional[str] = None) -> ContextArgs:
         if dialect is None:
@@ -230,10 +237,14 @@ class Csv(Format):
         reader = csv.reader(file, dialect=dialect)
 
         objects, bools = ([] for _ in range(2))
+
         _, *properties = next(reader)
-        for obj, *values in reader:
+
+        get_value = cls.values.__getitem__
+
+        for obj, *symbols in reader:
             objects.append(obj)
-            bools.append(tuple(v == 'X' for v in values))
+            bools.append(tuple(map(get_value, symbols)))
 
         return ContextArgs(objects, properties, bools)
 
@@ -243,10 +254,12 @@ class Csv(Format):
               _serialized=None) -> None:
         if dialect is None:
             dialect = cls.dialect
-
         writer = csv.writer(file, dialect=dialect)
+
         symbool = cls.symbols.__getitem__
+
         writer.writerow([''] + list(properties))
+
         writer.writerows([o] + list(map(symbool, bs))
                          for o, bs in zip(objects, bools))
 

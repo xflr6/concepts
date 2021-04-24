@@ -171,6 +171,20 @@ Llama,,\r
 '''
 
 
+def test_csv_loads_ints():
+    source = '''\
+cheese,in_stock,sold_out\r
+Cheddar,0,1\r
+Limburger,0,1\r
+'''
+
+    args = formats.Csv.loads(source)
+
+    assert args.objects == ['Cheddar', 'Limburger']
+    assert args.properties == ['in_stock', 'sold_out']
+    assert args.bools ==  [(False, True), (False, True)]
+
+
 class TestWikitableAscii(unittest.TestCase, Ascii):
 
     format = formats.WikiTable
