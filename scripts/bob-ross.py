@@ -22,6 +22,8 @@ URL = ('https://raw.githubusercontent.com/fivethirtyeight/data'
 
 CSV = pathlib.Path(URL.rpartition('/')[2])
 
+CSV_SHA256 = '42045c8b8aaa8296095d6b294927fb9d0f73a57259f59b560c375844c0fe01cf'
+
 OPEN_KWARGS = {'encoding': 'ascii', 'newline': '\n'}
 
 CXT = CSV.with_suffix('.cxt')
@@ -44,8 +46,7 @@ if not CSV.exists():
     urllib.request.urlretrieve(URL, CSV)
     assert CSV.stat().st_size
 
-assert tools.sha256sum(CSV) == ('42045c8b8aaa8296095d6b294927fb9d'
-                                '0f73a57259f59b560c375844c0fe01cf')
+assert tools.sha256sum(CSV) == CSV_SHA256
 
 if not CXT.exists():
     header, *episodes = read_episodes(CSV)

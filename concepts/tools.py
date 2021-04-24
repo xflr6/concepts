@@ -18,6 +18,7 @@ __all__ = ['snakify',
            'crc32_hex',
            'sha256sum',
            'write_lines',
+           'csv_iterrows',
            'write_csv', 'write_csv_file',
            'dump_json', 'load_json']
 
@@ -245,6 +246,14 @@ def write_lines(path, lines: typing.Iterable[str],
         write = functools.partial(print, file=f)
         for line in lines:
             write(line)
+
+
+def csv_iterrows(path, *, dialect: str = CSV_DIALECT,
+                 encoding: str = DEFAULT_ENCODING,
+                 newline: typing.Optional[str] = ''):
+    with open(path, encoding=encoding, newline=newline) as f:
+        reader = csv.reader(f, dialect=dialect)
+        yield from reader
 
 
 def write_csv(path, rows,

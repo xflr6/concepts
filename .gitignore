@@ -20,7 +20,9 @@ __pycache__/
 
 Thumbs.db
 
+/scripts/*.data
 /scripts/*.csv
 /scripts/*.cxt
+/scripts/*.names
 /test-output/
 /visualize-output/

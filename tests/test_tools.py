@@ -25,6 +25,16 @@ def test_write_lines(tmp_path):
     assert filepath.read_text(encoding='ascii') == 'spam\n'
 
 
+def test_csv_iterows(tmp_path):
+    filepath = tmp_path / 'spam.csv'
+
+    filepath.write_bytes(b'name\r\nspam\r\n')
+
+    rows = list(tools.csv_iterrows(filepath, dialect='excel'))
+
+    assert rows == [['name'], ['spam']]
+
+
 def test_write_csv(tmp_path):
     filepath = tmp_path / 'spam.csv'
 
