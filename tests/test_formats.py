@@ -221,5 +221,4 @@ class TestPythonLiteral(unittest.TestCase, Ascii):
     (1,),
     (1,),
   ],
-}
-'''
+}'''

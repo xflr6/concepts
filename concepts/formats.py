@@ -77,43 +77,56 @@ class Format(metaclass=FormatMeta):
 
     encoding = None
 
-    normalize_newlines = True
+    newline = None
 
-    @staticmethod
-    def loads(source, **kwargs) -> ContextArgs:
-        """Parse source string and return ``ContextArgs``."""
-        raise NotImplementedError  # pragma: no cover
-
-    @staticmethod
-    def dumps(objects, properties, bools, *, _serialized=None, **kwargs):
-        """Serialize ``(objects, properties, bools)`` and return string."""
-        raise NotImplementedError  # pragma: no cover
+    dumps_rstrip = None
 
     @classmethod
-    def load(cls, filename, encoding) -> ContextArgs:
+    def load(cls, filename, encoding, **kwargs) -> ContextArgs:
         """Load and parse serialized objects, properties, bools from file."""
         if encoding is None:
             encoding = cls.encoding
 
-        with open(filename, 'r', encoding=encoding) as fd:
-            source = fd.read()
-
-        if cls.normalize_newlines:
-            source = source.replace('\r\n', '\n').replace('\r', '\n')
+        with open(filename, encoding=encoding, newline=cls.newline) as f:
+            return cls.loadf(f, **kwargs)
         return cls.loads(source)
 
     @classmethod
+    def loads(cls, source, **kwargs) -> ContextArgs:
+        """Parse source string and return ``ContextArgs``."""
+        with io.StringIO(source) as buf:
+            return cls.loadf(buf, **kwargs)
+
+    @classmethod
     def dump(cls, filename, objects, properties, bools,
-             *, encoding: typing.Optional[str], _serialized=None):
+             *, encoding: typing.Optional[str], _serialized=None, **kwargs):
         """Write serialized objects, properties, bools to file."""
         if encoding is None:
             encoding = cls.encoding
 
-        source = cls.dumps(objects, properties, bools,
-                           _serialized=_serialized)
+        with open(filename, 'w', encoding=encoding, newline=cls.newline) as f:
+            cls.dumpf(f, objects, properties, bools, _serialized=_serialized,
+                      **kwargs)
 
-        with open(filename, 'w', encoding=encoding) as fd:
-            fd.write(source)
+    @classmethod
+    def dumps(cls, objects, properties, bools, _serialized=None, **kwargs):
+        with io.StringIO(newline=cls.newline) as buf:
+            cls.dumpf(buf, objects, properties, bools, _serialized=_serialized,
+                      **kwargs)
+            source = buf.getvalue()
+        if cls.dumps_rstrip:
+            source = source.rstrip()
+        return source
+
+    @staticmethod
+    def loadf(file, **kwargs) -> ContextArgs:
+        """Parse file-like object and return ``ContextArgs``."""
+        raise NotImplementedError  # pragma: no cover
+
+    @staticmethod
+    def dumpf(file, objects, properties, bools, *, _serialized=None, **kwargs):
+        """Serialize ``(objects, properties, bools)`` into file-like object."""
+        raise NotImplementedError  # pragma: no cover
 
 
 class Cxt(Format):
@@ -121,9 +134,12 @@ class Cxt(Format):
 
     suffix = '.cxt'
 
+    dumps_rstrip = False
+
     @staticmethod
-    def loads(source):
-        b, yx, table = source.strip().split('\n\n')
+    def loadf(file):
+        source = file.read().strip()
+        b, yx, table = source.split('\n\n')
         y, x = (int(i) for i in yx.split())
         lines = [l.strip() for l in table.strip().split('\n')]
         objects = lines[:y]
@@ -132,10 +148,11 @@ class Cxt(Format):
         return ContextArgs(objects, properties, bools)
 
     @staticmethod
-    def dumps(objects, properties, bools, *, _serialized=None):
-        lines = iter_cxt_lines(objects, properties, bools,
-                               end_with_empty_line=True)
-        return '\n'.join(lines)
+    def dumpf(file, objects, properties, bools, *, _serialized=None):
+        write = functools.partial(print, file=file)
+        for line in iter_cxt_lines(objects, properties, bools,
+                                   end_with_empty_line=False):
+            write(line)
 
 
 def iter_cxt_lines(objects, properties, bools,
@@ -166,9 +183,11 @@ class Table(Format):
 
     suffix = '.txt'
 
+    dumps_rstrip = True
+
     @staticmethod
-    def loads(source):
-        lines = (l.partition('#')[0].strip() for l in source.splitlines())
+    def loadf(file):
+        lines = (line.partition('#')[0].strip() for line in file)
         lines = list(filter(None, lines))
         properties = [p.strip() for p in lines[0].strip('|').split('|')]
         table = [(obj.strip(),
@@ -179,14 +198,15 @@ class Table(Format):
         return ContextArgs(objects, properties, bools)
 
     @staticmethod
-    def dumps(objects, properties, bools, *, indent=0, _serialized=None):
+    def dumpf(file, objects, properties, bools, *, indent=0, _serialized=None):
         wd = [tools.max_len(objects)]
         wd.extend(map(len, properties))
         tmpl = ' ' * indent + '|'.join(f'%-{w:d}s' for w in wd) + '|'
-        result = [tmpl % (('',) + tuple(properties))]
-        result.extend(tmpl % ((o,) + tuple('X' if b else '' for b in intent))
-                      for o, intent in zip(objects, bools))
-        return '\n'.join(result)
+
+        write = functools.partial(print, file=file)
+        write(tmpl % (('',) + tuple(properties)))
+        for o, intent in zip(objects, bools):
+            write(tmpl % ((o,) + tuple('X' if b else '' for b in intent)))
 
 
 class Csv(Format):
@@ -194,72 +214,38 @@ class Csv(Format):
 
     suffix = '.csv'
 
+    newline = ''
+
+    dumps_rstrip = False
+
     dialect = csv.excel
 
-    @staticmethod
-    def _load(reader) -> ContextArgs:
-        objects, bools = [], []
-        properties = next(reader)[1:]
-        for cols in reader:
-            objects.append(cols[0])
-            bools.append(tuple(c == 'X' for c in cols[1:]))
+    @classmethod
+    def loadf(cls, file, *, dialect: typing.Optional[str] = None) -> ContextArgs:
+        if dialect is None:
+            dialect = cls.dialect
+        reader = csv.reader(file, dialect=dialect)
+
+        objects, bools = ([] for _ in range(2))
+        _, *properties = next(reader)
+        for obj, *values in reader:
+            objects.append(obj)
+            bools.append(tuple(v == 'X' for v in values))
 
         return ContextArgs(objects, properties, bools)
 
-    @staticmethod
-    def _dump(writer, objects, properties, bools):
+    @classmethod
+    def dumpf(cls, file, objects, properties, bools,
+              *, dialect: typing.Optional[str] = None,
+              _serialized=None) -> None:
+        if dialect is None:
+            dialect = cls.dialect
+
+        writer = csv.writer(file, dialect=dialect)
         symbool = ('', 'X').__getitem__
         writer.writerow([''] + list(properties))
         writer.writerows([o] + list(map(symbool, bs))
-            for o, bs in zip(objects, bools))
-
-    @classmethod
-    def loads(cls, source, *, dialect=None) -> ContextArgs:
-        if dialect is None:
-            dialect = cls.dialect
-
-        csv_reader = csv.reader
-
-        with io.StringIO(source) as fd:
-            reader = csv_reader(fd, dialect)
-            return cls._load(reader)
-
-    @classmethod
-    def dumps(cls, objects, properties, bools, *, dialect=None, _serialized=None):
-        if dialect is None:
-            dialect = cls.dialect
-
-        with io.StringIO() as fd:
-            writer = csv.writer(fd, dialect)
-            cls._dump(writer, objects, properties, bools)
-            result = fd.getvalue()
-
-        return result
-
-    @classmethod
-    def load(cls, filename, *, encoding, dialect=None) -> ContextArgs:
-        if encoding is None:
-            encoding = cls.encoding
-
-        if dialect is None:
-            dialect = cls.dialect
-
-        with open(filename, 'r', encoding=encoding, newline='') as fd:
-            reader = csv.reader(fd, dialect)
-            return cls._load(reader)
-
-    @classmethod
-    def dump(cls, filename, objects, properties, bools, *, encoding,
-             dialect=None, _serialized=None):
-        if encoding is None:
-            encoding = cls.encoding
-
-        if dialect is None:
-            dialect = cls.dialect
-
-        with open(filename, 'w', encoding=encoding, newline='') as fd:
-            writer = csv.writer(fd, dialect)
-            return cls._dump(writer, objects, properties, bools)
+                         for o, bs in zip(objects, bools))
 
 
 class WikiTable(Format):
@@ -267,16 +253,23 @@ class WikiTable(Format):
 
     aliases = ['wikitable']
 
+    dumps_rstrip = True
+
     @staticmethod
-    def dumps(objects, properties, bools, *,  _serialized=None):
-        result = ['{| class="featuresystem"', '!',
-                  '!{}'.format('!!'.join(properties))]
+    def dumpf(file, objects, properties, bools, *,  _serialized=None):
+        write = functools.partial(print, file=file)
+        write('{| class="featuresystem"')
+        write('!')
+        write('!{}'.format('!!'.join(properties)))
+
         wp = list(map(len, properties))
+
         for o, intent in zip(objects, bools):
             bcells = (('X' if b else '').ljust(w) for w, b in zip(wp, intent))
-            result += ['|-', f'!{o}', '|{}'.format('||'.join(bcells))]
-        result.append('|}')
-        return '\n'.join(result)
+            write('|-')
+            write(f'!{o}')
+            write('|{}'.format('||'.join(bcells)))
+        write('|}')
 
 
 class PythonLiteral(Format):
@@ -284,8 +277,11 @@ class PythonLiteral(Format):
 
     suffix = '.py'
 
+    dumps_rstrip = True
+
     @staticmethod
-    def loads(python_source) -> SerializedArgs:
+    def loadf(file) -> SerializedArgs:
+        python_source = file.read()
         args = ast.literal_eval(python_source)
         assert args is not None
         assert isinstance(args, dict)
@@ -303,7 +299,7 @@ class PythonLiteral(Format):
         return SerializedArgs(objects, properties, bools, serialized=args)
 
     @staticmethod
-    def dumps(objects, properties, bools, *, _serialized=None):
+    def dumpf(file, objects, properties, bools, *, _serialized=None) -> None:
         if _serialized is None:
             doc = {'objects': objects,
                    'properties': properties,
@@ -337,10 +333,6 @@ class PythonLiteral(Format):
 
             yield '}'
 
-        with io.StringIO() as buf:
-            write = functools.partial(print, file=buf)
-            for line in iterlines(doc):
-                write(line)
-            result = buf.getvalue()
-
-        return result
+        write = functools.partial(print, file=file)
+        for line in iterlines(doc):
+            write(line)

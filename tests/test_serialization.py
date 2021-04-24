@@ -291,6 +291,7 @@ def test_tostring_python_literal(test_output, context, with_lattice,
         context.tofile(path, frmat='python-literal')
         result = path.read_text(encoding='utf-8')
     else:
+        expected_str = expected_str.rstrip()
         result = context.tostring(frmat='python-literal')
 
     assert result is not None
