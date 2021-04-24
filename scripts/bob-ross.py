@@ -67,6 +67,7 @@ assert len(context.objects) == 403
 assert len(context.properties) == 67
 
 lattice = context.lattice
+print(repr(lattice))
 
 assert len(lattice) == 3_463
 
