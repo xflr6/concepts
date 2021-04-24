@@ -279,7 +279,7 @@ class Context:
 
     def copy(self, include_lattice: typing.Optional[bool] = False):
         """Return a fresh copy of the context (omits lattice)."""
-        if inlcude_lattice:  # pragma: no cover
+        if include_lattice:  # pragma: no cover
             raise NotImplementedError(f'.copy(include_lattice={include_latttice!r})')
         return Context(self.objects, self.properties, self.bools)
 
