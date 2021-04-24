@@ -1,18 +1,21 @@
 #!/usr/bin/env python3
-# bob_ross.py - download Bob Ross dataset and save as examples/bob_ross.cxt
+
+"""Download and convert dataset, save to examples/, try lattice generation."""
 
 import csv
 import pathlib
 import os
 import shutil
 import sys
+import time
+import typing
 import urllib.request
 
 sys.path.insert(0, os.pardir)
 
-import concepts
-from concepts import formats
-from concepts import tools
+import concepts  # noqa: E402
+from concepts import formats  # noqa: E402
+from concepts import tools  # noqa: E402
 
 URL = ('https://raw.githubusercontent.com/fivethirtyeight/data'
        '/master/bob-ross/elements-by-episode.csv')
@@ -21,44 +24,54 @@ CSV = pathlib.Path(URL.rpartition('/')[2])
 
 OPEN_KWARGS = {'encoding': 'ascii', 'newline': '\n'}
 
-DIALECT = 'excel'
-
-FLAGS = {'0': False, '1': True}
-
 CXT = CSV.with_suffix('.cxt')
 
-CSV_CONTEXT = CSV.with_name(f'{CSV.stem}-cxt{CSV.suffix}')
+TARGET = pathlib.Path(os.pardir) / 'examples' / 'bob_ross.cxt'
 
 
-def read_episodes(path, *, dialect: str = DIALECT):
+def read_episodes(path, *, dialect: str = 'excel',
+                  flags: typing.Mapping[str, bool] = {'0': False, '1': True}):
     with path.open(**OPEN_KWARGS) as f:
         reader = csv.reader(f, dialect=dialect)
         episode, _, *elements = next(reader)  # omit TITLE column
         yield [episode] + elements
         for episode, _, *elements in reader:
-            yield [episode] + [FLAGS[e] for e in elements]
+            yield [episode] + [flags[e] for e in elements]
 
 
 if not CSV.exists():
+    print(URL)
     urllib.request.urlretrieve(URL, CSV)
     assert CSV.stat().st_size
 
-if not all(path.exists() for path in (CXT, CSV_CONTEXT)):
+assert tools.sha256sum(CSV) == ('42045c8b8aaa8296095d6b294927fb9d'
+                                '0f73a57259f59b560c375844c0fe01cf')
+
+if not CXT.exists():
     header, *episodes = read_episodes(CSV)
     bools = [bools for _, *bools in episodes]
     lines = formats.iter_cxt_lines(objects=[e[0] for e in episodes],
                                    properties=header[1:],
                                    bools=bools)
+    print(CXT)
     tools.write_lines(CXT, lines, **OPEN_KWARGS)
+    print(TARGET)
+    shutil.copy(CXT, TARGET)
 
-assert tools.sha256sum(CSV) == '42045c8b8aaa8296095d6b294927fb9d0f73a57259f59b560c375844c0fe01cf'
+start = time.perf_counter()
 
 context = concepts.load_cxt(CXT)
+print(repr(context))
 
 assert len(context.objects) == 403
-
 assert len(context.properties) == 67
 
-context.tofile(CSV_CONTEXT, frmat='csv')
+lattice = context.lattice
 
-shutil.copy(CXT, pathlib.Path('..') / 'examples' / 'bob_ross.cxt')
+assert len(lattice) == 3_463
+
+duration = time.perf_counter() - start
+print(duration)
+
+# concepts 0.9.2, 2.2 GHz Intel i3-2330M CPU, 4GB RAM: 189s (PY2), 132s (PY3)
+# concepts 0.10.dev0, 2.2 GHz Intel i3-2330M CPU, 4GB RAM: 32s
