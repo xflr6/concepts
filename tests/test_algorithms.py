@@ -1,9 +1,13 @@
-import datetime
+import pathlib
 
 import pytest
 
 import concepts
 from concepts import algorithms
+
+BOB_ROSS = pathlib.Path('bob_ross.cxt')
+
+ENCODING = 'utf-8'
 
 
 def test_lattice(lattice):
@@ -140,3 +144,35 @@ def test_fcbo_example(dual, expected):
     assert set(members) == set(expected)
 
     assert members == expected
+
+
+@pytest.fixture
+def bob_ross(test_examples, filename=BOB_ROSS):
+    path = test_examples / filename
+
+    context = concepts.load_cxt(str(path), encoding=ENCODING)
+
+    assert len(context.objects) == 403
+    assert len(context.properties) == 67
+
+    return context
+
+
+@pytest.mark.slow
+def test_lattice_bob_ross(test_examples, test_output, stopwatch, bob_ross):
+    with stopwatch() as timing:
+        lattice = bob_ross.lattice
+
+    assert lattice is not None
+    assert len(lattice) == 3_463
+
+    target = test_output / f'{BOB_ROSS.stem}-serialized.py'
+    bob_ross.tofile(str(target), frmat='pythonliteral')
+    result = target.read_text(encoding=ENCODING)
+
+    example = test_examples / target.name
+    expected = example.read_text(encoding=ENCODING)
+
+    assert result == expected
+
+    assert timing.duration < 60

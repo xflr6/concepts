@@ -5,10 +5,9 @@ import sys
 
 import pytest
 
-ARGS = ['--capture=no',  # a.k.a. -s
-        #'tests/slow',
-        #'tests',
+ARGS = [#'--run-slow',
         #'--collect-only',
+        '--capture=no',  # a.k.a. -s
         #'--verbose',
         #'--pdb',
         #'--exitfirst',  # a.k.a. -x

@@ -9,15 +9,15 @@ python:
   - "3.9"
 env:
   - ARGS=
-  - ARGS="README.rst docs concepts tests"
+  - ARGS=--run-slow
 jobs:
   exclude:
     - python: 3.6
-      env: ARGS="README.rst docs concepts tests"
+      env: ARGS=--run-slow
     - python: 3.7
-      env: ARGS="README.rst docs concepts tests"
+      env: ARGS=--run-slow
     - python: 3.8
-      env: ARGS="README.rst docs concepts tests"
+      env: ARGS=--run-slow
 install: pip install -e .[test] codecov
 script: ./run-tests.py $ARGS
 before_cache: rm -f $HOME/.cache/pip/log/debug.log
