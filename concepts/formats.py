@@ -136,6 +136,8 @@ class Cxt(Format):
 
     dumps_rstrip = False
 
+    symbols = {False: '.', True: 'X'}
+
     @staticmethod
     def loadf(file):
         source = file.read().strip()
@@ -156,7 +158,8 @@ class Cxt(Format):
 
 
 def iter_cxt_lines(objects, properties, bools,
-                   *, end_with_empty_line: bool = False):
+                   *, end_with_empty_line: bool = False,
+                   symbols: typing.Mapping[bool, str] = Cxt.symbols):
     assert len(objects) == len(bools)
     assert {len(properties)} == set(map(len, bools))
     
@@ -169,10 +172,8 @@ def iter_cxt_lines(objects, properties, bools,
     yield from objects
     yield from properties
 
-    flags = {False: '.', True: 'X'}
-
     for row in bools:
-        yield ''.join(flags[value] for value in row)
+        yield ''.join(symbols[value] for value in row)
 
     if end_with_empty_line:
         yield ''
@@ -220,6 +221,8 @@ class Csv(Format):
 
     dialect = csv.excel
 
+    symbols = {False: '', True: 'X'}
+
     @classmethod
     def loadf(cls, file, *, dialect: typing.Optional[str] = None) -> ContextArgs:
         if dialect is None:
@@ -242,7 +245,7 @@ class Csv(Format):
             dialect = cls.dialect
 
         writer = csv.writer(file, dialect=dialect)
-        symbool = ('', 'X').__getitem__
+        symbool = cls.symbols.__getitem__
         writer.writerow([''] + list(properties))
         writer.writerows([o] + list(map(symbool, bs))
                          for o, bs in zip(objects, bools))

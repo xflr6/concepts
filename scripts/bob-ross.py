@@ -30,13 +30,13 @@ TARGET = pathlib.Path(os.pardir) / 'examples' / 'bob_ross.cxt'
 
 
 def read_episodes(path, *, dialect: str = 'excel',
-                  flags: typing.Mapping[str, bool] = {'0': False, '1': True}):
+                  symbols: typing.Mapping[str, bool] = {'0': False, '1': True}):
     with path.open(**OPEN_KWARGS) as f:
         reader = csv.reader(f, dialect=dialect)
         episode, _, *elements = next(reader)  # omit TITLE column
         yield [episode] + elements
         for episode, _, *elements in reader:
-            yield [episode] + [flags[e] for e in elements]
+            yield [episode] + [symbols[e] for e in elements]
 
 
 if not CSV.exists():

@@ -93,20 +93,20 @@ class RelationMeta(type):
             return
 
         table = self.__doc__.strip().partition('\n\n')[2].strip().splitlines()
-        flags = {'T': True, 'F': False}
+        symbols = {'T': True, 'F': False}
         if self.binary:
             def get_prop(fg):
-                return tuple(flags[f] for f in fg.strip())
+                return tuple(symbols[f] for f in fg.strip())
         else:
             def get_prop(fg):
-                return flags[fg.strip()]
+                return symbols[fg.strip()]
 
         properties = [get_prop(fg) for fg in table[0].strip('|').split('|')]
         obj_flags = [(obj.split(), [bool(p.strip()) for p in props.split('|')])
             for obj, props in (l.strip('|').partition('|')[::2] for l in table[1:])]
 
-        for index, ((name, symbol, order), flags) in enumerate(obj_flags):
-            pattern = frozenset(p for p, f in zip(properties, flags) if f)
+        for index, ((name, symbol, order), symbols) in enumerate(obj_flags):
+            pattern = frozenset(p for p, f in zip(properties, symbols) if f)
             ns = {'index': index, 'order': int(order),
                   'kind': name.lower(), 'symbol': symbol, 'pattern': pattern}
             cls = type(name, (self,), ns)
