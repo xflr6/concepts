@@ -84,7 +84,7 @@ def test_lattice(lattice):
             '000001 <-> 0101100110']),
 ])
 def test_fcbo(context, dual, expected):
-    func = getattr(algorithms, 'fcbo_dual' if dual else 'fcbo')
+    func = getattr(algorithms, 'fcbo_dual' if dual else 'fast_generate_from')
 
     result = list(func(context))
 
@@ -132,7 +132,7 @@ def test_fcbo_example(dual, expected):
     assert context.objects == ('A', 'B', 'C', 'D')
     assert context.properties == ('0', '1', '2', '3', '4', '5')
 
-    func = getattr(algorithms, 'fcbo_dual' if dual else 'fcbo')
+    func = getattr(algorithms, 'fcbo_dual' if dual else 'fast_generate_from')
 
     result = list(func(context))
 
