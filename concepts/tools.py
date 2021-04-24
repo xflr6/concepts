@@ -18,7 +18,7 @@ __all__ = ['snakify',
            'crc32_hex',
            'sha256sum',
            'write_lines',
-           'write_csv',
+           'write_csv', 'write_csv_file',
            'dump_json', 'load_json']
 
 CSV_DIALECT = 'excel'
@@ -254,10 +254,17 @@ def write_csv(path, rows,
               newline: typing.Optional[str] = ''):
     """Write ``rows`` as CSV to ``path`` with optional ``header``."""
     with open(path, 'w', encoding=encoding, newline=newline) as f:
-        writer = csv.writer(f, dialect=dialect)
-        if header is not None:
-            writer.writerow(header)
-        writer.writerows(rows)
+        write_csv_file(f, rows, header=header)
+
+
+def write_csv_file(file, rows,
+                   *, header: typing.Optional[typing.Iterable[str]] = None,
+                   dialect: str = CSV_DIALECT):
+    """Write ``rows`` as CSV to file-like object with optional ``header``."""
+    writer = csv.writer(file, dialect=dialect)
+    if header is not None:
+        writer.writerow(header)
+    writer.writerows(rows)
 
 
 def dump_json(obj, path_or_fileobj,

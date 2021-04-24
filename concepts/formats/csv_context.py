@@ -1,6 +1,8 @@
 import csv
 import typing
 
+from .. import tools
+
 from .base import ContextArgs, Format
 
 __all__ = ['Csv']
@@ -50,11 +52,12 @@ class Csv(Format):
               _serialized=None) -> None:
         if dialect is None:
             dialect = cls.dialect
-        writer = csv.writer(file, dialect=dialect)
+
+        header = [''] + list(properties)
 
         symbool = cls.symbols.__getitem__
 
-        writer.writerow([''] + list(properties))
+        rows = ([o] + list(map(symbool, bs))
+                for o, bs in zip(objects, bools))
 
-        writer.writerows([o] + list(map(symbool, bs))
-                         for o, bs in zip(objects, bools))
+        tools.write_csv_file(file, rows, header=header, dialect=dialect)
