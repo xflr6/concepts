@@ -90,6 +90,13 @@ def iterunion(concepts, sortkey, next_concepts):
                 push((sortkey(c), c))
 
 
+def iter_j_atom_mask(n: int):
+    j_atom = 1
+    for j in range(n):
+        yield j, j_atom, j_atom - 1
+        j_atom <<= 1
+
+
 def fcbo(context):
     """Yield ``(extent, intent)`` pairs from ``context``.
 
@@ -102,6 +109,9 @@ def fcbo(context):
     Intent = context._Intent
 
     n_attributes = len(context.properties)
+
+    j_attribute_mask = list(iter_j_atom_mask(n_attributes))
+
     attribute_sets = [Intent.infimum] * n_attributes
 
     concept = Extent.supremum, Intent.infimum
@@ -120,21 +130,17 @@ def fcbo(context):
 
         next_attribute_sets = attribute_sets.copy()
 
-        for j in reversed(range(attribute_index, n_attributes)):
-            j_attribute = 1 << j
-
+        for j, j_attribute, j_mask in reversed(j_attribute_mask[attribute_index:]):
             if j_attribute & intent:
                 continue
 
-            mask = j_attribute - 1
-
-            x = next_attribute_sets[j] & mask
+            x = next_attribute_sets[j] & j_mask
 
             if x & intent == x:
                 j_extent = extent & context._extents[j]
                 j_intent = Extent.prime(j_extent)
 
-                if j_intent & mask == intent & mask:
+                if j_intent & j_mask == intent & j_mask:
                     concept = (Extent.fromint(j_extent), Intent.fromint(j_intent))
                     stack.append((concept, j + 1, next_attribute_sets))
                 else:
@@ -146,6 +152,9 @@ def fcbo_dual(context):
     Intent = context._Intent
 
     n_objects = len(context.objects)
+
+    j_object_mask = list(iter_j_atom_mask(n_objects))
+
     object_sets = [Extent.infimum] * n_objects
 
     concept = Extent.infimum, Intent.supremum
@@ -153,32 +162,28 @@ def fcbo_dual(context):
     stack = [(concept, 0, object_sets)]
 
     while stack:
-        concept, obj_index, object_sets = stack.pop()
+        concept, object_index, object_sets = stack.pop()
 
         yield concept
 
         extent, intent = concept
 
-        if extent == Extent.supremum or obj_index >= n_objects:
+        if extent == Extent.supremum or object_index >= n_objects:
             continue
 
         next_object_sets = object_sets.copy()
 
-        for j in reversed(range(obj_index, n_objects)):
-            j_object = 1 << j
-
+        for j, j_object, j_mask in reversed(j_object_mask[object_index:]):
             if extent & j_object:
                 continue
 
-            mask = j_object - 1
-
-            x = next_object_sets[j] & mask
+            x = next_object_sets[j] & j_mask
 
             if x & extent == x:
                 j_intent = intent & context._intents[j]
                 j_extent = Intent.prime(j_intent)
 
-                if j_extent & mask == extent & mask:
+                if j_extent & j_mask == extent & j_mask:
                     concept = (Extent.fromint(j_extent), Intent.fromint(j_intent))
                     stack.append((concept, j + 1, next_object_sets))
                 else:
