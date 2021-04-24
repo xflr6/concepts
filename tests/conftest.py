@@ -15,6 +15,10 @@ TEST_EXAMPLES = pathlib.Path('examples')
 TEST_OUTPUT = pathlib.Path('test-output')
 
 
+if not TEST_OUTPUT.exists():
+    TEST_OUTPUT.mkdir()
+
+
 def pytest_addoption(parser):
     parser.addoption('--run-slow', action='store_true', default=False,
                      help='run tests that are marked as slow')
@@ -41,8 +45,7 @@ def test_examples(path=TEST_EXAMPLES):
 
 @pytest.fixture(scope='session')
 def test_output(path=TEST_OUTPUT):
-    if not path.exists():
-        path.mkdir()
+    assert path.exists()
     return path
 
 
