@@ -30,15 +30,17 @@ def lattice(Extent, *, infimum):
     while heap:
         _, concept = pop()
 
-        for extent, intent in neighbors(concept[0], Extent=Extent):
-            if extent in mapping:
-                neighbor = mapping[extent]
-            else:
-                neighbor = mapping[extent] = (extent, intent, [], [])
-                push((extent.shortlex(), neighbor))
+        extent, _, upper, _ = concept
 
-            concept[2].append(extent)
-            neighbor[3].append(concept[0])
+        for n_extent, n_intent in neighbors(extent, Extent=Extent):
+            if n_extent in mapping:
+                neighbor = mapping[n_extent]
+            else:
+                neighbor = mapping[n_extent] = (n_extent, n_intent, [], [])
+                push((n_extent.shortlex(), neighbor))
+
+            upper.append(n_extent)
+            neighbor[3].append(extent)
 
         yield concept  # concept[3] keeps growing until exhaustion
 
