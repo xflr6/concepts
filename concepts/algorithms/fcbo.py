@@ -49,7 +49,7 @@ def fast_generate_from(context):
 
     attribute_sets = [Intent.infimum] * n_attributes
 
-    concept = (Extent.supremum, Intent.infimum)
+    concept = Extent.supremum.doubleprime()
 
     stack = [(concept, 0, attribute_sets)]
 
@@ -127,7 +127,7 @@ def fcbo_dual(context):
 
     object_sets = [Extent.infimum] * n_objects
 
-    concept = (Extent.infimum, Intent.supremum)
+    concept = Extent.infimum.doubleprime()
 
     stack = [(concept, 0, object_sets)]
 
