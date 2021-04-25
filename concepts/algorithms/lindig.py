@@ -28,7 +28,7 @@ def lattice(Extent, *, infimum):
     pop = functools.partial(heapq.heappop, heap)
 
     while heap:
-        concept = pop()[1]
+        _, concept = pop()
 
         for extent, intent in neighbors(concept[0], Extent=Extent):
             if extent in mapping:
@@ -37,7 +37,7 @@ def lattice(Extent, *, infimum):
                 neighbor = mapping[extent] = (extent, intent, [], [])
                 push((extent.shortlex(), neighbor))
 
-            concept[2].append(neighbor[0])
+            concept[2].append(extent)
             neighbor[3].append(concept[0])
 
         yield concept  # concept[3] keeps growing until exhaustion
