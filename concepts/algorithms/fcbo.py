@@ -43,7 +43,7 @@ def fast_generate_from(context):
 
     n_attributes = len(context.properties)
 
-    j_atom = list(enumerate(Intent.atomic(Intent.supremum)))
+    j_atom = list(enumerate(Intent.supremum.atoms()))
 
     attribute_sets = [Intent.infimum] * n_attributes
 
@@ -116,7 +116,7 @@ def fcbo_dual(context):
 
     n_objects = len(context.objects)
 
-    j_atom = list(enumerate(Extent.atomic(Extent.supremum)))
+    j_atom = list(enumerate(Extent.supremum.atoms()))
 
     object_sets = [Extent.infimum] * n_objects
 
