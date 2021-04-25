@@ -46,7 +46,7 @@ if not CSV.exists():
     urllib.request.urlretrieve(URL, CSV)
     assert CSV.stat().st_size
 
-assert tools.sha256sum(CSV) == CSV_SHA256
+assert tools.sha256sum(CSV) == CSV_SHA256, f'{tools.sha256sum(CSV)} != {CSV_SHA256}'
 
 if not CXT.exists():
     header, *episodes = read_episodes(CSV)
@@ -62,18 +62,18 @@ if not CXT.exists():
 start = time.perf_counter()
 
 context = concepts.load_cxt(CXT)
-print(repr(context))
+print(f'{context!r}')
 
-assert len(context.objects) == 403
-assert len(context.properties) == 67
+assert len(context.objects) == 403, f'{len(context.object):_d} != 403'
+assert len(context.properties) == 67, f'{len(context.properties):_d} != 67'
 
 lattice = context.lattice
-print(repr(lattice))
+print(f'{lattice!r}')
 
-assert len(lattice) == 3_463
+assert len(lattice) == 3_463,  f'{len(lattice):_d} != 3_463'
 
 duration = time.perf_counter() - start
-print(duration)
+print(f'{duration:.1f} seconds')
 
 # concepts 0.9.2, 2.2 GHz Intel i3-2330M CPU, 4GB RAM: 189s (PY2), 132s (PY3)
 # concepts 0.10.dev0, 2.2 GHz Intel i3-2330M CPU, 4GB RAM: 32s

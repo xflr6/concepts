@@ -114,21 +114,21 @@ for path, hexdigest in [(NAMES, NAMES_SHA256), (DATA, DATA_SHA256)]:
         url = urllib.parse.urljoin(BASE, path.name)
         print(url)
         urllib.request.urlretrieve(url, path)
-        assert path.stat().st_size
         print(path.name, f'{path.stat().st_size:_d} bytes')
+        assert path.stat().st_size
 
-    assert tools.sha256sum(path) == hexdigest
+    assert tools.sha256sum(path) == hexdigest, f'{tools.sha256sum(path)} != {hexdigest}'
 
 attributes = parse_attributes(NAMES.read_text(encoding=ENCODING))
-assert len(attributes) == 23
+assert len(attributes) == 23, f'{len(attributes):_d} != 23'
 
 properties = list(iterproperties(attributes))
-print(properties)
-assert len(properties) == 128
+print(f'{properties!r:}')
+assert len(properties) == 128, f'{len(attributes):_d} != 128'
 
 if not all(path.exists() for path in (CXT, CSV, DAT)):
     data = list(tools.csv_iterrows(DATA))
-    assert len(data) == 8124
+    assert len(data) == 8_124, f'{len(data):_d} != 8_124'
 
     tools.write_csv(CSV, iterrows(attributes, data), header=[MUSHROOM.stem] + properties,
                     encoding=ENCODING)
