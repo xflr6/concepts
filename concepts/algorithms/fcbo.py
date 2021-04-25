@@ -40,15 +40,15 @@ def fast_generate_from(context):
     """
     n_attributes = len(context.properties)
 
-    Intent = context._Intent
+    Properties = context._Properties
 
-    j_atom = list(enumerate(Intent.supremum.atoms()))
+    j_atom = list(enumerate(Properties.supremum.atoms()))
 
-    Extent = context._Extent
+    Objects = context._Objects
 
-    prime = Extent.prime
+    prime = Objects.prime
 
-    stack = [(Extent.supremum.doubleprime(), 0, [Intent.infimum] * n_attributes)]
+    stack = [(Objects.supremum.doubleprime(), 0, [Properties.infimum] * n_attributes)]
 
     while stack:
         concept, attribute_index, attribute_sets = stack.pop()
@@ -78,7 +78,7 @@ def fast_generate_from(context):
                 j_lower = j_intent & j_mask
 
                 if j_lower & intent == j_lower:
-                    concept = (Extent.fromint(j_extent), Intent.fromint(j_intent))
+                    concept = (Objects.fromint(j_extent), Properties.fromint(j_intent))
                     stack.append((concept, j + 1, next_attribute_sets))
                 else:
                     next_attribute_sets[j] = j_intent
@@ -115,15 +115,15 @@ def fcbo_dual(context):
     """
     n_objects = len(context.objects)
 
-    Extent = context._Extent
+    Objects = context._Objects
 
-    j_atom = list(enumerate(Extent.supremum.atoms()))
+    j_atom = list(enumerate(Objects.supremum.atoms()))
 
-    Intent = context._Intent
+    Properties = context._Properties
 
-    prime = Intent.prime
+    prime = Properties.prime
 
-    stack = [(Extent.infimum.doubleprime(), 0, [Extent.infimum] * n_objects)]
+    stack = [(Objects.infimum.doubleprime(), 0, [Objects.infimum] * n_objects)]
 
     while stack:
         concept, object_index, object_sets = stack.pop()
@@ -153,7 +153,7 @@ def fcbo_dual(context):
                 j_lower = j_extent & j_mask
 
                 if j_lower & extent == j_lower:
-                    concept = (Extent.fromint(j_extent), Intent.fromint(j_intent))
+                    concept = (Objects.fromint(j_extent), Properties.fromint(j_intent))
                     stack.append((concept, j + 1, next_object_sets))
                 else:
                     next_object_sets[j] = j_extent

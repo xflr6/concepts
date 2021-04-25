@@ -14,9 +14,9 @@ import heapq
 __all__ = ['lattice', 'neighbors']
 
 
-def lattice(Extent, *, infimum):
+def lattice(Objects, *, infimum):
     """Yield ``(extent, indent, upper, lower)`` in short lexicographic order."""
-    extent, intent = Extent.frommembers(infimum).doubleprime()
+    extent, intent = Objects.frommembers(infimum).doubleprime()
 
     concept = (extent, intent, [], [])
 
@@ -32,7 +32,7 @@ def lattice(Extent, *, infimum):
 
         extent, _, upper, _ = concept
 
-        for n_extent, n_intent in neighbors(extent, Extent=Extent):
+        for n_extent, n_intent in neighbors(extent, Objects=Objects):
             upper.append(n_extent)
 
             if n_extent in mapping:
@@ -44,13 +44,13 @@ def lattice(Extent, *, infimum):
         yield concept  # concept[3] keeps growing until exhaustion
 
 
-def neighbors(objects, *, Extent):
+def neighbors(objects, *, Objects):
     """Yield upper neighbors from extent (in colex order?)."""
-    doubleprime = Extent.doubleprime
+    doubleprime = Objects.doubleprime
 
     minimal = ~objects
 
-    for add in Extent.atomic(minimal):
+    for add in Objects.atomic(minimal):
         objects_and_add = objects | add
 
         extent, intent = doubleprime(objects_and_add)

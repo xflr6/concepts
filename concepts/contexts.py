@@ -270,12 +270,11 @@ class Context:
             raise ValueError(f'bools is not {len(objects)} items'
                              f' of length {len(properties)}')
 
-        self._intents, self._extents = matrices.Relation('Intent', 'Extent',
-                                                         properties, objects,
-                                                         bools)
+        self._intents, self._extents = matrices.Relation('Properties', 'Objects',
+                                                         properties, objects, bools)
 
-        self._Intent = self._intents.BitSet
-        self._Extent = self._extents.BitSet
+        self._Properties = self._intents.BitSet
+        self._Objects = self._extents.BitSet
 
     def copy(self, include_lattice: typing.Optional[bool] = False):
         """Return a fresh copy of the context (omits lattice)."""
@@ -298,8 +297,8 @@ class Context:
             state (tuple[tuple[str, ...], tuple[str, ...]]): Pair of ``intents`` and ``extents``.
         """
         self._intents, self._extents = state
-        self._Intent = self._intents.BitSet
-        self._Extent = self._extents.BitSet
+        self._Properties = self._intents.BitSet
+        self._Objects = self._extents.BitSet
 
     def __eq__(self, other: 'Context'):
         """Return whether two contexts are equivalent.
@@ -340,14 +339,14 @@ class Context:
 
         cf. C. Lindig. 2000. Fast Concept Analysis.
         """
-        return algorithms.lattice(self._Extent, infimum=infimum)
+        return algorithms.lattice(self._Objects, infimum=infimum)
 
     def _neighbors(self, objects):
         """Yield upper neighbors from extent (in colex order?).
 
         cf. C. Lindig. 2000. Fast Concept Analysis.
         """
-        return algorithms.neighbors(objects, Extent=self._Extent)
+        return algorithms.neighbors(objects, Objects=self._Objects)
 
     def _minimal(self, extent, intent):
         """Return short lexicograpically minimum intent generating extent."""
@@ -374,7 +373,7 @@ class Context:
         Returns:
             tuple[str, ...]: A tuple of :obj:`str` labels taken from ``self.properties``.
         """
-        intent = self._Extent.frommembers(objects).prime()
+        intent = self._Objects.frommembers(objects).prime()
         if raw:
             return intent
         return intent.members()
@@ -390,7 +389,7 @@ class Context:
         Returns:
             tuple[str, ...]: A tuple of :obj:`str` labels taken from ``self.objects``.
         """
-        extent = self._Intent.frommembers(properties).prime()
+        extent = self._Properties.frommembers(properties).prime()
         if raw:
             return extent
         return extent.members()
@@ -406,7 +405,7 @@ class Context:
         Returns:
             list[tuple[tuple[str, ...], tuple[str, ...]]: A list of upper neighbor concepts as ``(extent, intent)`` pairs.
         """
-        objects = self._Extent.frommembers(objects).double()
+        objects = self._Objects.frommembers(objects).double()
         if raw:
             return list(self._neighbors(objects))
         return [(extent.members(), intent.members())
@@ -424,9 +423,9 @@ class Context:
             tuple[tuple[str, ...], tuple[str, ...]]: The smallest concept having all ``items`` as ``(extent, intent)`` pair.
         """
         try:
-            extent = self._Extent.frommembers(items)
+            extent = self._Objects.frommembers(items)
         except KeyError:
-            intent = self._Intent.frommembers(items)
+            intent = self._Properties.frommembers(items)
             intent, extent = intent.doubleprime()
         else:
             extent, intent = extent.doubleprime()
@@ -534,12 +533,12 @@ class Context:
     @property
     def objects(self):
         """tuple[str, ...]: (Names of the) objects described by the context."""
-        return self._Extent._members
+        return self._Objects._members
 
     @property
     def properties(self):
         """tuple[str, ...]: (Names of the) properties that describe the objects."""
-        return self._Intent._members
+        return self._Properties._members
 
     @property
     def bools(self):
