@@ -47,7 +47,7 @@ def fast_generate_from(context):
 
     attribute_sets = [Intent.infimum] * n_attributes
 
-    concept = Extent.supremum, Intent.infimum
+    concept = (Extent.supremum, Intent.infimum)
 
     stack = [(concept, 0, attribute_sets)]
 
@@ -73,9 +73,12 @@ def fast_generate_from(context):
 
             if x & intent == x:
                 j_extent = extent & context._extents[j]
+
                 j_intent = Extent.prime(j_extent)
 
-                if j_intent & j_mask == intent & j_mask:
+                j_lower = j_intent & j_mask
+
+                if j_lower & intent == j_lower:
                     concept = (Extent.fromint(j_extent), Intent.fromint(j_intent))
                     stack.append((concept, j + 1, next_attribute_sets))
                 else:
@@ -120,7 +123,7 @@ def fcbo_dual(context):
 
     object_sets = [Extent.infimum] * n_objects
 
-    concept = Extent.infimum, Intent.supremum
+    concept = (Extent.infimum, Intent.supremum)
 
     stack = [(concept, 0, object_sets)]
 
@@ -146,9 +149,12 @@ def fcbo_dual(context):
 
             if x & extent == x:
                 j_intent = intent & context._intents[j]
+
                 j_extent = Intent.prime(j_intent)
 
-                if j_extent & j_mask == extent & j_mask:
+                j_lower = j_extent & j_mask
+
+                if j_lower & extent == j_lower:
                     concept = (Extent.fromint(j_extent), Intent.fromint(j_intent))
                     stack.append((concept, j + 1, next_object_sets))
                 else:
