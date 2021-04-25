@@ -84,13 +84,12 @@ def test_lattice(lattice):
             '000001 <-> 0101100110']),
 ])
 def test_fcbo(context, dual, expected):
-    func = getattr(algorithms, 'fcbo_dual' if dual else 'fast_generate_from')
+    func = getattr(algorithms, 'fcbo_dual' if dual else 'get_concepts')
 
-    iterconcepts = func(context)
-    result = algorithms.ConceptList.frompairs(iterconcepts)
+    result = iterconcepts = func(context)
+    result = algorithms.ConceptList.frompairs(iterconcepts) if dual else result
 
-    pairs = [f'{extent.bits()} <-> {intent.bits()}'
-             for extent, intent in result]
+    pairs = list(map(str, result))
 
     assert pairs == expected
 
