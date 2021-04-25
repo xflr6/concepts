@@ -176,4 +176,4 @@ def test_lattice_bob_ross(test_examples, test_output, stopwatch, bob_ross):
 
     assert result == expected
 
-    assert timing.duration < 60
+    assert timing.duration < 30
