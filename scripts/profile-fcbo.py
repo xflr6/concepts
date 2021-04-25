@@ -26,14 +26,18 @@ print(f'{context!r}')
 assert len(context.objects) == 8_124,  f'{len(context.objects):_d)} != 8_124'
 assert len(context.properties) == 128, f'{len(context.properties):_d} != 128'
 
-n_concepts = sum(1 for _ in algorithms.fast_generate_from(context))
-print(f'{n_concepts:_d} concepts')
-
-assert n_concepts >= 150_000, f'{n_concepts:_d} < 150_000'
+result = list(algorithms.fast_generate_from(context))
+print(f'{len(result):_d} concepts')
 
 duration = time.perf_counter() - start
 print(f'{duration:.1f} seconds')
 
+assert len(result) >= 150_000, f'{len(result):_d} < 150_000'
+
 assert duration <= 90, f'{duration:.1f} > 90'
 
-cProfile.run('list(algorithms.fast_generate_from(context))')
+cProfile.run('list(algorithms.fast_generate_from(context))',
+             sort='tottime')
+
+context.tofile('../test-output/mushroom-concepts.dat',
+               frmat='fimi', encoding=ENCODING)
