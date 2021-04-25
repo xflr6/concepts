@@ -86,7 +86,8 @@ def test_lattice(lattice):
 def test_fcbo(context, dual, expected):
     func = getattr(algorithms, 'fcbo_dual' if dual else 'fast_generate_from')
 
-    result = list(func(context))
+    iterconcepts = func(context)
+    result = algorithms.ConceptList.frompairs(iterconcepts)
 
     pairs = [f'{extent.bits()} <-> {intent.bits()}'
              for extent, intent in result]
@@ -179,7 +180,7 @@ def test_lattice_mushroom_subset(stopwatch, mushroom_subset):
 @pytest.mark.no_cover
 def test_fcbo_mushroom(stopwatch, mushroom):
     with stopwatch() as timing:
-        result = list(algorithms.fast_generate_from(mushroom))
+        result = algorithms.get_concepts(mushroom)
 
     print(f'{len(result):_d}')
     assert len(result) > 150_000
@@ -191,7 +192,7 @@ def test_fcbo_mushroom(stopwatch, mushroom):
 @pytest.mark.no_cover
 def test_fcbo_mushroom_subset(stopwatch, mushroom_subset):
     with stopwatch() as timing:
-        result = list(algorithms.fast_generate_from(mushroom_subset))
+        result = algorithms.get_concepts(mushroom_subset)
 
     assert len(result) == 221_525
 

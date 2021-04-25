@@ -4,6 +4,7 @@
 
 import typing
 
+from .concepts import ConceptList
 from .definitions import Definition
 from .contexts import Context
 

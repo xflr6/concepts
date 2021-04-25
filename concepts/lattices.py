@@ -7,7 +7,7 @@ import operator
 
 from . import algorithms
 from . import contexts
-from .lattice_concepts import Concept, Infimum, Atom, Supremum
+from .lattice_members import Concept, Infimum, Atom, Supremum
 from . import tools
 from . import visualize
 
