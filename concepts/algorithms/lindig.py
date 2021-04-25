@@ -33,14 +33,13 @@ def lattice(Extent, *, infimum):
         extent, _, upper, _ = concept
 
         for n_extent, n_intent in neighbors(extent, Extent=Extent):
-            if n_extent in mapping:
-                neighbor = mapping[n_extent]
-            else:
-                mapping[n_extent] = neighbor = (n_extent, n_intent, [], [])
-                push((n_extent.shortlex(), neighbor))
-
             upper.append(n_extent)
-            neighbor[3].append(extent)
+
+            if n_extent in mapping:
+                mapping[n_extent][3].append(extent)
+            else:
+                mapping[n_extent] = neighbor = (n_extent, n_intent, [], [extent])
+                push((n_extent.shortlex(), neighbor))
 
         yield concept  # concept[3] keeps growing until exhaustion
 
