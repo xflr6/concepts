@@ -38,20 +38,17 @@ def fast_generate_from(context):
          ('AD', '12'),
          ('ABD', '2')]
     """
-    Extent = context._Extent
-    Intent = context._Intent
-
-    prime = Extent.prime
-
     n_attributes = len(context.properties)
+
+    Intent = context._Intent
 
     j_atom = list(enumerate(Intent.supremum.atoms()))
 
-    attribute_sets = [Intent.infimum] * n_attributes
+    Extent = context._Extent
 
-    concept = Extent.supremum.doubleprime()
+    prime = Extent.prime
 
-    stack = [(concept, 0, attribute_sets)]
+    stack = [(Extent.supremum.doubleprime(), 0, [Intent.infimum] * n_attributes)]
 
     while stack:
         concept, attribute_index, attribute_sets = stack.pop()
@@ -116,20 +113,17 @@ def fcbo_dual(context):
          ('BC', '04'),
          ('C', '014')]
     """
+    n_objects = len(context.objects)
+
     Extent = context._Extent
+
+    j_atom = list(enumerate(Extent.supremum.atoms()))
+
     Intent = context._Intent
 
     prime = Intent.prime
 
-    n_objects = len(context.objects)
-
-    j_atom = list(enumerate(Extent.supremum.atoms()))
-
-    object_sets = [Extent.infimum] * n_objects
-
-    concept = Extent.infimum.doubleprime()
-
-    stack = [(concept, 0, object_sets)]
+    stack = [(Extent.infimum.doubleprime(), 0, [Extent.infimum] * n_objects)]
 
     while stack:
         concept, object_index, object_sets = stack.pop()
