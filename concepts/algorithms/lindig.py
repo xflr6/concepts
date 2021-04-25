@@ -36,7 +36,7 @@ def lattice(Extent, *, infimum):
             if n_extent in mapping:
                 neighbor = mapping[n_extent]
             else:
-                neighbor = mapping[n_extent] = (n_extent, n_intent, [], [])
+                mapping[n_extent] = neighbor = (n_extent, n_intent, [], [])
                 push((n_extent.shortlex(), neighbor))
 
             upper.append(n_extent)
