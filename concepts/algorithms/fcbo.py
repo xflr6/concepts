@@ -41,6 +41,8 @@ def fast_generate_from(context):
     Extent = context._Extent
     Intent = context._Intent
 
+    prime = Extent.prime
+
     n_attributes = len(context.properties)
 
     j_atom = list(enumerate(Intent.supremum.atoms()))
@@ -58,7 +60,7 @@ def fast_generate_from(context):
 
         extent, intent = concept
 
-        if extent == Extent.infimum or attribute_index == n_attributes:
+        if attribute_index == n_attributes or not extent:
             continue
 
         next_attribute_sets = attribute_sets.copy()
@@ -74,7 +76,7 @@ def fast_generate_from(context):
             if x & intent == x:
                 j_extent = extent & context._extents[j]
 
-                j_intent = Extent.prime(j_extent)
+                j_intent = prime(j_extent)
 
                 j_lower = j_intent & j_mask
 
@@ -117,6 +119,8 @@ def fcbo_dual(context):
     Extent = context._Extent
     Intent = context._Intent
 
+    prime = Intent.prime
+
     n_objects = len(context.objects)
 
     j_atom = list(enumerate(Extent.supremum.atoms()))
@@ -134,7 +138,7 @@ def fcbo_dual(context):
 
         extent, intent = concept
 
-        if extent == Extent.supremum or object_index == n_objects:
+        if object_index == n_objects or not intent:
             continue
 
         next_object_sets = object_sets.copy()
@@ -150,7 +154,7 @@ def fcbo_dual(context):
             if x & extent == x:
                 j_intent = intent & context._intents[j]
 
-                j_extent = Intent.prime(j_intent)
+                j_extent = prime(j_intent)
 
                 j_lower = j_extent & j_mask
 
