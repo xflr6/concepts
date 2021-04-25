@@ -9,13 +9,6 @@ https://doi.org/10.1016/j.ins.2011.09.023
 __all__ = ['fast_generate_from', 'fcbo_dual']
 
 
-def iter_j_atom_mask(n: int):
-    j_atom = 1
-    for j in range(n):
-        yield j, j_atom, j_atom - 1
-        j_atom <<= 1
-
-
 def fast_generate_from(context):
     """Yield ``(extent, intent)`` pairs from ``context`` (by intents).
 
@@ -50,7 +43,7 @@ def fast_generate_from(context):
 
     n_attributes = len(context.properties)
 
-    j_attribute_mask = list(iter_j_atom_mask(n_attributes))
+    j_atom = list(enumerate(Intent.atomic(Intent.supremum)))
 
     attribute_sets = [Intent.infimum] * n_attributes
 
@@ -70,9 +63,11 @@ def fast_generate_from(context):
 
         next_attribute_sets = attribute_sets.copy()
 
-        for j, j_attribute, j_mask in reversed(j_attribute_mask[attribute_index:]):
+        for j, j_attribute in reversed(j_atom[attribute_index:]):
             if j_attribute & intent:
                 continue
+
+            j_mask = j_attribute - 1
 
             x = next_attribute_sets[j] & j_mask
 
@@ -121,7 +116,7 @@ def fcbo_dual(context):
 
     n_objects = len(context.objects)
 
-    j_object_mask = list(iter_j_atom_mask(n_objects))
+    j_atom = list(enumerate(Extent.atomic(Extent.supremum)))
 
     object_sets = [Extent.infimum] * n_objects
 
@@ -141,9 +136,11 @@ def fcbo_dual(context):
 
         next_object_sets = object_sets.copy()
 
-        for j, j_object, j_mask in reversed(j_object_mask[object_index:]):
+        for j, j_object in reversed(j_atom[object_index:]):
             if extent & j_object:
                 continue
+
+            j_mask = j_object - 1
 
             x = next_object_sets[j] & j_mask
 
