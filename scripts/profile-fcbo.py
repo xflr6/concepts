@@ -18,7 +18,7 @@ ROOT = pathlib.Path(os.pardir)
 
 MUSHROOM =  ROOT / 'examples' / 'mushroom.cxt'
 
-ATTRIBUTES =  ROOT / 'test-output' / f'{MUSHROOM.stem}-intents.dat'
+INTENTS =  ROOT / 'test-output' / f'{MUSHROOM.stem}-intents.dat'
 
 ENCODING = 'ascii'
 
@@ -34,8 +34,8 @@ assert len(context.properties) == 128, f'{len(context.properties):_d} != 128'
 result = algorithms.get_concepts(context)
 print(f'{len(result):_d} concepts')
 
-formats.write_concepts_dat(ATTRIBUTES, result)
-print(ATTRIBUTES, f'{ATTRIBUTES.stat().st_size:_d} bytes')
+result.tofile(INTENTS)
+print(INTENTS, f'{INTENTS.stat().st_size:_d} bytes')
 
 duration = time.perf_counter() - start
 print(f'{duration:.1f} seconds')

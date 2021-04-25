@@ -1,5 +1,6 @@
 import typing
 
+from . import formats
 from . import matrices
 
 __all__ = ['ConceptList']
@@ -79,3 +80,8 @@ class ConceptList(list):
     @classmethod
     def frompairs(cls, iterconcepts):
         return cls(map(Concept._make, iterconcepts))
+
+    def tofile(self, filename, *, frmat: str = 'fimi', **kwargs):
+        if frmat != 'fimi':  # pragma: no cover
+            raise NotImplementedError(f'tofile(frmat={frmat!r})')
+        formats.write_concepts_dat(filename, self, **kwargs)
