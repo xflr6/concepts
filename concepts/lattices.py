@@ -6,8 +6,8 @@ import heapq
 import operator
 
 from . import algorithms
-from .concepts import Concept, Infimum, Atom, Supremum
 from . import contexts
+from .lattice_members import Concept, Infimum, Atom, Supremum
 from . import tools
 from . import visualize
 
@@ -124,12 +124,12 @@ class Lattice:
 
     @classmethod
     def _fromlist(cls, context, lattice, unordered):
-        make_extent = context._Extent.fromint
-        make_intent = context._Intent.fromint
+        make_objects = context._Objects.fromint
+        make_properties = context._Properties.fromint
         inst = object.__new__(cls)
         concepts = [Concept(inst,
-                            make_extent(sum(1 << e for e in ex)),
-                            make_intent(sum(1 << i for i in in_)),
+                            make_objects(sum(1 << e for e in ex)),
+                            make_properties(sum(1 << i for i in in_)),
                             up, lo)
                     for ex, in_, up, lo in lattice]
 
@@ -363,7 +363,7 @@ class Lattice:
             Concept: :class:`.Concept` instance from this lattice.
         """
         extents = (c._extent for c in concepts)
-        join = self._context._Extent.reduce_or(extents)
+        join = self._context._Objects.reduce_or(extents)
         return self._mapping[join.double()]
 
     def meet(self, concepts):
@@ -376,7 +376,7 @@ class Lattice:
             Concept: :class:`.Concept` instance from this lattice.
         """
         extents = (c._extent for c in concepts)
-        meet = self._context._Extent.reduce_and(extents)
+        meet = self._context._Objects.reduce_and(extents)
         return self._mapping[meet.double()]
 
     def upset_union(self, concepts,
@@ -422,7 +422,7 @@ class Lattice:
         heapq.heapify(heap)
         push, pop = heapq.heappush, heapq.heappop
         extents = (c._extent for i, c in heap)
-        target = self._context._Extent.reduce_or(extents)
+        target = self._context._Objects.reduce_or(extents)
         seen = -1
         while heap:
             index, concept = pop(heap)
@@ -456,6 +456,3 @@ class Lattice:
                                  make_object_label=make_object_label,
                                  make_property_label=make_property_label,
                                  **kwargs)
-
-
-

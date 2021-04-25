@@ -1,8 +1,6 @@
-# test_contexts.py
-
 import pytest
 
-from concepts.contexts import Context
+from concepts import Context
 
 
 def test_empty_objects():
@@ -53,6 +51,16 @@ def test_init():
     assert c.bools == [(True, False), (False, True)]
 
 
+def test_copy(context):
+    context = Context(context.objects, context.properties, context.bools)
+    assert context.lattice is not None
+
+    copy = context.copy()
+
+    assert copy == context
+    assert 'lattice' not in copy.__dict__
+
+
 def test_eq_noncontext(context):
     assert not (context == object())
 
@@ -92,13 +100,14 @@ def test_minimize_infimum(context):
 
 
 def test_raw(context):
-    Extent, Intent = context._Extent, context._Intent  # noqa: N806
-    assert context.intension(['1sg', '1pl'], raw=True) == Intent('1001010000')
-    assert context.extension(['+1', '+sg'], raw=True) == Extent('100000')
+    Objects = context._Objects  # noqa: N806
+    Properties = context._Properties  # noqa: N806
+    assert context.intension(['1sg', '1pl'], raw=True) == Properties('1001010000')
+    assert context.extension(['+1', '+sg'], raw=True) == Objects('100000')
     assert context.neighbors(['1sg'], raw=True) == \
-        [(Extent('110000'), Intent('1001010000')),
-         (Extent('101000'), Intent('0000011001')),
-         (Extent('100010'), Intent('0001001001'))]
+        [(Objects('110000'), Properties('1001010000')),
+         (Objects('101000'), Properties('0000011001')),
+         (Objects('100010'), Properties('0001001001'))]
 
 
 def test_tofile(tmp_path, context, filename='context.cxt', encoding='utf-8'):

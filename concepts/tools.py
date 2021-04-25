@@ -7,21 +7,34 @@ import hashlib
 from itertools import permutations, groupby, starmap
 import json
 import operator
+import re
 import typing
 import zlib
 
-__all__ = ['Unique',
+__all__ = ['snakify',
+           'Unique',
            'max_len', 'maximal',
            'lazyproperty',
            'crc32_hex',
            'sha256sum',
            'write_lines',
-           'write_csv',
+           'csv_iterrows',
+           'write_csv', 'write_csv_file',
            'dump_json', 'load_json']
 
 CSV_DIALECT = 'excel'
 
 DEFAULT_ENCODING = 'utf-8'
+
+
+def snakify(name: str, *, sep: str = '_',
+            _re_upper=re.compile(r'([A-Z])')) -> str:
+    """Lowercase ``name`` adding ``sep`` before in-word-uppercase letters.
+
+    >>> snakify('CamelCase')
+    'camel_case'
+    """
+    return (name[:1] + _re_upper.sub(rf'{sep}\1', name[1:])).lower()
 
 
 class Unique(collections.abc.MutableSet):
@@ -235,6 +248,14 @@ def write_lines(path, lines: typing.Iterable[str],
             write(line)
 
 
+def csv_iterrows(path, *, dialect: str = CSV_DIALECT,
+                 encoding: str = DEFAULT_ENCODING,
+                 newline: typing.Optional[str] = ''):
+    with open(path, encoding=encoding, newline=newline) as f:
+        reader = csv.reader(f, dialect=dialect)
+        yield from reader
+
+
 def write_csv(path, rows,
               *, header: typing.Optional[typing.Iterable[str]] = None,
               dialect: str = CSV_DIALECT,
@@ -242,10 +263,17 @@ def write_csv(path, rows,
               newline: typing.Optional[str] = ''):
     """Write ``rows`` as CSV to ``path`` with optional ``header``."""
     with open(path, 'w', encoding=encoding, newline=newline) as f:
-        writer = csv.writer(f, dialect=dialect)
-        if header is not None:
-            writer.writerow(header)
-        writer.writerows(rows)
+        write_csv_file(f, rows, header=header)
+
+
+def write_csv_file(file, rows,
+                   *, header: typing.Optional[typing.Iterable[str]] = None,
+                   dialect: str = CSV_DIALECT):
+    """Write ``rows`` as CSV to file-like object with optional ``header``."""
+    writer = csv.writer(file, dialect=dialect)
+    if header is not None:
+        writer.writerow(header)
+    writer.writerows(rows)
 
 
 def dump_json(obj, path_or_fileobj,
@@ -257,7 +285,7 @@ def dump_json(obj, path_or_fileobj,
 
 
 def load_json(path_or_fileobj,
-              *,  encoding: str = DEFAULT_ENCODING,
+              *, encoding: str = DEFAULT_ENCODING,
               mode: str = 'r', **kwargs):
     """Return deserialized :func:`json.load` from path or file-like object."""
     return _call_json('load', path_or_fileobj, encoding, mode, **kwargs)
@@ -268,7 +296,7 @@ def _call_json(funcname, path_or_fileobj, encoding, mode, **kwargs):
     close = not fallthrough
 
     try:
-        return getattr(json,funcname)(fp=f, **kwargs)
+        return getattr(json, funcname)(fp=f, **kwargs)
     except (AttributeError, TypeError):
         raise TypeError('path_or_fileobj: {path_or_fileobj!r}')
     finally:

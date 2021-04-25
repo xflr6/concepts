@@ -1,28 +1,26 @@
-# test_formats.py
-
-import os
+import pathlib
 import unittest
 
 import pytest
 
-from concepts.formats import Format, Cxt, Table, Csv, WikiTable
+from concepts import formats
 
-DIRECTORY = 'test-output'
+from conftest import TEST_OUTPUT
 
 
 @pytest.mark.parametrize('name, expected', [
-    ('table', Table),
-    ('cxt', Cxt),
-    ('csv', Csv),
-    ('wikitable', WikiTable),
+    ('table', formats.Table),
+    ('cxt', formats.Cxt),
+    ('csv', formats.Csv),
+    ('wiki-table', formats.WikiTable),
 ])
 def test_getitem(name, expected):
-    assert Format[name] is expected is Format[name.upper()]
+    assert formats.Format[name] is expected is formats.Format[name.upper()]
 
 
 def test_getitem_invalid():
     with pytest.raises(KeyError):
-        Format['spam']
+        formats.Format['spam']
 
 
 @pytest.mark.parametrize('filename, expected', [
@@ -31,55 +29,53 @@ def test_getitem_invalid():
     ('spam.spam.csv', 'csv')
 ])
 def test_infer_format(filename, expected):
-    assert Format.infer_format(filename) == expected
+    assert formats.Format.infer_format(filename) == expected
 
 
 def test_infer_format_invalid():
     with pytest.raises(ValueError, match=r'filename suffix'):
-        Format.infer_format('spam.spam')
+        formats.Format.infer_format('spam.spam')
 
 
-class LoadsDumps(object):
+class LoadsDumps:
 
     def test_loads(self):
         try:
-            objects, properties, bools = self.format.loads(self.result)
+            args = self.format.loads(self.result)
         except NotImplementedError:
             pass
         else:
-            self.assertSequenceEqual(objects, self.objects)
-            self.assertSequenceEqual(properties, self.properties)
-            self.assertSequenceEqual(bools, self.bools)
+            self.assertSequenceEqual(args.objects, self.objects)
+            self.assertSequenceEqual(args.properties, self.properties)
+            self.assertSequenceEqual(args.bools, self.bools)
 
     def test_dumps(self):
         result = self.format.dumps(self.objects, self.properties, self.bools)
         self.assertEqual(result, self.result)
 
-    def test_dump_load(self, outdir=DIRECTORY):
-        if not os.path.exists(outdir):
-            os.mkdir(outdir)
-
+    def test_dump_load(self, outdir=TEST_OUTPUT):
         extension = getattr(self.format, 'extension', '.txt')
-        filepath = os.path.join(outdir, self.__class__.__name__ + extension)
-        self.format.dump(filepath,
+        filepath = (outdir / self.__class__.__name__).with_suffix(extension)
+        self.format.dump(str(filepath),
                          self.objects, self.properties, self.bools,
-                         self.encoding)
+                         encoding=self.encoding)
 
         try:
-            objects, properties, bools = self.format.load(filepath,
-                                                          self.encoding)
+            args = self.format.load(filepath, encoding=self.encoding)
         except NotImplementedError:
             pass
         else:
-            self.assertSequenceEqual(objects, self.objects)
-            self.assertSequenceEqual(properties, self.properties)
-            self.assertSequenceEqual(bools, self.bools)
+            self.assertSequenceEqual(args.objects, self.objects)
+            self.assertSequenceEqual(args.properties, self.properties)
+            self.assertSequenceEqual(args.bools, self.bools)
 
 
 class Ascii(LoadsDumps):
 
     objects = ('Cheddar', 'Limburger')
+
     properties = ('in_stock', 'sold_out')
+
     bools = [(False, True), (False, True)]
 
     encoding = None
@@ -88,7 +84,9 @@ class Ascii(LoadsDumps):
 class Unicode(LoadsDumps):
 
     objects = ('M\xf8\xf8se', 'Llama')
+
     properties = ('majestic', 'bites')
+
     bools = [(True, True), (False, False)]
 
     encoding = 'utf-8'
@@ -96,72 +94,348 @@ class Unicode(LoadsDumps):
 
 class TestCxtAscii(unittest.TestCase, Ascii):
 
-    format = Cxt
-    result = 'B\n\n2\n2\n\nCheddar\nLimburger\nin_stock\nsold_out\n.X\n.X\n'
+    format = formats.Cxt
+
+    result = '''\
+B
+
+2
+2
+
+Cheddar
+Limburger
+in_stock
+sold_out
+.X
+.X
+'''
 
 
 class TextCxtUnicode(unittest.TestCase, Unicode):
 
-    format = Cxt
-    result = 'B\n\n2\n2\n\nM\xf8\xf8se\nLlama\nmajestic\nbites\nXX\n..\n'
+    format = formats.Cxt
+
+    result = '''\
+B
+
+2
+2
+
+Møøse
+Llama
+majestic
+bites
+XX
+..
+'''
 
 
 class TestTableAscii(unittest.TestCase, Ascii):
 
-    format = Table
-    result = ('         |in_stock|sold_out|\n'
-              'Cheddar  |        |X       |\n'
-              'Limburger|        |X       |')
+    format = formats.Table
+
+    result = '''\
+         |in_stock|sold_out|
+Cheddar  |        |X       |
+Limburger|        |X       |'''
 
 
 class TestTableUnicode(unittest.TestCase, Unicode):
 
-    format = Table
-    result = ('     |majestic|bites|\n'
-              'M\xf8\xf8se|X       |X    |\n'
-              'Llama|        |     |')
+    format =formats.Table
+
+    result = '''\
+     |majestic|bites|
+Møøse|X       |X    |
+Llama|        |     |'''
 
 
 class TestCsvAscii(unittest.TestCase, Ascii):
 
-    format = Csv
-    result = (',in_stock,sold_out\r\n'
-              'Cheddar,,X\r\n'
-              'Limburger,,X\r\n')
+    format = formats.Csv
 
+    result = '''\
+,in_stock,sold_out\r
+Cheddar,,X\r
+Limburger,,X\r
+'''
 
 class TestCsvUnicode(unittest.TestCase, Unicode):
 
-    format = Csv
-    result = (',majestic,bites\r\n'
-              'M\xf8\xf8se,X,X\r\n'
-              'Llama,,\r\n')
+    format = formats.Csv
+
+    result = '''\
+,majestic,bites\r
+Møøse,X,X\r
+Llama,,\r
+'''
+
+
+def test_csv_loads_ints():
+    source = '''\
+cheese,in_stock,sold_out\r
+Cheddar,0,1\r
+Limburger,0,1\r
+'''
+
+    args = formats.Csv.loads(source)
+
+    assert args.objects == ['Cheddar', 'Limburger']
+    assert args.properties == ['in_stock', 'sold_out']
+    assert args.bools ==  [(False, True), (False, True)]
 
 
 class TestWikitableAscii(unittest.TestCase, Ascii):
 
-    format = WikiTable
-    result = ('{| class="featuresystem"\n'
-              '!\n'
-              '!in_stock!!sold_out\n'
-              '|-\n'
-              '!Cheddar\n'
-              '|        ||X       \n'
-              '|-\n'
-              '!Limburger\n'
-              '|        ||X       \n'
-              '|}')
+    format = formats.WikiTable
+
+    result = '''\
+{| class="featuresystem"
+!
+!in_stock!!sold_out
+|-
+!Cheddar
+|        ||X       
+|-
+!Limburger
+|        ||X       
+|}'''
 
 
 class TestWikitableUnicode(unittest.TestCase, Unicode):
 
-    format = WikiTable
-    result = ('{| class="featuresystem"\n'
-              '!\n'
-              '!majestic!!bites\n'
-              '|-\n'
-              '!M\xf8\xf8se\n|X       ||X    \n'
-              '|-\n'
-              '!Llama\n'
-              '|        ||     \n'
-              '|}')
+    format = formats.WikiTable
+
+    result = '''\
+{| class="featuresystem"
+!
+!majestic!!bites
+|-
+!Møøse
+|X       ||X    
+|-
+!Llama
+|        ||     
+|}'''
+
+
+class TestPythonLiteral(unittest.TestCase, Ascii):
+
+    format = formats.PythonLiteral
+
+    result = '''\
+{
+  'objects': (
+    'Cheddar', 'Limburger',
+  ),
+  'properties': (
+    'in_stock', 'sold_out',
+  ),
+  'context': [
+    (1,),
+    (1,),
+  ],
+}'''
+
+
+class TestFimi(unittest.TestCase, Ascii):
+
+    format = formats.Fimi
+
+    result = '''\
+1
+1
+'''
+
+
+@pytest.mark.parametrize('frmat, label, expected', [
+    ('table', None, '''\
+   |+1|-1|+2|-2|+3|-3|+sg|+pl|-sg|-pl|
+1sg|X |  |  |X |  |X |X  |   |   |X  |
+1pl|X |  |  |X |  |X |   |X  |X  |   |
+2sg|  |X |X |  |  |X |X  |   |   |X  |
+2pl|  |X |X |  |  |X |   |X  |X  |   |
+3sg|  |X |  |X |X |  |X  |   |   |X  |
+3pl|  |X |  |X |X |  |   |X  |X  |   |
+'''),
+    ('cxt', None, '''\
+B
+
+6
+10
+
+1sg
+1pl
+2sg
+2pl
+3sg
+3pl
++1
+-1
++2
+-2
++3
+-3
++sg
++pl
+-sg
+-pl
+X..X.XX..X
+X..X.X.XX.
+.XX..XX..X
+.XX..X.XX.
+.X.XX.X..X
+.X.XX..XX.
+'''),
+    ('python-literal', None, '''\
+{
+  'objects': (
+    '1sg', '1pl', '2sg', '2pl', '3sg', '3pl',
+  ),
+  'properties': (
+    '+1', '-1', '+2', '-2', '+3', '-3', '+sg', '+pl', '-sg', '-pl',
+  ),
+  'context': [
+    (0, 3, 5, 6, 9),
+    (0, 3, 5, 7, 8),
+    (1, 2, 5, 6, 9),
+    (1, 2, 5, 7, 8),
+    (1, 3, 4, 6, 9),
+    (1, 3, 4, 7, 8),
+  ],
+}
+'''),
+    ('csv', None, '''\
+,+1,-1,+2,-2,+3,-3,+sg,+pl,-sg,-pl
+1sg,X,,,X,,X,X,,,X
+1pl,X,,,X,,X,,X,X,
+2sg,,X,X,,,X,X,,,X
+2pl,,X,X,,,X,,X,X,
+3sg,,X,,X,X,,X,,,X
+3pl,,X,,X,X,,,X,X,
+'''),
+    ('fimi', None, '''\
+0 3 5 6 9
+0 3 5 7 8
+1 2 5 6 9
+1 2 5 7 8
+1 3 4 6 9
+1 3 4 7 8
+'''),
+    ( 'wiki-table', 'wiki-table', '''\
+{| class="featuresystem"
+!
+!+1!!-1!!+2!!-2!!+3!!-3!!+sg!!+pl!!-sg!!-pl
+|-
+!1sg
+|X ||  ||  ||X ||  ||X ||X  ||   ||   ||X  
+|-
+!1pl
+|X ||  ||  ||X ||  ||X ||   ||X  ||X  ||   
+|-
+!2sg
+|  ||X ||X ||  ||  ||X ||X  ||   ||   ||X  
+|-
+!2pl
+|  ||X ||X ||  ||  ||X ||   ||X  ||X  ||   
+|-
+!3sg
+|  ||X ||  ||X ||X ||  ||X  ||   ||   ||X  
+|-
+!3pl
+|  ||X ||  ||X ||X ||  ||   ||X  ||X  ||   
+|}
+''')])
+def test_write_example(test_output, context, frmat, label, expected):
+    Format = formats.Format[frmat]
+
+    flag = f'-{label}' if label else ''
+
+    suffix = getattr(Format, 'suffix', '.txt')
+    target = test_output / f'example{flag}{suffix}'
+
+    result = write_format(target,
+                          context.objects, context.properties, context.bools,
+                          Format=Format)
+
+    assert result == expected
+
+
+def write_format(target, objects, properties, bools, *, Format):
+    Format.dump(str(target),
+                objects, properties, bools,
+                encoding=Format.encoding)
+
+    assert target.exists()
+    assert target.stat().st_size
+
+    result = target.read_text(encoding=Format.encoding)
+
+    return result
+
+
+@pytest.mark.parametrize('extents, label, expected', [
+    ( False, 'intents', '''\
+0 1 2 3 4 5 6 7 8 9
+0 3 5 6 9
+0 3 5 7 8
+1 2 5 6 9
+1 2 5 7 8
+1 3 4 6 9
+1 3 4 7 8
+0 3 5
+5 6 9
+3 6 9
+5 7 8
+3 7 8
+1 2 5
+1 6 9
+1 7 8
+1 3 4
+6 9
+7 8
+5
+3
+1
+
+'''),
+    (True, 'extents', '''\
+
+0
+1
+2
+3
+4
+5
+0 1
+0 2
+0 4
+1 3
+1 5
+2 3
+2 4
+3 5
+4 5
+0 2 4
+1 3 5
+0 1 2 3
+0 1 4 5
+2 3 4 5
+0 1 2 3 4 5
+''')])
+def test_write_example_concepts_dat(test_output, context, extents, label, expected):
+    context = context.copy()
+
+    Format = formats.Format['fimi']
+
+    target = test_output / f'example-{label}.dat'
+    iterconcepts = ((c._extent, c._intent) for c in context.lattice)
+    
+    formats.write_concepts_dat(target, iterconcepts, extents=extents)
+
+    assert target.exists()
+    assert target.stat().st_size
+
+    result = target.read_text(encoding=Format.encoding)
+
+    assert result == expected

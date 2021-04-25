@@ -128,8 +128,10 @@ class Context:
             Context: New :class:`.Context` instance.
         """
         frmat = formats.Format[frmat]
-        objects, properties, bools = frmat.loads(source, **kwargs)
-        return cls(objects, properties, bools)
+        args = frmat.loads(source, **kwargs)
+        if args.serialized is not None:
+            return cls.fromdict(args.serialized)
+        return cls(args.objects, args.properties, args.bools)
 
     @classmethod
     def fromfile(cls, filename, frmat: str = 'cxt',
@@ -150,8 +152,10 @@ class Context:
             frmat = formats.Format.infer_format(filename)
 
         frmat = formats.Format[frmat]
-        objects, properties, bools = frmat.load(filename, encoding, **kwargs)
-        return cls(objects, properties, bools)
+        args = frmat.load(filename, encoding=encoding, **kwargs)
+        if args.serialized is not None:
+            return cls.fromdict(args.serialized)
+        return cls(args.objects, args.properties, args.bools)
 
     @classmethod
     def fromjson(cls, path_or_fileobj, encoding: str = 'utf-8',
@@ -241,7 +245,7 @@ class Context:
     def __init__(self,
                  objects: typing.Iterable[str],
                  properties: typing.Iterable[str],
-                 bools: typing.Iterable[typing.Tuple[bool,...]]) -> None:
+                 bools: typing.Iterable[typing.Tuple[bool, ...]]) -> None:
         """Create context from ``objects``, ``properties``, and ``bools`` correspondence.
 
         Args:
@@ -266,12 +270,17 @@ class Context:
             raise ValueError(f'bools is not {len(objects)} items'
                              f' of length {len(properties)}')
 
-        self._intents, self._extents = matrices.Relation('Intent', 'Extent',
-                                                         properties, objects,
-                                                         bools)
+        self._intents, self._extents = matrices.Relation('Properties', 'Objects',
+                                                         properties, objects, bools)
 
-        self._Intent = self._intents.BitSet
-        self._Extent = self._extents.BitSet
+        self._Properties = self._intents.BitSet
+        self._Objects = self._extents.BitSet
+
+    def copy(self, include_lattice: typing.Optional[bool] = False):
+        """Return a fresh copy of the context (omits lattice)."""
+        if include_lattice:  # pragma: no cover
+            raise NotImplementedError(f'.copy(include_lattice={include_lattice!r})')
+        return Context(self.objects, self.properties, self.bools)
 
     def __getstate__(self):
         """Pickle context as ``(intents, extents)`` tuple.
@@ -288,8 +297,8 @@ class Context:
             state (tuple[tuple[str, ...], tuple[str, ...]]): Pair of ``intents`` and ``extents``.
         """
         self._intents, self._extents = state
-        self._Intent = self._intents.BitSet
-        self._Extent = self._extents.BitSet
+        self._Properties = self._intents.BitSet
+        self._Objects = self._extents.BitSet
 
     def __eq__(self, other: 'Context'):
         """Return whether two contexts are equivalent.
@@ -330,14 +339,14 @@ class Context:
 
         cf. C. Lindig. 2000. Fast Concept Analysis.
         """
-        return algorithms.lattice(self._Extent, infimum=infimum)
+        return algorithms.lattice(self._Objects, infimum=infimum)
 
     def _neighbors(self, objects):
         """Yield upper neighbors from extent (in colex order?).
 
         cf. C. Lindig. 2000. Fast Concept Analysis.
         """
-        return algorithms.neighbors(objects, Extent=self._Extent)
+        return algorithms.neighbors(objects, Objects=self._Objects)
 
     def _minimal(self, extent, intent):
         """Return short lexicograpically minimum intent generating extent."""
@@ -364,7 +373,7 @@ class Context:
         Returns:
             tuple[str, ...]: A tuple of :obj:`str` labels taken from ``self.properties``.
         """
-        intent = self._Extent.frommembers(objects).prime()
+        intent = self._Objects.frommembers(objects).prime()
         if raw:
             return intent
         return intent.members()
@@ -380,7 +389,7 @@ class Context:
         Returns:
             tuple[str, ...]: A tuple of :obj:`str` labels taken from ``self.objects``.
         """
-        extent = self._Intent.frommembers(properties).prime()
+        extent = self._Properties.frommembers(properties).prime()
         if raw:
             return extent
         return extent.members()
@@ -396,7 +405,7 @@ class Context:
         Returns:
             list[tuple[tuple[str, ...], tuple[str, ...]]: A list of upper neighbor concepts as ``(extent, intent)`` pairs.
         """
-        objects = self._Extent.frommembers(objects).double()
+        objects = self._Objects.frommembers(objects).double()
         if raw:
             return list(self._neighbors(objects))
         return [(extent.members(), intent.members())
@@ -414,9 +423,9 @@ class Context:
             tuple[tuple[str, ...], tuple[str, ...]]: The smallest concept having all ``items`` as ``(extent, intent)`` pair.
         """
         try:
-            extent = self._Extent.frommembers(items)
+            extent = self._Objects.frommembers(items)
         except KeyError:
-            intent = self._Intent.frommembers(items)
+            intent = self._Properties.frommembers(items)
             intent, extent = intent.doubleprime()
         else:
             extent, intent = extent.doubleprime()
@@ -485,8 +494,12 @@ class Context:
             str: The context as seralized string.
         """
         frmat = formats.Format[frmat]
-        return frmat.dumps(self.objects, self.properties, self.bools,
-                           **kwargs)
+
+        assert '_serialized' not in kwargs
+        if frmat is formats.PythonLiteral:
+            kwargs['_serialized'] = self.todict(ignore_lattice=None)
+
+        return frmat.dumps(self.objects, self.properties, self.bools, **kwargs)
 
     def tofile(self, filename, frmat: str = 'cxt',
                encoding: str = 'utf-8', **kwargs):
@@ -497,9 +510,14 @@ class Context:
             encoding (str): Encoding of the file (``'utf-8'``, ``'latin1'``, ``'ascii'``, ...).
         """
         frmat = formats.Format[frmat]
+
+        assert '_serialized' not in kwargs
+        if frmat is formats.PythonLiteral:
+            kwargs['_serialized'] = self.todict(ignore_lattice=None)
+
         frmat.dump(filename,
                    self.objects, self.properties, self.bools,
-                   encoding, **kwargs)
+                   encoding=encoding, **kwargs)
 
     def crc32(self, encoding: str = 'utf-8'):
         """Return hex-encoded unsigned CRC32 over encoded context table string.
@@ -515,12 +533,12 @@ class Context:
     @property
     def objects(self):
         """tuple[str, ...]: (Names of the) objects described by the context."""
-        return self._Extent._members
+        return self._Objects._members
 
     @property
     def properties(self):
         """tuple[str, ...]: (Names of the) properties that describe the objects."""
-        return self._Intent._members
+        return self._Properties._members
 
     @property
     def bools(self):

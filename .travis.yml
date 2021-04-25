@@ -7,7 +7,18 @@ python:
   - "3.7"
   - "3.8"
   - "3.9"
+env:
+  - ARGS=
+  - ARGS=--run-slow
+jobs:
+  exclude:
+    - python: 3.6
+      env: ARGS=--run-slow
+    - python: 3.7
+      env: ARGS=--run-slow
+    - python: 3.8
+      env: ARGS=--run-slow
 install: pip install -e .[test] codecov
-script: ./run-tests.py
+script: ./run-tests.py $ARGS
 before_cache: rm -f $HOME/.cache/pip/log/debug.log
 after_success: codecov

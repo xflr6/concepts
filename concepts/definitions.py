@@ -82,8 +82,8 @@ class Triple:
             Definition: A new :class:`.Definition` instance.
         """
         frmat = formats.Format[frmat]
-        objects, properties, bools = frmat.load(filename, encoding, **kwargs)
-        return cls(objects, properties, bools)
+        args = frmat.load(filename, encoding, **kwargs)
+        return cls(args.objects, args.properties, args.bools)
 
     @classmethod
     def _fromargs(cls, _objects, _properties, _pairs):
@@ -109,7 +109,7 @@ class Triple:
         """Return an independent copy of the instance.
 
         Returns:
-            An instance of ``type(self)``. 
+            An instance of ``type(self)``.
         """
         return self._fromargs(self._objects.copy(),
                               self._properties.copy(),

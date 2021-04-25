@@ -1,9 +1,13 @@
-import datetime
+import pathlib
 
 import pytest
 
 import concepts
 from concepts import algorithms
+
+BOB_ROSS = pathlib.Path('bob_ross.cxt')
+
+ENCODING = 'utf-8'
 
 
 def test_lattice(lattice):
@@ -80,9 +84,10 @@ def test_lattice(lattice):
             '000001 <-> 0101100110']),
 ])
 def test_fcbo(context, dual, expected):
-    func = getattr(algorithms, 'fcbo_dual' if dual else 'fcbo')
+    func = getattr(algorithms, 'fcbo_dual' if dual else 'fast_generate_from')
 
-    result = list(func(context))
+    iterconcepts = func(context)
+    result = algorithms.ConceptList.frompairs(iterconcepts)
 
     pairs = [f'{extent.bits()} <-> {intent.bits()}'
              for extent, intent in result]
@@ -90,53 +95,105 @@ def test_fcbo(context, dual, expected):
     assert pairs == expected
 
 
-@pytest.mark.parametrize('dual, expected', [
-    (False, [('ABCD', ''),
-             ('ABC',  '0'),
-             ('AC',   '01'),
-             ('A',    '012'),
-             ('',     '012345'),
-             ('C',    '014'),
-             ('AB',   '02'),
-             ('B',    '02345'),
-             ('BC',   '04'),
-             ('ACD',  '1'),
-             ('AD',   '12'),
-             ('ABD',  '2')]),
-    (True, [('',     '012345'),
-            ('A',    '012'),
-            ('AB',   '02'),
-            ('ABC',  '0'),
-            ('ABCD', ''),
-            ('ABD',  '2'),
-            ('AC',   '01'),
-            ('ACD',  '1'),
-            ('AD',   '12'),
-            ('B',    '02345'),
-            ('BC',   '04'),
-            ('C',    '014')]),
-])
-def test_fcbo_example(dual, expected):
-    source = (' |0|1|2|3|4|5|\n'
-              'A|X|X|X| | | |\n'
-              'B|X| |X|X|X|X|\n'
-              'C|X|X| | |X| |\n'
-              'D| |X|X| | | |\n')
+@pytest.fixture
+def bob_ross(test_examples, filename=BOB_ROSS):
+    path = test_examples / filename
 
-    context = concepts.make_context(source)
+    context = concepts.load_cxt(str(path), encoding=ENCODING)
 
-    assert context.objects == ('A', 'B', 'C', 'D')
-    assert context.properties == ('0', '1', '2', '3', '4', '5')
+    assert len(context.objects) == 403
+    assert len(context.properties) == 67
 
-    func = getattr(algorithms, 'fcbo_dual' if dual else 'fcbo')
+    return context
 
-    result = list(func(context))
 
-    assert len(result) == len(expected)
+@pytest.fixture
+def mushroom(test_examples, filename='mushroom.cxt'):
+    path = test_examples / filename
 
-    members = [(''.join(extent.members()), ''.join(intent.members()))
-               for extent, intent in result]
+    context = concepts.load_cxt(str(path))
 
-    assert set(members) == set(expected)
+    assert len(context.objects) == 8_124
+    assert len(context.properties) == 128
 
-    assert members == expected
+    return context
+
+
+@pytest.fixture
+def mushroom_subset(test_examples, filename='mushrooms_subset.csv'):
+    path = test_examples / filename
+
+    context = concepts.Context.fromfile(str(path), frmat='csv')
+
+    assert len(context.objects) == 8_124
+    assert len(context.properties) == 119
+
+    return context
+
+
+@pytest.mark.slow
+@pytest.mark.no_cover
+def test_lattice_bob_ross(test_examples, test_output, stopwatch, bob_ross):
+    with stopwatch() as timing:
+        lattice = bob_ross.lattice
+
+    assert lattice is not None
+    assert len(lattice) == 3_463
+
+    target = test_output / f'{BOB_ROSS.stem}-serialized.py'
+    bob_ross.tofile(str(target), frmat='python-literal')
+    result = target.read_text(encoding=ENCODING)
+
+    example = test_examples / target.name
+    expected = example.read_text(encoding=ENCODING)
+
+    assert result == expected
+
+    assert timing.duration < 40
+
+
+@pytest.mark.skip(reason='TODO')
+@pytest.mark.slow
+@pytest.mark.no_cover
+def test_lattice_mushroom(stopwatch, mushroom):
+    with stopwatch():
+        lattice = mushroom.lattice
+
+    assert lattice is not None
+
+    print(f'{len(lattice):_d}')
+    assert len(latice) > 150_000
+
+
+@pytest.mark.skip(reason='TODO')
+@pytest.mark.slow
+@pytest.mark.no_cover
+def test_lattice_mushroom_subset(stopwatch, mushroom_subset):
+    with stopwatch():
+        lattice = mushroom_subset.lattice
+
+    assert lattice is not None
+    assert len(lattice) == 221_525
+
+
+@pytest.mark.slow
+@pytest.mark.no_cover
+def test_fcbo_mushroom(stopwatch, mushroom):
+    with stopwatch() as timing:
+        result = algorithms.get_concepts(mushroom)
+
+    print(f'{len(result):_d}')
+    assert len(result) > 150_000
+
+    assert timing.duration < 90
+
+
+@pytest.mark.slow
+@pytest.mark.no_cover
+def test_fcbo_mushroom_subset(stopwatch, mushroom_subset):
+    with stopwatch() as timing:
+        result = algorithms.get_concepts(mushroom_subset)
+
+    assert len(result) == 221_525
+
+    assert timing.duration < 90

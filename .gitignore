@@ -10,17 +10,20 @@ __pycache__/
 /.eggs/
 
 /.venv/
-/.pytest_cache/
 /.coverage
 /.coverage.*
 /htmlcov/
 /.tox/
 
 .ipynb_checkpoints/
+.pytest_cache/
 
 Thumbs.db
 
+/scripts/*.dat
+/scripts/*.data
 /scripts/*.csv
 /scripts/*.cxt
+/scripts/*.names
 /test-output/
 /visualize-output/

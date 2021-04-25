@@ -1,5 +1,4 @@
-# test_serialization.py
-
+import ast
 import io
 import random
 
@@ -7,7 +6,6 @@ import pytest
 
 from concepts import Context, Definition
 from concepts.lattices import Lattice
-
 
 SERIALIZED = {
     'objects': (
@@ -216,6 +214,98 @@ def test_dict_roundtrip(context, ignore_lattice):
     else:
         assert 'lattice' in result.__dict__
         assert result.lattice._eq(context.lattice)
+
+@pytest.mark.parametrize('to_file', [False, True])
+@pytest.mark.parametrize('with_lattice, expected_doc, expected_str', [
+    (False, SERIALIZED_NOLATTICE,
+     '''\
+{
+  'objects': (
+    '1sg', '1pl', '2sg', '2pl', '3sg', '3pl',
+  ),
+  'properties': (
+    '+1', '-1', '+2', '-2', '+3', '-3', '+sg', '+pl', '-sg', '-pl',
+  ),
+  'context': [
+    (0, 3, 5, 6, 9),
+    (0, 3, 5, 7, 8),
+    (1, 2, 5, 6, 9),
+    (1, 2, 5, 7, 8),
+    (1, 3, 4, 6, 9),
+    (1, 3, 4, 7, 8),
+  ],
+}
+'''),
+    (True, SERIALIZED,
+     '''\
+{
+  'objects': (
+    '1sg', '1pl', '2sg', '2pl', '3sg', '3pl',
+  ),
+  'properties': (
+    '+1', '-1', '+2', '-2', '+3', '-3', '+sg', '+pl', '-sg', '-pl',
+  ),
+  'context': [
+    (0, 3, 5, 6, 9),
+    (0, 3, 5, 7, 8),
+    (1, 2, 5, 6, 9),
+    (1, 2, 5, 7, 8),
+    (1, 3, 4, 6, 9),
+    (1, 3, 4, 7, 8),
+  ],
+  'lattice': [
+    ((), (0, 1, 2, 3, 4, 5, 6, 7, 8, 9), (1, 2, 3, 4, 5, 6), ()),
+    ((0,), (0, 3, 5, 6, 9), (7, 8, 9), (0,)),
+    ((1,), (0, 3, 5, 7, 8), (7, 10, 11), (0,)),
+    ((2,), (1, 2, 5, 6, 9), (8, 12, 13), (0,)),
+    ((3,), (1, 2, 5, 7, 8), (10, 12, 14), (0,)),
+    ((4,), (1, 3, 4, 6, 9), (9, 13, 15), (0,)),
+    ((5,), (1, 3, 4, 7, 8), (11, 14, 15), (0,)),
+    ((0, 1), (0, 3, 5), (18, 19), (1, 2)),
+    ((0, 2), (5, 6, 9), (16, 18), (1, 3)),
+    ((0, 4), (3, 6, 9), (16, 19), (1, 5)),
+    ((1, 3), (5, 7, 8), (17, 18), (2, 4)),
+    ((1, 5), (3, 7, 8), (17, 19), (2, 6)),
+    ((2, 3), (1, 2, 5), (18, 20), (3, 4)),
+    ((2, 4), (1, 6, 9), (16, 20), (3, 5)),
+    ((3, 5), (1, 7, 8), (17, 20), (4, 6)),
+    ((4, 5), (1, 3, 4), (19, 20), (5, 6)),
+    ((0, 2, 4), (6, 9), (21,), (8, 9, 13)),
+    ((1, 3, 5), (7, 8), (21,), (10, 11, 14)),
+    ((0, 1, 2, 3), (5,), (21,), (7, 8, 10, 12)),
+    ((0, 1, 4, 5), (3,), (21,), (7, 9, 11, 15)),
+    ((2, 3, 4, 5), (1,), (21,), (12, 13, 14, 15)),
+    ((0, 1, 2, 3, 4, 5), (), (), (18, 19, 20, 16, 17)),
+  ],
+}
+''')])
+def test_tostring_python_literal(test_output, context, with_lattice,
+                                 expected_doc, expected_str, to_file):
+    if with_lattice:
+        context = context.copy()
+        assert context.lattice is not None
+
+    if to_file:
+        modifier = '-lattice' if with_lattice else ''
+        path = test_output / f'example-serialized{modifier}.py'
+        context.tofile(path, frmat='python-literal')
+        result = path.read_text(encoding='utf-8')
+    else:
+        expected_str = expected_str.rstrip()
+        result = context.tostring(frmat='python-literal')
+
+    assert result is not None
+    assert isinstance(result, str)
+    assert result
+
+    doc = ast.literal_eval(result)
+
+    assert doc is not None
+    assert isinstance(doc, dict)
+    assert doc
+    assert doc == expected_doc
+
+    assert result == expected_str
 
 
 def test_json_roundtrip(context, path_or_fileobj, encoding):
