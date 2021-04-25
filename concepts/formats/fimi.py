@@ -46,6 +46,6 @@ class Fimi(Format):
 def write_attributes_dat(path, iterconcepts,
                          *, encoding=Fimi.encoding,
                          newline=Fimi.newline):
-    with path.open('w', encoding=encoding, newline=newline) as f:
+    with open(path, 'w', encoding=encoding, newline=newline) as f:
         rows = (list(intent.iter_set()) for _, intent in iterconcepts)
         tools.write_csv_file(f, rows, dialect=FimiDialect)

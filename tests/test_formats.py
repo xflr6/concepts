@@ -251,7 +251,7 @@ class TestFimi(unittest.TestCase, Ascii):
 def test_write_attributes_dat(test_output, context):
     context = context.copy()
 
-    target = test_output / 'example-concepts.dat'
+    target = test_output / 'example-attributes.dat'
     iterconcepts = ((c._extent, c._intent) for c in context.lattice)
 
     formats.write_attributes_dat(target, iterconcepts)
