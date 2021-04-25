@@ -390,6 +390,31 @@ class Definition(Triple):
              |human|knight|king|brave|
     Arthur   |X    |      |    |     |
     Launcelot|X    |X     |    |     |
+
+    >>> e.remove_empty_objects()
+    >>> print(e)
+             |human|knight|king|brave|
+    Arthur   |X    |      |    |     |
+    Launcelot|X    |X     |    |     |
+
+    >>> e.remove_empty_properties()
+    >>> print(e)
+             |human|knight|
+    Arthur   |X    |      |
+    Launcelot|X    |X     |
+
+    >>> e.add_object('Spam')
+    >>> print(e)
+             |human|knight|
+    Arthur   |X    |      |
+    Launcelot|X    |X     |
+    Spam     |     |      |
+
+    >>> e.remove_empty_objects()
+    >>> print(e)
+             |human|knight|
+    Arthur   |X    |      |
+    Launcelot|X    |X     |
     """
 
     def rename_object(self, old, new):
@@ -484,6 +509,18 @@ class Definition(Triple):
         """
         self._properties.remove(prop)
         self._pairs.difference_update((o, prop) for o in self._objects)
+
+    def remove_empty_objects(self):
+        nonempty_objects = {o for o, _ in self._pairs}
+        empty_objects = set(self._objects) - nonempty_objects
+        for o in empty_objects:
+            self._objects.remove(o)
+
+    def remove_empty_properties(self):
+        nonempty_properties = {p for _, p in self._pairs}
+        empty_properties = set(self._properties) - nonempty_properties
+        for p in empty_properties:
+            self._properties.remove(p)
 
     def set_object(self, obj, properties):
         """Add an object to the definition and set its ``properties``.
