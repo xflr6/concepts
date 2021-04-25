@@ -106,6 +106,30 @@ def bob_ross(test_examples, filename=BOB_ROSS):
     return context
 
 
+@pytest.fixture
+def mushroom(test_examples, filename='mushroom.cxt'):
+    path = test_examples / filename
+
+    context = concepts.load_cxt(str(path))
+
+    assert len(context.objects) == 8_124
+    assert len(context.properties) == 128
+
+    return context
+
+
+@pytest.fixture
+def mushroom_subset(test_examples, filename='mushrooms_subset.csv'):
+    path = test_examples / filename
+
+    context = concepts.Context.fromfile(str(path), frmat='csv')
+
+    assert len(context.objects) == 8_124
+    assert len(context.properties) == 119
+
+    return context
+
+
 @pytest.mark.slow
 @pytest.mark.no_cover
 def test_lattice_bob_ross(test_examples, test_output, stopwatch, bob_ross):
@@ -125,3 +149,50 @@ def test_lattice_bob_ross(test_examples, test_output, stopwatch, bob_ross):
     assert result == expected
 
     assert timing.duration < 40
+
+
+@pytest.mark.skip(reason='TODO')
+@pytest.mark.slow
+@pytest.mark.no_cover
+def test_lattice_mushroom(stopwatch, mushroom):
+    with stopwatch():
+        lattice = mushroom.lattice
+
+    assert lattice is not None
+
+    print(f'{len(lattice):_d}')
+    assert len(latice) > 150_000
+
+
+@pytest.mark.skip(reason='TODO')
+@pytest.mark.slow
+@pytest.mark.no_cover
+def test_lattice_mushroom_subset(stopwatch, mushroom_subset):
+    with stopwatch():
+        lattice = mushroom_subset.lattice
+
+    assert lattice is not None
+    assert len(lattice) == 221_525
+
+
+@pytest.mark.slow
+@pytest.mark.no_cover
+def test_fcbo_mushroom(stopwatch, mushroom):
+    with stopwatch() as timing:
+        result = list(algorithms.fast_generate_from(mushroom))
+
+    print(f'{len(result):_d}')
+    assert len(result) > 150_000
+
+    assert timing.duration < 90
+
+
+@pytest.mark.slow
+@pytest.mark.no_cover
+def test_fcbo_mushroom_subset(stopwatch, mushroom_subset):
+    with stopwatch() as timing:
+        result = list(algorithms.fast_generate_from(mushroom_subset))
+
+    assert len(result) == 221_525
+
+    assert timing.duration < 90
