@@ -5,7 +5,7 @@ from .. import tools
 from .base import Format
 
 __all__ = ['Fimi',
-           'write_attributes_dat']
+           'write_concepts_dat']
 
 
 def iter_fimi_rows(bools):
@@ -43,9 +43,11 @@ class Fimi(Format):
     dumpf = staticmethod(dump_file)
 
 
-def write_attributes_dat(path, iterconcepts,
-                         *, encoding=Fimi.encoding,
-                         newline=Fimi.newline):
+def write_concepts_dat(path, iterconcepts, *, extents: bool = False,
+                       encoding=Fimi.encoding,
+                       newline=Fimi.newline):
+    rows = ((list(extent.iter_set()) for extent, _ in iterconcepts) if extents
+            else (list(intent.iter_set()) for _, intent in iterconcepts))
+
     with open(path, 'w', encoding=encoding, newline=newline) as f:
-        rows = (list(intent.iter_set()) for _, intent in iterconcepts)
         tools.write_csv_file(f, rows, dialect=FimiDialect)

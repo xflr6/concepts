@@ -248,20 +248,134 @@ class TestFimi(unittest.TestCase, Ascii):
 '''
 
 
-def test_write_attributes_dat(test_output, context):
-    context = context.copy()
+@pytest.mark.parametrize('frmat, label, expected', [
+    ('table', None, '''\
+   |+1|-1|+2|-2|+3|-3|+sg|+pl|-sg|-pl|
+1sg|X |  |  |X |  |X |X  |   |   |X  |
+1pl|X |  |  |X |  |X |   |X  |X  |   |
+2sg|  |X |X |  |  |X |X  |   |   |X  |
+2pl|  |X |X |  |  |X |   |X  |X  |   |
+3sg|  |X |  |X |X |  |X  |   |   |X  |
+3pl|  |X |  |X |X |  |   |X  |X  |   |
+'''),
+    ('cxt', None, '''\
+B
 
-    target = test_output / 'example-attributes.dat'
-    iterconcepts = ((c._extent, c._intent) for c in context.lattice)
+6
+10
 
-    formats.write_attributes_dat(target, iterconcepts)
+1sg
+1pl
+2sg
+2pl
+3sg
+3pl
++1
+-1
++2
+-2
++3
+-3
++sg
++pl
+-sg
+-pl
+X..X.XX..X
+X..X.X.XX.
+.XX..XX..X
+.XX..X.XX.
+.X.XX.X..X
+.X.XX..XX.
+'''),
+    ('python-literal', None, '''\
+{
+  'objects': (
+    '1sg', '1pl', '2sg', '2pl', '3sg', '3pl',
+  ),
+  'properties': (
+    '+1', '-1', '+2', '-2', '+3', '-3', '+sg', '+pl', '-sg', '-pl',
+  ),
+  'context': [
+    (0, 3, 5, 6, 9),
+    (0, 3, 5, 7, 8),
+    (1, 2, 5, 6, 9),
+    (1, 2, 5, 7, 8),
+    (1, 3, 4, 6, 9),
+    (1, 3, 4, 7, 8),
+  ],
+}
+'''),
+    ('csv', None, '''\
+,+1,-1,+2,-2,+3,-3,+sg,+pl,-sg,-pl
+1sg,X,,,X,,X,X,,,X
+1pl,X,,,X,,X,,X,X,
+2sg,,X,X,,,X,X,,,X
+2pl,,X,X,,,X,,X,X,
+3sg,,X,,X,X,,X,,,X
+3pl,,X,,X,X,,,X,X,
+'''),
+    ('fimi', None, '''\
+0 3 5 6 9
+0 3 5 7 8
+1 2 5 6 9
+1 2 5 7 8
+1 3 4 6 9
+1 3 4 7 8
+'''),
+    ( 'wiki-table', 'wiki-table', '''\
+{| class="featuresystem"
+!
+!+1!!-1!!+2!!-2!!+3!!-3!!+sg!!+pl!!-sg!!-pl
+|-
+!1sg
+|X ||  ||  ||X ||  ||X ||X  ||   ||   ||X  
+|-
+!1pl
+|X ||  ||  ||X ||  ||X ||   ||X  ||X  ||   
+|-
+!2sg
+|  ||X ||X ||  ||  ||X ||X  ||   ||   ||X  
+|-
+!2pl
+|  ||X ||X ||  ||  ||X ||   ||X  ||X  ||   
+|-
+!3sg
+|  ||X ||  ||X ||X ||  ||X  ||   ||   ||X  
+|-
+!3pl
+|  ||X ||  ||X ||X ||  ||   ||X  ||X  ||   
+|}
+''')])
+def test_write_example(test_output, context, frmat, label, expected):
+    Format = formats.Format[frmat]
+
+    flag = f'-{label}' if label else ''
+
+    suffix = getattr(Format, 'suffix', '.txt')
+    target = test_output / f'example{flag}{suffix}'
+
+    result = write_format(target,
+                          context.objects, context.properties, context.bools,
+                          Format=Format)
+
+    assert result == expected
+
+
+def write_format(target, objects, properties, bools, *, Format):
+    Format.dump(str(target),
+                objects, properties, bools,
+                encoding=Format.encoding)
 
     assert target.exists()
     assert target.stat().st_size
 
-    result = target.read_text()
+    result = target.read_text(encoding=Format.encoding)
 
-    assert result == '''\
+    return result
+
+
+@pytest.mark.parametrize('extents, label, expected', [
+    ( False, 'intents', '''\
 0 1 2 3 4 5 6 7 8 9
 0 3 5 6 9
 0 3 5 7 8
@@ -284,4 +398,44 @@ def test_write_attributes_dat(test_output, context):
 3
 1
 
-'''
+'''),
+    (True, 'extents', '''\
+
+0
+1
+2
+3
+4
+5
+0 1
+0 2
+0 4
+1 3
+1 5
+2 3
+2 4
+3 5
+4 5
+0 2 4
+1 3 5
+0 1 2 3
+0 1 4 5
+2 3 4 5
+0 1 2 3 4 5
+''')])
+def test_write_example_concepts_dat(test_output, context, extents, label, expected):
+    context = context.copy()
+
+    Format = formats.Format['fimi']
+
+    target = test_output / f'example-{label}.dat'
+    iterconcepts = ((c._extent, c._intent) for c in context.lattice)
+    
+    formats.write_concepts_dat(target, iterconcepts, extents=extents)
+
+    assert target.exists()
+    assert target.stat().st_size
+
+    result = target.read_text(encoding=Format.encoding)
+
+    assert result == expected
