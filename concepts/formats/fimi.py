@@ -4,7 +4,8 @@ from .. import tools
 
 from .base import Format
 
-__all__ = ['Fimi']
+__all__ = ['Fimi',
+           'write_attributes_dat']
 
 
 def iter_fimi_rows(bools):
@@ -40,3 +41,11 @@ class Fimi(Format):
     dumps_rstrip = False
 
     dumpf = staticmethod(dump_file)
+
+
+def write_attributes_dat(path, iterconcepts,
+                         *, encoding=Fimi.encoding,
+                         newline=Fimi.newline):
+    with path.open('w', encoding=encoding, newline=newline) as f:
+        rows = (list(intent.iter_set()) for _, intent in iterconcepts)
+        tools.write_csv_file(f, rows, dialect=FimiDialect)

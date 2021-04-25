@@ -12,8 +12,13 @@ sys.path.insert(1, os.pardir)
 
 import concepts  # noqa: E402
 from concepts import algorithms  # noqa: E402
+from concepts import formats  # noqa: E402
 
-MUSHROOM = pathlib.Path(os.pardir) / 'examples' / 'mushroom.cxt'
+ROOT = pathlib.Path(os.pardir)
+
+MUSHROOM =  ROOT / 'examples' / 'mushroom.cxt'
+
+ATTRIBUTES =  ROOT / 'test-output' / f'{MUSHROOM.stem}-attributes.dat'
 
 ENCODING = 'ascii'
 
@@ -29,6 +34,9 @@ assert len(context.properties) == 128, f'{len(context.properties):_d} != 128'
 result = list(algorithms.fast_generate_from(context))
 print(f'{len(result):_d} concepts')
 
+formats.write_attributes_dat(ATTRIBUTES, result)
+print(ATTRIBUTES, f'{ATTRIBUTES.stat().st_size:_d} bytes')
+
 duration = time.perf_counter() - start
 print(f'{duration:.1f} seconds')
 
@@ -38,6 +46,3 @@ assert duration <= 90, f'{duration:.1f} > 90'
 
 cProfile.run('list(algorithms.fast_generate_from(context))',
              sort='tottime')
-
-context.tofile('../test-output/mushroom-concepts.dat',
-               frmat='fimi', encoding=ENCODING)

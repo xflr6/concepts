@@ -246,3 +246,42 @@ class TestFimi(unittest.TestCase, Ascii):
 1
 1
 '''
+
+
+def test_write_attributes_dat(test_output, context):
+    context = context.copy()
+
+    target = test_output / 'example-concepts.dat'
+    iterconcepts = ((c._extent, c._intent) for c in context.lattice)
+
+    formats.write_attributes_dat(target, iterconcepts)
+
+    assert target.exists()
+    assert target.stat().st_size
+
+    result = target.read_text()
+
+    assert result == '''\
+0 1 2 3 4 5 6 7 8 9
+0 3 5 6 9
+0 3 5 7 8
+1 2 5 6 9
+1 2 5 7 8
+1 3 4 6 9
+1 3 4 7 8
+0 3 5
+5 6 9
+3 6 9
+5 7 8
+3 7 8
+1 2 5
+1 6 9
+1 7 8
+1 3 4
+6 9
+7 8
+5
+3
+1
+
+'''
