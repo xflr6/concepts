@@ -94,58 +94,6 @@ def test_fcbo(context, dual, expected):
     assert pairs == expected
 
 
-@pytest.mark.parametrize('dual, expected', [
-    (False, [('ABCD', ''),
-             ('ABC',  '0'),
-             ('AC',   '01'),
-             ('A',    '012'),
-             ('',     '012345'),
-             ('C',    '014'),
-             ('AB',   '02'),
-             ('B',    '02345'),
-             ('BC',   '04'),
-             ('ACD',  '1'),
-             ('AD',   '12'),
-             ('ABD',  '2')]),
-    (True, [('',     '012345'),
-            ('A',    '012'),
-            ('AB',   '02'),
-            ('ABC',  '0'),
-            ('ABCD', ''),
-            ('ABD',  '2'),
-            ('AC',   '01'),
-            ('ACD',  '1'),
-            ('AD',   '12'),
-            ('B',    '02345'),
-            ('BC',   '04'),
-            ('C',    '014')]),
-])
-def test_fcbo_example(dual, expected):
-    source = (' |0|1|2|3|4|5|\n'
-              'A|X|X|X| | | |\n'
-              'B|X| |X|X|X|X|\n'
-              'C|X|X| | |X| |\n'
-              'D| |X|X| | | |\n')
-
-    context = concepts.make_context(source)
-
-    assert context.objects == ('A', 'B', 'C', 'D')
-    assert context.properties == ('0', '1', '2', '3', '4', '5')
-
-    func = getattr(algorithms, 'fcbo_dual' if dual else 'fast_generate_from')
-
-    result = list(func(context))
-
-    assert len(result) == len(expected)
-
-    members = [(''.join(extent.members()), ''.join(intent.members()))
-               for extent, intent in result]
-
-    assert set(members) == set(expected)
-
-    assert members == expected
-
-
 @pytest.fixture
 def bob_ross(test_examples, filename=BOB_ROSS):
     path = test_examples / filename

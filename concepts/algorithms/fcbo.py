@@ -17,7 +17,34 @@ def iter_j_atom_mask(n: int):
 
 
 def fast_generate_from(context):
-    """Yield ``(extent, intent)`` pairs from ``context`` (by intents)."""
+    """Yield ``(extent, intent)`` pairs from ``context`` (by intents).
+
+    Example:
+        >>> from concepts import make_context
+
+        >>> context = make_context('''
+        ...  |0|1|2|3|4|5|
+        ... A|X|X|X| | | |
+        ... B|X| |X|X|X|X|
+        ... C|X|X| | |X| |
+        ... D| |X|X| | | |''')
+
+        >>> [(''.join(extent.members()),  # doctest: +NORMALIZE_WHITESPACE
+        ...   ''.join(intent.members()))
+        ...  for extent, intent in fast_generate_from(context)]
+        [('ABCD', ''),
+         ('ABC', '0'),
+         ('AC', '01'),
+         ('A', '012'),
+         ('', '012345'),
+         ('C', '014'),
+         ('AB', '02'),
+         ('B', '02345'),
+         ('BC', '04'),
+         ('ACD', '1'),
+         ('AD', '12'),
+         ('ABD', '2')]
+    """
     Extent = context._Extent
     Intent = context._Intent
 
@@ -61,7 +88,34 @@ def fast_generate_from(context):
 
 
 def fcbo_dual(context):
-    """Yield ``(extent, intent)`` pairs from ``context`` (by extents)."""
+    """Yield ``(extent, intent)`` pairs from ``context`` (by extents).
+
+    Example:
+        >>> from concepts import make_context
+
+        >>> context = make_context('''
+        ...  |0|1|2|3|4|5|
+        ... A|X|X|X| | | |
+        ... B|X| |X|X|X|X|
+        ... C|X|X| | |X| |
+        ... D| |X|X| | | |''')
+
+        >>> [(''.join(extent.members()),  # doctest: +NORMALIZE_WHITESPACE
+        ...   ''.join(intent.members()))
+        ...  for extent, intent in fcbo_dual(context)]
+        [('', '012345'),
+         ('A', '012'),
+         ('AB', '02'),
+         ('ABC', '0'),
+         ('ABCD', ''),
+         ('ABD', '2'),
+         ('AC', '01'),
+         ('ACD', '1'),
+         ('AD', '12'),
+         ('B', '02345'),
+         ('BC', '04'),
+         ('C', '014')]
+    """
     Extent = context._Extent
     Intent = context._Intent
 
