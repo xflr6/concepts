@@ -4,6 +4,7 @@ import pytest
 
 import concepts
 from concepts import algorithms
+from concepts import formats
 
 BOB_ROSS = pathlib.Path('bob_ross.cxt')
 
@@ -118,6 +119,22 @@ def test_fcbo(context, dual, expected):
     assert pairs == expected
 
 
+def test_serialize_bob_ross(test_output, bob_ross):
+    target = test_output / f'{BOB_ROSS.stem}-serialized.py'
+    bob_ross.tofile(str(target), frmat='python-literal')
+
+    Format = formats.Format['python-literal']
+    serialized_args = Format.load(target, encoding='utf-8')
+
+    for name in ('objects', 'properties'):
+        assert getattr(serialized_args, name) == (serialized_args
+                                                  .serialized[name])
+    assert serialized_args.lattice is None
+
+    for name in ('objects', 'properties', 'bools'):
+        assert getattr(serialized_args, name) == getattr(bob_ross, name)
+
+
 @pytest.mark.slow
 @pytest.mark.no_cover
 def test_lattice_bob_ross(test_examples, test_output, stopwatch, bob_ross):
@@ -127,7 +144,7 @@ def test_lattice_bob_ross(test_examples, test_output, stopwatch, bob_ross):
     assert lattice is not None
     assert len(lattice) == 3_463
 
-    target = test_output / f'{BOB_ROSS.stem}-serialized.py'
+    target = test_output / f'{BOB_ROSS.stem}-serialized-lattice.py'
     bob_ross.tofile(str(target), frmat='python-literal')
     result = target.read_text(encoding=ENCODING)
 
