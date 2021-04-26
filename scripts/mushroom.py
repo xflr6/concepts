@@ -36,9 +36,9 @@ CXT = MUSHROOM.with_suffix('.cxt')
 
 DAT = MUSHROOM.with_suffix('.dat')
 
-CXT_CLEANED = CXT.with_name(f'{CXT.stem}-cleaned{CXT.suffix}')
+CXT_MINIMAL = CXT.with_name(f'{CXT.stem}-minimal{CXT.suffix}')
 
-DAT_CLEANED = DAT.with_name(f'{DAT.stem}-cleaned{DAT.suffix}')
+DAT_MINIMAL = DAT.with_name(f'{DAT.stem}-minimal{DAT.suffix}')
 
 
 ATTRIBUTES = re.compile(r'''
@@ -131,7 +131,7 @@ properties = list(iterproperties(attributes))
 print(f'{properties!r:}')
 assert len(properties) == 128, f'{len(attributes):_d} != 128'
 
-if not all(path.exists() for path in (CXT, CSV, DAT, CXT_CLEANED, DAT_CLEANED)):
+if not all(path.exists() for path in (CXT, CSV, DAT, CXT_MINIMAL, DAT_MINIMAL)):
     data = list(tools.csv_iterrows(DATA))
     assert len(data) == 8_124, f'{len(data):_d} != 8_124'
 
@@ -148,11 +148,13 @@ if not all(path.exists() for path in (CXT, CSV, DAT, CXT_CLEANED, DAT_CLEANED)):
     print(DAT, f'{DAT.stat().st_size:_d} bytes')
 
     definition = concepts.Definition.fromfile(CXT)
-    definition.remove_empty_properties()
+    removed = definition.remove_empty_properties()
+    print(removed)
+
     context = concepts.Context(*definition)
     assert len(context.properties) == 119, f'{len(attributes):_d} != 119'
 
-    context.tofile(CXT_CLEANED, frmat='cxt')
-    print(CXT_CLEANED, f'{CXT_CLEANED.stat().st_size:_d} bytes')
-    context.tofile(DAT_CLEANED, frmat='fimi')
-    print(DAT_CLEANED, f'{DAT_CLEANED.stat().st_size:_d} bytes')
+    context.tofile(CXT_MINIMAL, frmat='cxt')
+    print(CXT_MINIMAL, f'{CXT_MINIMAL.stat().st_size:_d} bytes')
+    context.tofile(DAT_MINIMAL, frmat='fimi')
+    print(DAT_MINIMAL, f'{DAT_MINIMAL.stat().st_size:_d} bytes')

@@ -14,22 +14,18 @@ import concepts  # noqa: E402
 from concepts import algorithms  # noqa: E402
 from concepts import formats  # noqa: E402
 
-ROOT = pathlib.Path(os.pardir)
+from mushroom import CXT_MINIMAL, ENCODING
 
-MUSHROOM =  ROOT / 'examples' / 'mushroom.cxt'
-
-INTENTS =  ROOT / 'test-output' / f'{MUSHROOM.stem}-intents.dat'
-
-ENCODING = 'ascii'
+INTENTS =  CXT_MINIMAL.with_name(f'{CXT_MINIMAL.stem}-intents.dat')
 
 
 start = time.perf_counter()
 
-context = concepts.load(MUSHROOM, encoding=ENCODING)
+context = concepts.load(CXT_MINIMAL, encoding=ENCODING)
 print(f'{context!r}')
 
 assert len(context.objects) == 8_124,  f'{len(context.objects):_d)} != 8_124'
-assert len(context.properties) == 128, f'{len(context.properties):_d} != 128'
+assert len(context.properties) == 119, f'{len(context.properties):_d} != 119'
 
 result = algorithms.get_concepts(context)
 print(f'{len(result):_d} concepts')
@@ -40,7 +36,7 @@ print(INTENTS, f'{INTENTS.stat().st_size:_d} bytes')
 duration = time.perf_counter() - start
 print(f'{duration:.1f} seconds')
 
-assert len(result) >= 150_000, f'{len(result):_d} < 150_000'
+assert len(result) == 238_710, f'{len(result):_d} != 238_710'
 
 assert duration <= 90, f'{duration:.1f} > 90'
 

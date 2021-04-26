@@ -392,12 +392,14 @@ class Definition(Triple):
     Launcelot|X    |X     |    |     |
 
     >>> e.remove_empty_objects()
+    []
     >>> print(e)
              |human|knight|king|brave|
     Arthur   |X    |      |    |     |
     Launcelot|X    |X     |    |     |
 
     >>> e.remove_empty_properties()
+    ['king', 'brave']
     >>> print(e)
              |human|knight|
     Arthur   |X    |      |
@@ -411,6 +413,7 @@ class Definition(Triple):
     Spam     |     |      |
 
     >>> e.remove_empty_objects()
+    ['Spam']
     >>> print(e)
              |human|knight|
     Arthur   |X    |      |
@@ -510,17 +513,19 @@ class Definition(Triple):
         self._properties.remove(prop)
         self._pairs.difference_update((o, prop) for o in self._objects)
 
-    def remove_empty_objects(self):
+    def remove_empty_objects(self) -> typing.List[str]:
         nonempty_objects = {o for o, _ in self._pairs}
-        empty_objects = set(self._objects) - nonempty_objects
+        empty_objects = [o for o in self._objects if o not in nonempty_objects]
         for o in empty_objects:
             self._objects.remove(o)
+        return empty_objects
 
-    def remove_empty_properties(self):
+    def remove_empty_properties(self) -> typing.List[str]:
         nonempty_properties = {p for _, p in self._pairs}
-        empty_properties = set(self._properties) - nonempty_properties
+        empty_properties = [p for p in self._properties if p not in nonempty_properties]
         for p in empty_properties:
             self._properties.remove(p)
+        return empty_properties
 
     def set_object(self, obj, properties):
         """Add an object to the definition and set its ``properties``.
