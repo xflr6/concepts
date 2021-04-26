@@ -38,8 +38,14 @@ DAT = MUSHROOM.with_suffix('.dat')
 
 CXT_MINIMAL = CXT.with_name(f'{CXT.stem}-minimal{CXT.suffix}')
 
+CSV_MINIMAL_STR = CSV.with_name(f'{CSV.stem}-str{CSV.suffix}')
+
+CSV_MINIMAL_INT = CSV.with_name(f'{CSV.stem}-int{CSV.suffix}')
+
 DAT_MINIMAL = DAT.with_name(f'{DAT.stem}-minimal{DAT.suffix}')
 
+RESULTS = (CSV, CXT, DAT,
+           CSV_MINIMAL_STR, CSV_MINIMAL_INT, CXT_MINIMAL, DAT_MINIMAL)
 
 ATTRIBUTES = re.compile(r'''
                         ^7\.[ ]Attribute[ ]Information:
@@ -131,7 +137,7 @@ properties = list(iterproperties(attributes))
 print(f'{properties!r:}')
 assert len(properties) == 128, f'{len(attributes):_d} != 128'
 
-if not all(path.exists() for path in (CXT, CSV, DAT, CXT_MINIMAL, DAT_MINIMAL)):
+if not all(path.exists() for path in RESULTS):
     data = list(tools.csv_iterrows(DATA))
     assert len(data) == 8_124, f'{len(data):_d} != 8_124'
 
@@ -156,5 +162,14 @@ if not all(path.exists() for path in (CXT, CSV, DAT, CXT_MINIMAL, DAT_MINIMAL)):
 
     context.tofile(CXT_MINIMAL, frmat='cxt')
     print(CXT_MINIMAL, f'{CXT_MINIMAL.stat().st_size:_d} bytes')
+
+    context.tofile(CSV_MINIMAL_STR, frmat='csv',
+                   object_header=MUSHROOM.stem, bools_as_int=False)
+    print(CSV_MINIMAL_STR, f'{CSV_MINIMAL_STR.stat().st_size:_d} bytes')
+
+    context.tofile(CSV_MINIMAL_INT, frmat='csv',
+                    object_header=MUSHROOM.stem, bools_as_int=True)
+    print(CSV_MINIMAL_INT, f'{CSV_MINIMAL_INT.stat().st_size:_d} bytes')
+
     context.tofile(DAT_MINIMAL, frmat='fimi')
     print(DAT_MINIMAL, f'{DAT_MINIMAL.stat().st_size:_d} bytes')

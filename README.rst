@@ -119,7 +119,11 @@ The generation of the concept lattice is based on the algorithm from C. Lindig.
 `Fast Concept Analysis`_. In Gerhard Stumme, editors, Working with Conceptual
 Structures - Contributions to ICCS 2000, Shaker Verlag, Aachen, Germany, 2000.
 
-The included example ``CXT`` files are taken from Uta Priss' `FCA homepage`_
+Most of the included example ``CXT`` files are taken from Uta Priss'
+`FCA homepage`_.
+
+The ``mushroom`` dataset is converted from the
+`UCI Mashine Learning repsitory`_.
 
 
 See also
@@ -148,6 +152,7 @@ Concepts is distributed under the `MIT license`_.
 .. _FCA: https://en.wikipedia.org/wiki/Formal_concept_analysis
 .. _Fast Concept Analysis: http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.143.948
 .. _FCA homepage: http://www.upriss.org.uk/fca/examples.html
+.. _UCI Mashine Learning repsitory: https://archive.ics.uci.edu/ml/machine-learning-databases/mushroom/
 
 .. _pip: https://pip.readthedocs.io
 .. _Graphviz software: http://www.graphviz.org

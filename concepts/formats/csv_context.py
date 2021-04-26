@@ -56,13 +56,14 @@ class Csv(Format):
 
     @classmethod
     def dumpf(cls, file, objects, properties, bools,
-              *, bools_as_int: bool = False,
+              *, object_header: typing.Optional[str] = None,
+              bools_as_int: bool = False,
               dialect: typing.Optional[str] = None,
               _serialized=None) -> None:
         if dialect is None:
             dialect = cls.dialect
 
-        header = [''] + list(properties)
+        header = [object_header] + list(properties)
 
         symbool = cls.symbols[bools_as_int].__getitem__
 
