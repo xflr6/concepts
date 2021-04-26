@@ -195,12 +195,12 @@ def test_csv_loads_auto_as_int(source, kwargs):
 cheese,in_stock,sold_out\r
 Cheddar,0,\r
 Limburger,0,1\r
-''', ValueError, r''),
+''', ValueError,  r"first row: \['Cheddar', '0', ''\]"),
     ('''\
 cheese,in_stock,sold_out\r
 Cheddar,0,1\r
 Limburger,X,1\r
-''', KeyError, r'')])
+''', KeyError, r'X')])
 def test_csv_loads_auto_as_int_invalid(source, expected, match):
     with pytest.raises(expected, match=match):
         result = formats.Csv.loads(source)
