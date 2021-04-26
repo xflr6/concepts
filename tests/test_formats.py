@@ -171,18 +171,39 @@ Llama,,\r
 '''
 
 
-def test_csv_loads_ints():
-    source = '''\
+@pytest.mark.parametrize('source, kwargs', [
+    ('''\
 cheese,in_stock,sold_out\r
 Cheddar,0,1\r
 Limburger,0,1\r
-'''
-
-    args = formats.Csv.loads(source)
+''', {}),
+    ('''\
+cheese,in_stock,sold_out\r
+Cheddar,,X\r
+Limburger,,X\r
+''', {})])
+def test_csv_loads_auto_as_int(source, kwargs):
+    args = formats.Csv.loads(source, **kwargs)
 
     assert args.objects == ['Cheddar', 'Limburger']
     assert args.properties == ['in_stock', 'sold_out']
     assert args.bools ==  [(False, True), (False, True)]
+
+
+@pytest.mark.parametrize('source, expected, match', [
+    ('''\
+cheese,in_stock,sold_out\r
+Cheddar,0,\r
+Limburger,0,1\r
+''', ValueError, r''),
+    ('''\
+cheese,in_stock,sold_out\r
+Cheddar,0,1\r
+Limburger,X,1\r
+''', KeyError, r'')])
+def test_csv_loads_auto_as_int_invalid(source, expected, match):
+    with pytest.raises(expected, match=match):
+        result = formats.Csv.loads(source)
 
 
 class TestWikitableAscii(unittest.TestCase, Ascii):
@@ -368,6 +389,11 @@ def test_write_example(test_output, context, frmat, label, kwargs, expected):
                           Format=Format, **kwargs)
 
     assert result == expected
+
+    try:
+        reloaded = Format.load(target, encoding=Format.encoding, **kwargs)
+    except NotImplementedError:
+        pytest.skip('not implemented')
 
 
 def write_format(target, objects, properties, bools, *, Format, **kwargs):
