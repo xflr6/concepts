@@ -248,8 +248,8 @@ class TestFimi(unittest.TestCase, Ascii):
 '''
 
 
-@pytest.mark.parametrize('frmat, label, expected', [
-    ('table', None, '''\
+@pytest.mark.parametrize('frmat, label, kwargs, expected', [
+    ('table', None, {}, '''\
    |+1|-1|+2|-2|+3|-3|+sg|+pl|-sg|-pl|
 1sg|X |  |  |X |  |X |X  |   |   |X  |
 1pl|X |  |  |X |  |X |   |X  |X  |   |
@@ -258,7 +258,7 @@ class TestFimi(unittest.TestCase, Ascii):
 3sg|  |X |  |X |X |  |X  |   |   |X  |
 3pl|  |X |  |X |X |  |   |X  |X  |   |
 '''),
-    ('cxt', None, '''\
+    ('cxt', None, {}, '''\
 B
 
 6
@@ -287,7 +287,7 @@ X..X.X.XX.
 .X.XX.X..X
 .X.XX..XX.
 '''),
-    ('python-literal', None, '''\
+    ('python-literal', 'literal', {}, '''\
 {
   'objects': (
     '1sg', '1pl', '2sg', '2pl', '3sg', '3pl',
@@ -305,7 +305,7 @@ X..X.X.XX.
   ],
 }
 '''),
-    ('csv', None, '''\
+    ('csv', 'str', {'bools_as_int': False}, '''\
 ,+1,-1,+2,-2,+3,-3,+sg,+pl,-sg,-pl
 1sg,X,,,X,,X,X,,,X
 1pl,X,,,X,,X,,X,X,
@@ -314,7 +314,16 @@ X..X.X.XX.
 3sg,,X,,X,X,,X,,,X
 3pl,,X,,X,X,,,X,X,
 '''),
-    ('fimi', None, '''\
+    ('csv', 'int', {'bools_as_int': True}, '''\
+,+1,-1,+2,-2,+3,-3,+sg,+pl,-sg,-pl
+1sg,1,0,0,1,0,1,1,0,0,1
+1pl,1,0,0,1,0,1,0,1,1,0
+2sg,0,1,1,0,0,1,1,0,0,1
+2pl,0,1,1,0,0,1,0,1,1,0
+3sg,0,1,0,1,1,0,1,0,0,1
+3pl,0,1,0,1,1,0,0,1,1,0
+'''),
+    ('fimi', None, {}, '''\
 0 3 5 6 9
 0 3 5 7 8
 1 2 5 6 9
@@ -322,7 +331,7 @@ X..X.X.XX.
 1 3 4 6 9
 1 3 4 7 8
 '''),
-    ( 'wiki-table', 'wiki-table', '''\
+    ( 'wiki-table', 'wiki-table', {}, '''\
 {| class="featuresystem"
 !
 !+1!!-1!!+2!!-2!!+3!!-3!!+sg!!+pl!!-sg!!-pl
@@ -346,7 +355,7 @@ X..X.X.XX.
 |  ||X ||  ||X ||X ||  ||   ||X  ||X  ||   
 |}
 ''')])
-def test_write_example(test_output, context, frmat, label, expected):
+def test_write_example(test_output, context, frmat, label, kwargs, expected):
     Format = formats.Format[frmat]
 
     flag = f'-{label}' if label else ''
@@ -356,15 +365,15 @@ def test_write_example(test_output, context, frmat, label, expected):
 
     result = write_format(target,
                           context.objects, context.properties, context.bools,
-                          Format=Format)
+                          Format=Format, **kwargs)
 
     assert result == expected
 
 
-def write_format(target, objects, properties, bools, *, Format):
+def write_format(target, objects, properties, bools, *, Format, **kwargs):
     Format.dump(str(target),
                 objects, properties, bools,
-                encoding=Format.encoding)
+                encoding=Format.encoding, **kwargs)
 
     assert target.exists()
     assert target.stat().st_size

@@ -7,9 +7,17 @@ from .base import ContextArgs, Format
 
 __all__ = ['Csv']
 
-SYMBOLS = {False: '', True: 'X'}
+SYMBOLS = {False: {False: '', True: 'X'},
+           True: {False: 0, True: 1}}
 
-EXTRA_PARSING_SYMBOLS = {'0': False, '1': True}
+VALUES = {as_int: {str(s): v for v, s in symbols.items()}
+          for as_int, symbols in SYMBOLS.items()}
+
+VALUES[None] = {s: v
+                for values in VALUES.values()
+                for s, v in values.items()}
+
+assert len(VALUES[None]) == 4
 
 
 class Csv(Format):
@@ -25,11 +33,11 @@ class Csv(Format):
 
     symbols = SYMBOLS
 
-    values = {s: b for b, s in symbols.items()}
-    values.update(EXTRA_PARSING_SYMBOLS)
+    values = VALUES
 
     @classmethod
-    def loadf(cls, file, *, dialect: typing.Optional[str] = None) -> ContextArgs:
+    def loadf(cls, file, *, bools_as_int: typing.Optional[bool] = None,
+              dialect: typing.Optional[str] = None) -> ContextArgs:
         if dialect is None:
             dialect = cls.dialect
         reader = csv.reader(file, dialect=dialect)
@@ -38,7 +46,7 @@ class Csv(Format):
 
         _, *properties = next(reader)
 
-        get_value = cls.values.__getitem__
+        get_value = cls.values[bools_as_int].__getitem__
 
         for obj, *symbols in reader:
             objects.append(obj)
@@ -48,14 +56,15 @@ class Csv(Format):
 
     @classmethod
     def dumpf(cls, file, objects, properties, bools,
-              *, dialect: typing.Optional[str] = None,
+              *, bools_as_int: bool = False,
+              dialect: typing.Optional[str] = None,
               _serialized=None) -> None:
         if dialect is None:
             dialect = cls.dialect
 
         header = [''] + list(properties)
 
-        symbool = cls.symbols.__getitem__
+        symbool = cls.symbols[bools_as_int].__getitem__
 
         rows = ([o] + list(map(symbool, bs))
                 for o, bs in zip(objects, bools))
