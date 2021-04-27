@@ -4,7 +4,7 @@ import itertools
 
 import pandas as pd
 
-from mushroom import MUSHROOM, ENCODING, CSV, properties
+from mushroom import MUSHROOM, ENCODING, CSV, CSV_MINIMAL_INT, properties
 
 
 dtype = {MUSHROOM.stem: 'uint'}
@@ -27,3 +27,11 @@ cf = pd.concat([cf, cf.sum().to_frame('total').T])
 
 print(cf)
 print('fill ratio:', f'{df.sum().sum() / df.count().sum():.2%}')
+
+
+mf = pd.read_csv(CSV_MINIMAL_INT, dtype=dtype, index_col=MUSHROOM.stem,
+                 encoding=ENCODING)
+mf.info(memory_usage='deep')
+
+assert df.equals(mf), ("df.drop(empty, axis='columns') aggrees"
+                       ' with Definition.remove_empty_properties()')

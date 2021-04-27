@@ -38,7 +38,7 @@ def fast_generate_from(context):
          ('AD', '12'),
          ('ABD', '2')]
     """
-    n_attributes = len(context.properties)
+    n_properties = len(context.properties)
 
     Properties = context._Properties
 
@@ -48,27 +48,27 @@ def fast_generate_from(context):
 
     prime = Objects.prime
 
-    stack = [(Objects.supremum.doubleprime(), 0, [Properties.infimum] * n_attributes)]
+    stack = [(Objects.supremum.doubleprime(), 0, [Properties.infimum] * n_properties)]
 
     while stack:
-        concept, attribute_index, attribute_sets = stack.pop()
+        concept, property_index, property_sets = stack.pop()
 
         yield concept
 
         extent, intent = concept
 
-        if attribute_index == n_attributes or not extent:
+        if property_index == n_properties or not extent:
             continue
 
-        next_attribute_sets = attribute_sets.copy()
+        next_property_sets = property_sets.copy()
 
-        for j, j_attribute in reversed(j_atom[attribute_index:]):
-            if j_attribute & intent:
+        for j, j_property in reversed(j_atom[property_index:]):
+            if j_property & intent:
                 continue
 
-            j_mask = j_attribute - 1
+            j_mask = j_property - 1
 
-            x = next_attribute_sets[j] & j_mask
+            x = next_property_sets[j] & j_mask
 
             if x & intent == x:
                 j_extent = extent & context._extents[j]
@@ -79,9 +79,9 @@ def fast_generate_from(context):
 
                 if j_lower & intent == j_lower:
                     concept = (Objects.fromint(j_extent), Properties.fromint(j_intent))
-                    stack.append((concept, j + 1, next_attribute_sets))
+                    stack.append((concept, j + 1, next_property_sets))
                 else:
-                    next_attribute_sets[j] = j_intent
+                    next_property_sets[j] = j_intent
 
 
 def fcbo_dual(context):

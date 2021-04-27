@@ -4,10 +4,35 @@ import pytest
 
 import concepts
 from concepts import algorithms
+from concepts import formats
 
 BOB_ROSS = pathlib.Path('bob_ross.cxt')
 
 ENCODING = 'utf-8'
+
+
+@pytest.fixture
+def bob_ross(test_examples, filename=BOB_ROSS):
+    path = test_examples / filename
+
+    context = concepts.load_cxt(str(path), encoding=ENCODING)
+
+    assert len(context.objects) == 403
+    assert len(context.properties) == 67
+
+    return context
+
+
+@pytest.fixture
+def mushroom(test_examples, filename='mushroom.cxt'):
+    path = test_examples / filename
+
+    context = concepts.load_cxt(str(path))
+
+    assert len(context.objects) == 8_124
+    assert len(context.properties) == 119
+
+    return context
 
 
 def test_lattice(lattice):
@@ -84,51 +109,30 @@ def test_lattice(lattice):
             '000001 <-> 0101100110']),
 ])
 def test_fcbo(context, dual, expected):
-    func = getattr(algorithms, 'fcbo_dual' if dual else 'fast_generate_from')
+    func = getattr(algorithms, 'fcbo_dual' if dual else 'iterconcepts')
 
-    iterconcepts = func(context)
-    result = algorithms.ConceptList.frompairs(iterconcepts)
+    result = iterconcepts = func(context)
+    result = (algorithms.ConceptList.frompairs(iterconcepts) if dual else result)
 
-    pairs = [f'{extent.bits()} <-> {intent.bits()}'
-             for extent, intent in result]
+    pairs = list(map(str, result))
 
     assert pairs == expected
 
 
-@pytest.fixture
-def bob_ross(test_examples, filename=BOB_ROSS):
-    path = test_examples / filename
+def test_serialize_bob_ross(test_output, bob_ross):
+    target = test_output / f'{BOB_ROSS.stem}-serialized.py'
+    bob_ross.tofile(str(target), frmat='python-literal')
 
-    context = concepts.load_cxt(str(path), encoding=ENCODING)
+    Format = formats.Format['python-literal']
+    serialized_args = Format.load(target, encoding='utf-8')
 
-    assert len(context.objects) == 403
-    assert len(context.properties) == 67
+    for name in ('objects', 'properties'):
+        assert getattr(serialized_args, name) == (serialized_args
+                                                  .serialized[name])
+    assert serialized_args.lattice is None
 
-    return context
-
-
-@pytest.fixture
-def mushroom(test_examples, filename='mushroom.cxt'):
-    path = test_examples / filename
-
-    context = concepts.load_cxt(str(path))
-
-    assert len(context.objects) == 8_124
-    assert len(context.properties) == 128
-
-    return context
-
-
-@pytest.fixture
-def mushroom_subset(test_examples, filename='mushrooms_subset.csv'):
-    path = test_examples / filename
-
-    context = concepts.Context.fromfile(str(path), frmat='csv')
-
-    assert len(context.objects) == 8_124
-    assert len(context.properties) == 119
-
-    return context
+    for name in ('objects', 'properties', 'bools'):
+        assert getattr(serialized_args, name) == getattr(bob_ross, name)
 
 
 @pytest.mark.slow
@@ -140,7 +144,7 @@ def test_lattice_bob_ross(test_examples, test_output, stopwatch, bob_ross):
     assert lattice is not None
     assert len(lattice) == 3_463
 
-    target = test_output / f'{BOB_ROSS.stem}-serialized.py'
+    target = test_output / f'{BOB_ROSS.stem}-serialized-lattice.py'
     bob_ross.tofile(str(target), frmat='python-literal')
     result = target.read_text(encoding=ENCODING)
 
@@ -152,28 +156,16 @@ def test_lattice_bob_ross(test_examples, test_output, stopwatch, bob_ross):
     assert timing.duration < 40
 
 
-@pytest.mark.skip(reason='TODO')
 @pytest.mark.slow
 @pytest.mark.no_cover
+@pytest.mark.skip(reason='TODO')
 def test_lattice_mushroom(stopwatch, mushroom):
     with stopwatch():
         lattice = mushroom.lattice
 
     assert lattice is not None
 
-    print(f'{len(lattice):_d}')
-    assert len(latice) > 150_000
-
-
-@pytest.mark.skip(reason='TODO')
-@pytest.mark.slow
-@pytest.mark.no_cover
-def test_lattice_mushroom_subset(stopwatch, mushroom_subset):
-    with stopwatch():
-        lattice = mushroom_subset.lattice
-
-    assert lattice is not None
-    assert len(lattice) == 221_525
+    assert len(latice) ==  238_710
 
 
 @pytest.mark.slow
@@ -182,18 +174,6 @@ def test_fcbo_mushroom(stopwatch, mushroom):
     with stopwatch() as timing:
         result = algorithms.get_concepts(mushroom)
 
-    print(f'{len(result):_d}')
-    assert len(result) > 150_000
-
-    assert timing.duration < 90
-
-
-@pytest.mark.slow
-@pytest.mark.no_cover
-def test_fcbo_mushroom_subset(stopwatch, mushroom_subset):
-    with stopwatch() as timing:
-        result = algorithms.get_concepts(mushroom_subset)
-
-    assert len(result) == 221_525
+    assert len(result) == 238_710
 
     assert timing.duration < 90

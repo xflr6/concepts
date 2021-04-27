@@ -146,6 +146,16 @@ class Concept:
         self.upper_neighbors = upper  #: The directly implied concepts.
         self.lower_neighbors = lower  #: The directly subsumed concepts.
 
+    def __str__(self):
+        extent = ', '.join(self._extent.members())
+        intent = ' '.join(self._intent.members())
+        objects = ' <=> {}'.format(' '.join(self.objects)) if self.objects else ''
+        properties = ' <=> {}'.format(' '.join(self.properties)) if self.properties else ''
+        return f'{{{extent}}} <-> [{intent}]{objects}{properties}'
+
+    def __repr__(self):
+        return f'<{self.__class__.__name__} {self}>'
+
     def _eq(self, other):
         if not isinstance(other, Concept):
             return NotImplemented
@@ -343,16 +353,6 @@ class Concept:
         meet = self._extent & other._extent
         return (not not meet and meet != self._extent and meet != other._extent
                 and (self._extent | other._extent) != self.lattice.supremum._extent)
-
-    def __str__(self):
-        extent = ', '.join(self._extent.members())
-        intent = ' '.join(self._intent.members())
-        objects = ' <=> {}'.format(' '.join(self.objects)) if self.objects else ''
-        properties = ' <=> {}'.format(' '.join(self.properties)) if self.properties else ''
-        return f'{{{extent}}} <-> [{intent}]{objects}{properties}'
-
-    def __repr__(self):
-        return f'<{self.__class__.__name__} {self}>'
 
 
 class Infimum(Concept):

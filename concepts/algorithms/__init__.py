@@ -9,7 +9,12 @@ from .lindig import lattice, neighbors
 __all__ = ['iterunion',
            'fast_generate_from', 'fcbo_dual',
            'lattice', 'neighbors'
-           'get_concepts']
+           'iterconcepts', 'get_concepts']
+
+
+def iterconcepts(context) -> typing.Iterator[Concept]:
+    iterconcepts = fast_generate_from(context)
+    return map(Concept._make, iterconcepts)
 
 
 def get_concepts(context) -> typing.List[Concept]:
