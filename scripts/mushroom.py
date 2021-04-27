@@ -168,7 +168,7 @@ if not all(path.exists() for path in RESULTS):
     print(CSV_MINIMAL_STR, f'{CSV_MINIMAL_STR.stat().st_size:_d} bytes')
 
     context.tofile(CSV_MINIMAL_INT, frmat='csv',
-                    object_header=MUSHROOM.stem, bools_as_int=True)
+                   object_header=MUSHROOM.stem, bools_as_int=True)
     print(CSV_MINIMAL_INT, f'{CSV_MINIMAL_INT.stat().st_size:_d} bytes')
 
     context.tofile(DAT_MINIMAL, frmat='fimi')

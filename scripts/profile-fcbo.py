@@ -4,7 +4,6 @@
 
 import cProfile
 import os
-import pathlib
 import sys
 import time
 
@@ -12,11 +11,10 @@ sys.path.insert(1, os.pardir)
 
 import concepts  # noqa: E402
 from concepts import algorithms  # noqa: E402
-from concepts import formats  # noqa: E402
 
-from mushroom import CXT_MINIMAL, ENCODING
+from mushroom import CXT_MINIMAL, ENCODING  # noqa: E402
 
-INTENTS =  CXT_MINIMAL.with_name(f'{CXT_MINIMAL.stem}-intents.dat')
+INTENTS = CXT_MINIMAL.with_name(f'{CXT_MINIMAL.stem}-intents.dat')
 
 
 start = time.perf_counter()
@@ -24,7 +22,7 @@ start = time.perf_counter()
 context = concepts.load(CXT_MINIMAL, encoding=ENCODING)
 print(f'{context!r}')
 
-assert len(context.objects) == 8_124,  f'{len(context.objects):_d)} != 8_124'
+assert len(context.objects) == 8_124, f'{len(context.objects):_d)} != 8_124'
 assert len(context.properties) == 119, f'{len(context.properties):_d} != 119'
 
 result = algorithms.get_concepts(context)

@@ -1,7 +1,5 @@
 #!/usr/bin/env python3
 
-import itertools
-
 import pandas as pd
 
 from mushroom import MUSHROOM, ENCODING, CSV, CSV_MINIMAL_INT, properties
