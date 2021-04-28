@@ -10,7 +10,30 @@ from . import lattices
 from . import matrices
 from . import tools
 
-__all__ = ['Context']
+__all__ = ['Context', 'ContextShape']
+
+
+class ContextShape(typing.NamedTuple):
+    """
+
+    >>> ContextShape(403, 67)
+    ContextShape(objects=403, properties=67)
+
+    >>> n_objects, _ = ContextShape(403, 67)
+    >>> n_objects
+    403
+    """
+
+    objects: int
+    properties: int
+
+    @property
+    def rows(self) -> int:
+        return self.objects
+
+    @property
+    def columns(self) -> int:
+        return self.properties
 
 
 class Data:
@@ -694,6 +717,21 @@ class Context(ExportableMixin, LatticeMixin,
              (False, True, False, True, True, False, False, True, True, False)]
             """
         return self._intents.bools()
+
+    @property
+    def shape(self) -> 'ContextShape':
+        """Return shape/dimensions of the context.
+
+        Returns:
+            ContextShape: New :class:`.ContextShape` instance.
+
+        Example:
+            >>> import concepts
+            >>> c = concepts.Context.fromstring(concepts.EXAMPLE)
+            >>> c.shape
+            ContextShape(objects=6, properties=10)
+        """
+        return ContextShape(len(self.objects), len(self.properties))
 
     def definition(self) -> 'definitions.Definition':
         """Return ``(objects, properties, bools)`` triple as mutable object.

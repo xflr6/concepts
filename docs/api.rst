@@ -42,7 +42,7 @@ Context
         __getitem__,
         __eq__, __ne__,
         tostring, tofile, todict, tojson, crc32,
-        objects, properties, bools,
+        objects, properties, bools, shape,
         definition, relations, lattice
 
 

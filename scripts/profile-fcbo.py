@@ -22,8 +22,7 @@ start = time.perf_counter()
 context = concepts.load(CXT_MINIMAL, encoding=ENCODING)
 print(f'{context!r}')
 
-assert len(context.objects) == 8_124, f'{len(context.objects):_d)} != 8_124'
-assert len(context.properties) == 119, f'{len(context.properties):_d} != 119'
+assert context.shape == (8_124, 119), f'{context.shape} != (8_124, 119)'
 
 result = algorithms.get_concepts(context)
 print(f'{len(result):_d} concepts')

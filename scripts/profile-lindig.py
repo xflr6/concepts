@@ -22,8 +22,7 @@ start = time.perf_counter()
 context = concepts.load(SEGMENTS, encoding=ENCODING)
 print(f'{context!r:}')
 
-assert len(context.objects) == 143, f'{len(context.object):_d} != 143'
-assert len(context.properties) == 56, f'{len(context.properties):_d} != 56'
+assert context.shape == (143, 56), f'{context.shape} != (143, 56)'
 
 lattice = context.lattice
 print(f'{lattice!r:}')
