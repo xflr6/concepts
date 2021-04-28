@@ -2,7 +2,6 @@
 
 import typing
 
-from ._example import EXAMPLE
 from . import algorithms
 from . import definitions
 from . import formats
@@ -28,6 +27,7 @@ class Context:
         Context: New :class:`.Context` instance.
 
     Example:
+        >>> from concepts import Context
         >>> Context(['man', 'woman'], ['male', 'female'], [(True, False), (False, True)])  # doctest: +ELLIPSIS
         <Context object mapping 2 objects to 2 properties [47e29724] at 0x...>
     """
@@ -43,7 +43,8 @@ class Context:
             frmat: Format of the context string (``'table'``, ``'cxt'``, ``'csv'``).
 
         Example:
-            >>> c = Context.fromstring(EXAMPLE)
+            >>> import concepts
+            >>> c = concepts.Context.fromstring(concepts.EXAMPLE)
             >>> print(c)  # doctest: +ELLIPSIS
             <Context object mapping 6 objects to 10 properties [b9d20179] at 0x...>
                    |+1|-1|+2|-2|+3|-3|+sg|+pl|-sg|-pl|
@@ -176,6 +177,7 @@ class Context:
             bools: Iterable of ``len(objects)`` tuples of ``len(properties)`` booleans.
 
         Example:
+            >>> from concepts import Context
             >>> Context(['man', 'woman'],
             ...         ['male', 'female'],
             ...         [(True, False), (False, True)])  # doctest: +ELLIPSIS
@@ -304,7 +306,8 @@ class Context:
             A tuple of :obj:`str` labels taken from ``self.properties``.
 
         Example:
-            >>> c = Context.fromstring(EXAMPLE)
+            >>> import concepts
+            >>> c = concepts.Context.fromstring(concepts.EXAMPLE)
             >>> c.intension(['1sg'])
             ('+1', '-2', '-3', '+sg', '-pl')
         """
@@ -325,7 +328,8 @@ class Context:
             A tuple of :obj:`str` labels taken from ``self.objects``.
 
         Example:
-            >>> c = Context.fromstring(EXAMPLE)
+            >>> import concepts
+            >>> c = concepts.Context.fromstring(concepts.EXAMPLE)
             >>> c.extension(['+1'])
             ('1sg', '1pl')
         """
@@ -347,7 +351,8 @@ class Context:
             A list of upper neighbor concepts as ``(extent, intent)`` pairs.
 
         Example:
-            >>> c = Context.fromstring(EXAMPLE)
+            >>> import concepts
+            >>> c = concepts.Context.fromstring(concepts.EXAMPLE)
             >>> c.neighbors(['1sg', '1pl', '2pl'])
             [(('1sg', '1pl', '2sg', '2pl', '3sg', '3pl'), ())]
         """
@@ -370,13 +375,12 @@ class Context:
             The smallest concept having all ``items`` as ``(extent, intent)`` pair.
 
         Example:
-            >>> c = Context.fromstring(EXAMPLE)
+            >>> import concepts
+            >>> c = concepts.Context.fromstring(concepts.EXAMPLE)
             >>> c['1sg',]
             (('1sg',), ('+1', '-2', '-3', '+sg', '-pl'))
-
             >>> c['1sg', '1pl', '2pl']
             (('1sg', '1pl', '2sg', '2pl'), ('-3',))
-
             >>> c['-1', '-sg']
             (('2pl', '3pl'), ('-1', '+pl', '-sg'))
         """
@@ -489,7 +493,7 @@ class Context:
             encoding (str): Encoding of the serialzation (``'utf-8'``, ``'latin1'``, ``'ascii'``, ...).
 
         Returns:
-            str: The unsigned CRC32 checksum as hex-string.
+            The unsigned CRC32 checksum as hex-string.
         """
         return tools.crc32_hex(self.tostring().encode(encoding))
 
@@ -498,7 +502,8 @@ class Context:
         """(Names of the) objects described by the context.
 
         Example:
-            >>> c = Context.fromstring(EXAMPLE)
+            >>> import concepts
+            >>> c = concepts.Context.fromstring(concepts.EXAMPLE)
             >>> c.objects
             ('1sg', '1pl', '2sg', '2pl', '3sg', '3pl')
         """
@@ -509,7 +514,8 @@ class Context:
         """(Names of the) properties that describe the objects.
 
         Example:
-            >>> c = Context.fromstring(EXAMPLE)
+            >>> import concepts
+            >>> c = concepts.Context.fromstring(concepts.EXAMPLE)
             >>> c.properties
             ('+1', '-1', '+2', '-2', '+3', '-3', '+sg', '+pl', '-sg', '-pl')
         """
@@ -520,7 +526,8 @@ class Context:
         """Row-wise boolean relation matrix between objects and properties.
 
         Example:
-            >>> c = Context.fromstring(EXAMPLE)
+            >>> import concepts
+            >>> c = concepts.Context.fromstring(concepts.EXAMPLE)
             >>> c.bools  # doctest: +NORMALIZE_WHITESPACE
             [(True, False, False, True, False, True, True, False, False, True),
              (True, False, False, True, False, True, False, True, True, False),
@@ -544,7 +551,8 @@ class Context:
         """Return the logical relations between the context properties.
 
         Example:
-            >>> c = Context.fromstring(EXAMPLE)
+            >>> import concepts
+            >>> c = concepts.Context.fromstring(concepts.EXAMPLE)
             >>> print(c.relations())
             +sg equivalent   -pl
             +pl equivalent   -sg

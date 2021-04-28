@@ -1,5 +1,6 @@
 import typing
 
+from ._example import EXAMPLE
 from . import formats
 from . import matrices
 
