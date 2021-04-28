@@ -61,6 +61,7 @@ Definition
         __setitem__,
         add_object, add_property,
         remove_object, remove_property,
+        remove_empty_objects, remove_empty_properties,
         set_object, set_property,
         union_update, intersection_update,
         union, intersection
