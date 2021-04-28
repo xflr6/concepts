@@ -406,7 +406,14 @@ class Context:
                 f' to {len(self.properties)} properties'
                 f' [{self.crc32()}] at {id(self):#x}>')
 
-    def todict(self, ignore_lattice: bool = False) -> typing.Dict:
+    def todict(self, ignore_lattice: bool = False
+               ) -> typing.Dict[str,
+                                typing.Union[typing.Tuple[str, ...],
+                                             typing.List[typing.Tuple[int, ...]],
+                                             typing.List[typing.Tuple[typing.Tuple[int, ...],
+                                                                      typing.Tuple[int, ...],
+                                                                      typing.Tuple[int, ...],
+                                                                      typing.Tuple[int, ...]]]]]:
         """Return serialized context with optional lattice.
 
         Args:
@@ -416,6 +423,12 @@ class Context:
 
         Returns:
             A new :obj:`dict` with the serialized context.
+
+        Example:
+            >>> import concepts
+            >>> c = concepts.Context.fromstring(concepts.EXAMPLE)
+            >>> list(c.todict().keys())
+            ['objects', 'properties', 'context', 'lattice']
         """
         result = {'objects': self.objects,
                   'properties': self.properties,
