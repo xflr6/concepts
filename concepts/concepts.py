@@ -7,7 +7,7 @@ __all__ = ['ConceptList']
 
 
 class Concept(typing.NamedTuple):
-    """
+    """Pair of raw extent and raw intent.
 
     >>> import concepts
     >>> context = concepts.make_context(concepts.EXAMPLE)
@@ -43,24 +43,24 @@ class Concept(typing.NamedTuple):
     intent: matrices.Vector
 
     @property
-    def objects(self):
-        """tuple[str, ...] The objects subsumed by the concept."""
+    def objects(self) -> typing.Tuple[str]:
+        """The objects subsumed by the concept."""
         return self.extent.members()
 
     @property
-    def properties(self):
-        """tuple[str, ...] The properties implied by the concept."""
+    def properties(self) -> typing.Tuple[str]:
+        """The properties implied by the concept."""
         return self.intent.members()
 
     @property
-    def n_objects(self):
+    def n_objects(self) -> int:
         return self.extent.count()
 
     @property
-    def n_properties(self):
+    def n_properties(self) -> int:
         return self.intent.count()
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f'{self.extent.bits()} <-> {self.intent.bits()}'
 
     def index_sets(self, *, as_set: bool = False):
@@ -76,12 +76,15 @@ class Concept(typing.NamedTuple):
 
 
 class ConceptList(list):
+    """List of (raw extent, raw intent) pairs."""
 
     @classmethod
-    def frompairs(cls, iterconcepts):
+    def frompairs(cls, iterconcepts) -> 'ConceptList':
         return cls(map(Concept._make, iterconcepts))
 
-    def tofile(self, filename, *, frmat: str = 'fimi', **kwargs):
+    def tofile(self, filename,
+               *, frmat: str = 'fimi',
+               **kwargs) -> None:
         if frmat != 'fimi':  # pragma: no cover
             raise NotImplementedError(f'tofile(frmat={frmat!r})')
         formats.write_concepts_dat(filename, self, **kwargs)

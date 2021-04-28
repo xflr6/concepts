@@ -1,5 +1,3 @@
-# junctors.py - logical relations between contingent boolean vectors
-
 """Logical relations between sequences of truth conditions.
 
 https://en.wikipedia.org/wiki/Template:Logical_connectives_table_and_Hasse_diagram
@@ -59,7 +57,8 @@ class Relations(list):
     Possibly equivalent Maybe
     """
 
-    def __init__(self, items, booleans, include_unary=False):
+    def __init__(self, items, booleans,
+                 include_unary: bool = False) -> None:
         """Filter out items with tautological or contradictory booleans."""
         unary = [Relation(i, None, bools)
                  for i, bools in zip(items, booleans)]
@@ -73,10 +72,10 @@ class Relations(list):
         super().__init__(members)
         self.sort(key=lambda r: r.order)
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.tostring(exclude_orthogonal=True)
 
-    def tostring(self, exclude_orthogonal=False):
+    def tostring(self, exclude_orthogonal: bool = False) -> str:
         tmpl = '%%-%ds %%-12s %%s' % max(len(str(r.left)) for r in self)
         if exclude_orthogonal:
             self = (r for r in self if r.__class__ is not Orthogonal)
@@ -88,7 +87,7 @@ class RelationMeta(type):
 
     __map = {}
 
-    def __init__(self, name, bases, dct):  # noqa: N804
+    def __init__(self, name, bases, dct) -> None:  # noqa: N804
         if 'binary' not in dct:
             return
 
@@ -140,14 +139,14 @@ class Unary(Relation):
 
     right = ''
 
-    def __init__(self, left, bools):
+    def __init__(self, left, bools) -> None:
         self.left = left
         self.bools = bools
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f'{self.left} {self.kind}'
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f'<{self.__class__.__name__}({self.left!r})>'
 
 
@@ -166,12 +165,12 @@ class Binary(Relation):
 
     binary = True
 
-    def __init__(self, left, right):
+    def __init__(self, left, right) -> None:
         self.left = left
         self.right = right
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f'{self.left} {self.kind} {self.right}'
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f'<{self.__class__.__name__}({self.left!r}, {self.right!r})>'
