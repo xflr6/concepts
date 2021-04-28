@@ -70,7 +70,7 @@ assert len(context.properties) == 67, f'{len(context.properties):_d} != 67'
 lattice = context.lattice
 print(f'{lattice!r}')
 
-assert len(lattice) == 3_463,  f'{len(lattice):_d} != 3_463'
+assert len(lattice) == 3_463, f'{len(lattice):_d} != 3_463'
 
 duration = time.perf_counter() - start
 print(f'{duration:.1f} seconds')
