@@ -335,7 +335,7 @@ class Context:
         return not self == other
 
     def _lattice(self, infimum=()):
-        """Yield ``(extent, indent, upper, lower)`` in short lexicographic order.
+        """Yield ``(extent, intent, upper, lower)`` in short lexicographic order.
 
         cf. C. Lindig. 2000. Fast Concept Analysis.
         """

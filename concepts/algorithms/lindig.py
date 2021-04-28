@@ -15,7 +15,7 @@ __all__ = ['lattice', 'neighbors']
 
 
 def lattice(Objects, *, infimum):
-    """Yield ``(extent, indent, upper, lower)`` in short lexicographic order."""
+    """Yield ``(extent, intent, upper, lower)`` in short lexicographic order."""
     extent, intent = Objects.frommembers(infimum).doubleprime()
 
     concept = (extent, intent, [], [])
