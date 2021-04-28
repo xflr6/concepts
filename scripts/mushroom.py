@@ -155,12 +155,20 @@ if not all(path.exists() for path in RESULTS):
 
     definition = concepts.Definition.fromfile(CXT)
     removed = definition.remove_empty_properties()
-    print(removed)
+    assert removed == ['gill-attachment:descending',
+                       'gill-attachment:notched',
+                       'gill-spacing:distant',
+                       'stalk-root:cup',
+                       'stalk-root:rhizomorphs',
+                       'veil-type:universal',
+                       'ring-type:cobwebby',
+                       'ring-type:sheathing',
+                       'ring-type:zone']
 
     context = concepts.Context(*definition)
     assert len(context.properties) == 119, f'{len(attributes):_d} != 119'
 
-    context.tofile(CXT_MINIMAL, frmat='cxt')
+    context.tofile(CXT_MINIMAL, frmat='cxt')  # examples/mushroom.cxt
     print(CXT_MINIMAL, f'{CXT_MINIMAL.stat().st_size:_d} bytes')
 
     context.tofile(CSV_MINIMAL_STR, frmat='csv',
