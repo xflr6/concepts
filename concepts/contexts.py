@@ -2,6 +2,7 @@
 
 import typing
 
+from ._example import EXAMPLE
 from . import algorithms
 from . import definitions
 from . import formats
@@ -29,88 +30,6 @@ class Context:
     Example:
         >>> Context(['man', 'woman'], ['male', 'female'], [(True, False), (False, True)])  # doctest: +ELLIPSIS
         <Context object mapping 2 objects to 2 properties [47e29724] at 0x...>
-
-    Usage:
-
-    >>> c = Context.fromstring('''
-    ...    |+1|-1|+2|-2|+3|-3|+sg|+pl|-sg|-pl|
-    ... 1sg| X|  |  | X|  | X|  X|   |   |  X|
-    ... 1pl| X|  |  | X|  | X|   |  X|  X|   |
-    ... 2sg|  | X| X|  |  | X|  X|   |   |  X|
-    ... 2pl|  | X| X|  |  | X|   |  X|  X|   |
-    ... 3sg|  | X|  | X| X|  |  X|   |   |  X|
-    ... 3pl|  | X|  | X| X|  |   |  X|  X|   |
-    ... ''')
-
-    >>> print(c)  # doctest: +ELLIPSIS
-    <Context object mapping 6 objects to 10 properties [b9d20179] at 0x...>
-           |+1|-1|+2|-2|+3|-3|+sg|+pl|-sg|-pl|
-        1sg|X |  |  |X |  |X |X  |   |   |X  |
-        1pl|X |  |  |X |  |X |   |X  |X  |   |
-        2sg|  |X |X |  |  |X |X  |   |   |X  |
-        2pl|  |X |X |  |  |X |   |X  |X  |   |
-        3sg|  |X |  |X |X |  |X  |   |   |X  |
-        3pl|  |X |  |X |X |  |   |X  |X  |   |
-
-
-    >>> c.objects
-    ('1sg', '1pl', '2sg', '2pl', '3sg', '3pl')
-
-    >>> c.properties
-    ('+1', '-1', '+2', '-2', '+3', '-3', '+sg', '+pl', '-sg', '-pl')
-
-    >>> c.bools  # doctest: +NORMALIZE_WHITESPACE
-    [(True, False, False, True, False, True, True, False, False, True),
-     (True, False, False, True, False, True, False, True, True, False),
-     (False, True, True, False, False, True, True, False, False, True),
-     (False, True, True, False, False, True, False, True, True, False),
-     (False, True, False, True, True, False, True, False, False, True),
-     (False, True, False, True, True, False, False, True, True, False)]
-
-
-    >>> c.intension(['1sg'])
-    ('+1', '-2', '-3', '+sg', '-pl')
-
-    >>> c.extension(['+1'])
-    ('1sg', '1pl')
-
-
-    >>> c.neighbors(['1sg', '1pl', '2pl'])
-    [(('1sg', '1pl', '2sg', '2pl', '3sg', '3pl'), ())]
-
-
-    >>> c['1sg',]
-    (('1sg',), ('+1', '-2', '-3', '+sg', '-pl'))
-
-    >>> c['1sg', '1pl', '2pl']
-    (('1sg', '1pl', '2sg', '2pl'), ('-3',))
-
-    >>> c['-1', '-sg']
-    (('2pl', '3pl'), ('-1', '+pl', '-sg'))
-
-
-    >>> print(c.relations())
-    +sg equivalent   -pl
-    +pl equivalent   -sg
-    +1  complement   -1
-    +2  complement   -2
-    +3  complement   -3
-    +sg complement   +pl
-    +sg complement   -sg
-    +pl complement   -pl
-    -sg complement   -pl
-    +1  incompatible +2
-    +1  incompatible +3
-    +2  incompatible +3
-    +1  implication  -2
-    +1  implication  -3
-    +2  implication  -1
-    +3  implication  -1
-    +2  implication  -3
-    +3  implication  -2
-    -1  subcontrary  -2
-    -1  subcontrary  -3
-    -2  subcontrary  -3
     """
 
     @classmethod
@@ -122,6 +41,18 @@ class Context:
         Args:
             source: Formal context table as plain-text string.
             frmat: Format of the context string (``'table'``, ``'cxt'``, ``'csv'``).
+
+        Example:
+            >>> c = Context.fromstring(EXAMPLE)
+            >>> print(c)  # doctest: +ELLIPSIS
+            <Context object mapping 6 objects to 10 properties [b9d20179] at 0x...>
+                   |+1|-1|+2|-2|+3|-3|+sg|+pl|-sg|-pl|
+                1sg|X |  |  |X |  |X |X  |   |   |X  |
+                1pl|X |  |  |X |  |X |   |X  |X  |   |
+                2sg|  |X |X |  |  |X |X  |   |   |X  |
+                2pl|  |X |X |  |  |X |   |X  |X  |   |
+                3sg|  |X |  |X |X |  |X  |   |   |X  |
+                3pl|  |X |  |X |X |  |   |X  |X  |   |
         """
         frmat = formats.Format[frmat]
         args = frmat.loads(source, **kwargs)
@@ -243,6 +174,12 @@ class Context:
             objects: Iterable of object label strings.
             properties: Iterable of property label strings.
             bools: Iterable of ``len(objects)`` tuples of ``len(properties)`` booleans.
+
+        Example:
+            >>> Context(['man', 'woman'],
+            ...         ['male', 'female'],
+            ...         [(True, False), (False, True)])  # doctest: +ELLIPSIS
+            <Context object mapping 2 objects to 2 properties [47e29724] at 0x...>
         """
         objects, properties = map(tuple, (objects, properties))
 
@@ -356,7 +293,7 @@ class Context:
                 yield it
 
     def intension(self, objects: typing.Iterable[str],
-                  raw: bool = False):
+                  raw: bool = False) -> typing.Tuple[str, ...]:
         """Return all properties shared by the given ``objects``.
 
         Args:
@@ -364,7 +301,12 @@ class Context:
             raw: Return raw intent instead of :obj:`str` tuple.
 
         Returns:
-            tuple[str, ...]: A tuple of :obj:`str` labels taken from ``self.properties``.
+            A tuple of :obj:`str` labels taken from ``self.properties``.
+
+        Example:
+            >>> c = Context.fromstring(EXAMPLE)
+            >>> c.intension(['1sg'])
+            ('+1', '-2', '-3', '+sg', '-pl')
         """
         intent = self._Objects.frommembers(objects).prime()
         if raw:
@@ -372,7 +314,7 @@ class Context:
         return intent.members()
 
     def extension(self, properties: typing.Iterable[str],
-                  raw: bool = False):
+                  raw: bool = False) -> typing.Tuple[str, ...]:
         """Return all objects sharing the given ``properties``.
 
         Args:
@@ -380,7 +322,12 @@ class Context:
             raw: Return raw extent instead of :obj:`str` tuple.
 
         Returns:
-            tuple[str, ...]: A tuple of :obj:`str` labels taken from ``self.objects``.
+            A tuple of :obj:`str` labels taken from ``self.objects``.
+
+        Example:
+            >>> c = Context.fromstring(EXAMPLE)
+            >>> c.extension(['+1'])
+            ('1sg', '1pl')
         """
         extent = self._Properties.frommembers(properties).prime()
         if raw:
@@ -388,7 +335,8 @@ class Context:
         return extent.members()
 
     def neighbors(self, objects: typing.Iterable[str],
-                  raw: bool = False):
+                  raw: bool = False) -> typing.List[typing.Tuple[typing.Tuple[str, ...],
+                                                                 typing.Tuple[str, ...]]]:
         """Return the upper neighbors of the concept having all given ``objects``.
 
         Args:
@@ -396,7 +344,12 @@ class Context:
             raw: Return raw ``(extent, intent)`` pairs instead of :obj:`str` tuples.
 
         Returns:
-            list[tuple[tuple[str, ...], tuple[str, ...]]: A list of upper neighbor concepts as ``(extent, intent)`` pairs.
+            A list of upper neighbor concepts as ``(extent, intent)`` pairs.
+
+        Example:
+            >>> c = Context.fromstring(EXAMPLE)
+            >>> c.neighbors(['1sg', '1pl', '2pl'])
+            [(('1sg', '1pl', '2sg', '2pl', '3sg', '3pl'), ())]
         """
         objects = self._Objects.frommembers(objects).double()
         if raw:
@@ -405,7 +358,8 @@ class Context:
                 for extent, intent in self._neighbors(objects)]
 
     def __getitem__(self, items: typing.Iterable[str],
-                    raw: bool = False):
+                    raw: bool = False) -> typing.Tuple[typing.Tuple[str, ...],
+                                                       typing.Tuple[str, ...]]:
         """Return ``(extension, intension)`` pair by shared objects or properties.
 
         Args:
@@ -413,7 +367,18 @@ class Context:
             raw: Return raw ``(extent, intent)`` pair instead of :obj:`str` tuples.
 
         Returns:
-            tuple[tuple[str, ...], tuple[str, ...]]: The smallest concept having all ``items`` as ``(extent, intent)`` pair.
+            The smallest concept having all ``items`` as ``(extent, intent)`` pair.
+
+        Example:
+            >>> c = Context.fromstring(EXAMPLE)
+            >>> c['1sg',]
+            (('1sg',), ('+1', '-2', '-3', '+sg', '-pl'))
+
+            >>> c['1sg', '1pl', '2pl']
+            (('1sg', '1pl', '2sg', '2pl'), ('-3',))
+
+            >>> c['-1', '-sg']
+            (('2pl', '3pl'), ('-1', '+pl', '-sg'))
         """
         try:
             extent = self._Objects.frommembers(items)
@@ -530,17 +495,40 @@ class Context:
 
     @property
     def objects(self) -> typing.Tuple[str, ...]:
-        """(Names of the) objects described by the context."""
+        """(Names of the) objects described by the context.
+
+        Example:
+            >>> c = Context.fromstring(EXAMPLE)
+            >>> c.objects
+            ('1sg', '1pl', '2sg', '2pl', '3sg', '3pl')
+        """
         return self._Objects._members
 
     @property
     def properties(self) -> typing.Tuple[str, ...]:
-        """(Names of the) properties that describe the objects."""
+        """(Names of the) properties that describe the objects.
+
+        Example:
+            >>> c = Context.fromstring(EXAMPLE)
+            >>> c.properties
+            ('+1', '-1', '+2', '-2', '+3', '-3', '+sg', '+pl', '-sg', '-pl')
+        """
         return self._Properties._members
 
     @property
     def bools(self) -> typing.List[typing.Tuple[bool, ...]]:
-        """Row-wise boolean relation matrix between objects and properties."""
+        """Row-wise boolean relation matrix between objects and properties.
+
+        Example:
+            >>> c = Context.fromstring(EXAMPLE)
+            >>> c.bools  # doctest: +NORMALIZE_WHITESPACE
+            [(True, False, False, True, False, True, True, False, False, True),
+             (True, False, False, True, False, True, False, True, True, False),
+             (False, True, True, False, False, True, True, False, False, True),
+             (False, True, True, False, False, True, False, True, True, False),
+             (False, True, False, True, True, False, True, False, False, True),
+             (False, True, False, True, True, False, False, True, True, False)]
+            """
         return self._intents.bools()
 
     def definition(self) -> 'definitions.Definition':
@@ -555,8 +543,30 @@ class Context:
                   include_unary: bool = False) -> 'junctors.Relations':
         """Return the logical relations between the context properties.
 
-        Returns:
-            Relations:
+        Example:
+            >>> c = Context.fromstring(EXAMPLE)
+            >>> print(c.relations())
+            +sg equivalent   -pl
+            +pl equivalent   -sg
+            +1  complement   -1
+            +2  complement   -2
+            +3  complement   -3
+            +sg complement   +pl
+            +sg complement   -sg
+            +pl complement   -pl
+            -sg complement   -pl
+            +1  incompatible +2
+            +1  incompatible +3
+            +2  incompatible +3
+            +1  implication  -2
+            +1  implication  -3
+            +2  implication  -1
+            +3  implication  -1
+            +2  implication  -3
+            +3  implication  -2
+            -1  subcontrary  -2
+            -1  subcontrary  -3
+            -2  subcontrary  -3
         """
         return junctors.Relations(self.properties,
                                   self._extents.bools(),

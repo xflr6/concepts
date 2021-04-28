@@ -4,9 +4,10 @@
 
 import typing
 
+from ._example import EXAMPLE
 from .concepts import ConceptList
-from .definitions import Definition
 from .contexts import Context
+from .definitions import Definition
 
 __all__ = ['Context', 'Definition',
            'load', 'load_cxt', 'load_csv',
@@ -17,16 +18,6 @@ __version__ = '0.10.dev0'
 __author__ = 'Sebastian Bank <sebastian.bank@uni-leipzig.de>'
 __license__ = 'MIT, see LICENSE.txt'
 __copyright__ = 'Copyright (c) 2013-2021 Sebastian Bank'
-
-EXAMPLE = '''
-   |+1|-1|+2|-2|+3|-3|+sg|+pl|-sg|-pl|
-1sg| X|  |  | X|  | X|  X|   |   |  X|
-1pl| X|  |  | X|  | X|   |  X|  X|   |
-2sg|  | X| X|  |  | X|  X|   |   |  X|
-2pl|  | X| X|  |  | X|   |  X|  X|   |
-3sg|  | X|  | X| X|  |  X|   |   |  X|
-3pl|  | X|  | X| X|  |   |  X|  X|   |
-'''
 
 
 def load(filename, encoding: str = 'utf-8', frmat: typing.Optional[str] = None):
