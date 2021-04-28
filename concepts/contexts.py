@@ -1,5 +1,3 @@
-# contexts.py - create FCA context and provide derivation and neighbors
-
 """Formal Concept Analysis contexts."""
 
 import typing

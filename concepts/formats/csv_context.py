@@ -32,7 +32,7 @@ class Csv(Format):
 
     @classmethod
     def loadf(cls, file, *, bools_as_int: typing.Optional[bool] = None,
-              dialect: typing.Optional[str] = None) -> ContextArgs:
+              dialect: typing.Optional[tools.CsvDialectOrStr] = None) -> ContextArgs:
         if dialect is None:
             dialect = cls.dialect
 
@@ -73,7 +73,7 @@ class Csv(Format):
     def dumpf(cls, file, objects, properties, bools,
               *, object_header: typing.Optional[str] = None,
               bools_as_int: bool = False,
-              dialect: typing.Optional[str] = None,
+              dialect: typing.Optional[tools.CsvDialectOrStr] = None,
               _serialized=None) -> None:
         if dialect is None:
             dialect = cls.dialect

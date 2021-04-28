@@ -31,7 +31,7 @@ CXT = CSV.with_suffix('.cxt')
 TARGET = pathlib.Path(os.pardir) / 'examples' / 'bob_ross.cxt'
 
 
-def read_episodes(path, *, dialect: str = 'excel',
+def read_episodes(path, *, dialect: typing.Union[csv.Dialect, str] = 'excel',
                   symbols: typing.Mapping[str, bool] = {'0': False, '1': True}):
     with path.open(**OPEN_KWARGS) as f:
         reader = csv.reader(f, dialect=dialect)

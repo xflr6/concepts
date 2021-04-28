@@ -27,6 +27,9 @@ CSV_DIALECT = 'excel'
 DEFAULT_ENCODING = 'utf-8'
 
 
+CsvDialectOrStr = typing.Union[csv.Dialect, str]
+
+
 def snakify(name: str, *, sep: str = '_',
             _re_upper=re.compile(r'([A-Z])')) -> str:
     """Lowercase ``name`` adding ``sep`` before in-word-uppercase letters.
@@ -248,7 +251,7 @@ def write_lines(path, lines: typing.Iterable[str],
             write(line)
 
 
-def csv_iterrows(path, *, dialect: str = CSV_DIALECT,
+def csv_iterrows(path, *, dialect: CsvDialectOrStr,
                  encoding: str = DEFAULT_ENCODING,
                  newline: typing.Optional[str] = ''):
     with open(path, encoding=encoding, newline=newline) as f:
@@ -258,7 +261,7 @@ def csv_iterrows(path, *, dialect: str = CSV_DIALECT,
 
 def write_csv(path, rows,
               *, header: typing.Optional[typing.Iterable[str]] = None,
-              dialect: str = CSV_DIALECT,
+              dialect: CsvDialectOrStr = CSV_DIALECT,
               encoding: str = DEFAULT_ENCODING,
               newline: typing.Optional[str] = ''):
     """Write ``rows`` as CSV to ``path`` with optional ``header``."""
@@ -268,7 +271,7 @@ def write_csv(path, rows,
 
 def write_csv_file(file, rows,
                    *, header: typing.Optional[typing.Iterable[str]] = None,
-                   dialect: str = CSV_DIALECT):
+                   dialect: CsvDialectOrStr = CSV_DIALECT):
     """Write ``rows`` as CSV to file-like object with optional ``header``."""
     writer = csv.writer(file, dialect=dialect)
     if header is not None:
