@@ -8,7 +8,7 @@ from . import tools
 __all__ = ['Definition']
 
 
-LabelType = typing.Sequence[str]
+StrSequence = typing.Sequence[str]
 
 
 class Triple:
@@ -95,8 +95,8 @@ class Triple:
         return inst
 
     def __init__(self,
-                 objects: LabelType = (),
-                 properties: LabelType = (),
+                 objects: StrSequence = (),
+                 properties: StrSequence = (),
                  bools: typing.Sequence[typing.Sequence[bool]] = ()):
         self._objects = tools.Unique(objects)
         if len(self._objects) != len(objects):
@@ -213,8 +213,8 @@ class Triple:
         return tools.crc32_hex(self.tostring().encode(encoding))
 
     def take(self,
-             objects: typing.Optional[LabelType] = None,
-             properties: typing.Optional[LabelType] = None,
+             objects: typing.Optional[StrSequence] = None,
+             properties: typing.Optional[StrSequence] = None,
              reorder: bool = False):
         """Return a subset with given ``objects``/``properties`` as new definition.
 
@@ -481,7 +481,7 @@ class Definition(Triple):
         else:
             self._pairs.discard(pair)
 
-    def add_object(self, obj: str, properties: LabelType = ()) -> None:
+    def add_object(self, obj: str, properties: StrSequence = ()) -> None:
         """Add an object to the definition and add ``properties`` as related.
 
         Args:
@@ -492,7 +492,7 @@ class Definition(Triple):
         self._properties |= properties
         self._pairs.update((obj, p) for p in properties)
 
-    def add_property(self, prop: str, objects: LabelType = ()) -> None:
+    def add_property(self, prop: str, objects: StrSequence = ()) -> None:
         """Add a property to the definition and add ``objects`` as related.
 
         Args:
@@ -537,7 +537,7 @@ class Definition(Triple):
             self._properties.remove(p)
         return empty_properties
 
-    def set_object(self, obj: str, properties: LabelType):
+    def set_object(self, obj: str, properties: StrSequence):
         """Add an object to the definition and set its ``properties``.
 
         Args:
@@ -554,7 +554,7 @@ class Definition(Triple):
             else:
                 pairs.discard((obj, p))
 
-    def set_property(self, prop: str, objects: LabelType) -> None:
+    def set_property(self, prop: str, objects: StrSequence) -> None:
         """Add a property to the definition and set its ``objects``.
 
 
