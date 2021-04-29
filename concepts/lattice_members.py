@@ -12,97 +12,26 @@ from . import algorithms
 class Concept:
     """Formal concept as pair of extent and intent.
 
-    Usage:
+    Example:
 
     >>> import concepts
-    >>> l = concepts.Context.fromstring(concepts.EXAMPLE).lattice
-
-    >>> c = l['+1',]
-
-    >>> c.index, c.dindex
+    >>> lattice = concepts.Context.fromstring(concepts.EXAMPLE).lattice
+    >>> concept = lattice['+1',]
+    >>> concept.index, concept.dindex
     (7, 6)
-
-    >>> c.objects
+    >>> concept.objects
     ()
-
-    >>> c.properties
+    >>> concept.properties
     ('+1',)
-
-
-    >>> c.atoms  # doctest: +NORMALIZE_WHITESPACE
+    >>> concept.atoms  # doctest: +NORMALIZE_WHITESPACE
     (<Atom {1sg} <-> [+1 -2 -3 +sg -pl] <=> 1sg>,
      <Atom {1pl} <-> [+1 -2 -3 +pl -sg] <=> 1pl>)
-
-    >>> c.upper_neighbors  # doctest: +NORMALIZE_WHITESPACE
+    >>> concept.upper_neighbors  # doctest: +NORMALIZE_WHITESPACE
     (<Concept {1sg, 1pl, 2sg, 2pl} <-> [-3] <=> -3>,
      <Concept {1sg, 1pl, 3sg, 3pl} <-> [-2] <=> -2>)
-
-    >>> c.lower_neighbors  # doctest: +NORMALIZE_WHITESPACE
+    >>> concept.lower_neighbors  # doctest: +NORMALIZE_WHITESPACE
     (<Atom {1sg} <-> [+1 -2 -3 +sg -pl] <=> 1sg>,
      <Atom {1pl} <-> [+1 -2 -3 +pl -sg] <=> 1pl>)
-
-    >>> list(c.upset())  # doctest: +NORMALIZE_WHITESPACE
-    [<Concept {1sg, 1pl} <-> [+1 -2 -3] <=> +1>,
-     <Concept {1sg, 1pl, 2sg, 2pl} <-> [-3] <=> -3>,
-     <Concept {1sg, 1pl, 3sg, 3pl} <-> [-2] <=> -2>,
-     <Supremum {1sg, 1pl, 2sg, 2pl, 3sg, 3pl} <-> []>]
-
-    >>> list(c.downset())  # doctest: +NORMALIZE_WHITESPACE
-    [<Concept {1sg, 1pl} <-> [+1 -2 -3] <=> +1>,
-     <Atom {1sg} <-> [+1 -2 -3 +sg -pl] <=> 1sg>,
-     <Atom {1pl} <-> [+1 -2 -3 +pl -sg] <=> 1pl>,
-     <Infimum {} <-> [+1 -1 +2 -2 +3 -3 +sg +pl -sg -pl]>]
-
-
-    >>> l['+1',] <= l['-3',] <= l['-3',] <= l[()]
-    True
-
-    >>> l['+1',] <= l['+sg',] or l['+sg',] <= l['+1',]
-    False
-
-    >>> l['+1',] >= l['+1', '+sg'] >= l['+1', '+sg'] >= l['+1', '-1']
-    True
-
-    >>> l['+1',] >= l['+sg',] or l['+sg',] >= l['+1',]
-    False
-
-    >>> l['+1',] < l['-3',] < l[()]
-    True
-
-    >>> l['+1',] > l['+1', '+sg'] > l['+1', '-1']
-    True
-
-
-    >>> l['+1',] | l['+2',]
-    <Concept {1sg, 1pl, 2sg, 2pl} <-> [-3] <=> -3>
-
-    >>> l['-1', '-2'] & l['-pl',]
-    <Atom {3sg} <-> [-1 -2 +3 +sg -pl] <=> 3sg>
-
-
-    >>> l['+1',].incompatible_with(l['+3',])
-    True
-
-    >>> l['+1',].incompatible_with(l['+sg',])
-    False
-
-    >>> l['+1',].complement_of(l['-1',])
-    True
-
-    >>> l['+1',].complement_of(l['+3',])
-    False
-
-    >>> l['-1',].subcontrary_with(l['-3',])
-    True
-
-    >>> l['-1',].subcontrary_with(l['+sg',])
-    False
-
-    >>> l['+1',].orthogonal_to(l['+sg',])
-    True
-
-    >>> l['+1',].orthogonal_to(l['+3',])
-    False
     """
 
     objects = ()
@@ -121,14 +50,14 @@ class Concept:
         self.upper_neighbors = upper  #: The directly implied concepts.
         self.lower_neighbors = lower  #: The directly subsumed concepts.
 
-    def __str__(self):
+    def __str__(self) -> str:
         extent = ', '.join(self._extent.members())
         intent = ' '.join(self._intent.members())
         objects = ' <=> {}'.format(' '.join(self.objects)) if self.objects else ''
         properties = ' <=> {}'.format(' '.join(self.properties)) if self.properties else ''
         return f'{{{extent}}} <-> [{intent}]{objects}{properties}'
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         """
 
         Example:
@@ -223,6 +152,14 @@ class Concept:
 
         Yields:
             :class:`.Concept` instances.
+
+            >>> import concepts
+            >>> lattice = concepts.Context.fromstring(concepts.EXAMPLE).lattice
+            >>> list(lattice['+1',].upset())  # doctest: +NORMALIZE_WHITESPACE
+            [<Concept {1sg, 1pl} <-> [+1 -2 -3] <=> +1>,
+             <Concept {1sg, 1pl, 2sg, 2pl} <-> [-3] <=> -3>,
+             <Concept {1sg, 1pl, 3sg, 3pl} <-> [-2] <=> -2>,
+             <Supremum {1sg, 1pl, 2sg, 2pl, 3sg, 3pl} <-> []>]
         """
         return algorithms.iterunion([self], _sortkey, _next_concepts)
 
@@ -233,131 +170,219 @@ class Concept:
 
         Yields:
             :class:`.Concept` instances.
+
+        Example:
+            >>> import concepts
+            >>> lattice = concepts.Context.fromstring(concepts.EXAMPLE).lattice
+            >>> list(lattice['+1',].downset())  # doctest: +NORMALIZE_WHITESPACE
+            [<Concept {1sg, 1pl} <-> [+1 -2 -3] <=> +1>,
+             <Atom {1sg} <-> [+1 -2 -3 +sg -pl] <=> 1sg>,
+             <Atom {1pl} <-> [+1 -2 -3 +pl -sg] <=> 1pl>,
+             <Infimum {} <-> [+1 -1 +2 -2 +3 -3 +sg +pl -sg -pl]>]
         """
         return algorithms.iterunion([self], _sortkey, _next_concepts)
 
-    def implies(self, other):
+    def implies(self, other: 'Concept') -> bool:
         """Implication comparison.
 
         Args:
-            other (Concept): :class:`.Concept` instance from the same lattice.
+            other: :class:`.Concept` instance from the same lattice.
 
         Returns:
             bool: ``True`` if ``self`` implies ``other`` else ``False``.
+
+        Example:
+            >>> import concepts
+            >>> lattice = concepts.Context.fromstring(concepts.EXAMPLE).lattice
+            >>> lattice['+1',] <= lattice['-3',] <= lattice['-3',] <= lattice[()]
+            True
+            >>> lattice['+1',] <= lattice['+sg',] or lattice['+sg',] <= lattice['+1',]
+            False
         """
         return self._extent & other._extent == self._extent
 
-    def subsumes(self, other):
+    def subsumes(self, other: 'Concept') -> bool:
         """Subsumption comparison.
 
         Args:
-            other (Concept): :class:`.Concept` instance from the same lattice.
+            other: :class:`.Concept` instance from the same lattice.
 
         Returns:
             bool: ``True`` if ``self`` subsumes ``other`` else ``False``.
+
+        Example:
+            >>> import concepts
+            >>> lattice = concepts.Context.fromstring(concepts.EXAMPLE).lattice
+            >>> lattice['+1',] >= lattice['+1', '+sg'] >= lattice['+1', '+sg'] >= lattice['+1', '-1']
+            True
+            >>> lattice['+1',] >= lattice['+sg',] or lattice['+sg',] >= lattice['+1',]
+            False
         """
         return self._extent | other._extent == self._extent
 
     __le__ = implies
+
     __ge__ = subsumes
 
-    def properly_implies(self, other):
+    def properly_implies(self, other: 'Concept') -> bool:
         """Proper implication comparison.
 
         Args:
-            other (Concept): :class:`.Concept` instance from the same lattice.
+            other: :class:`.Concept` instance from the same lattice.
 
         Returns:
             bool: ``True`` if ``self`` properly implies ``other`` else ``False``.
+
+        Example:
+            >>> import concepts
+            >>> lattice = concepts.Context.fromstring(concepts.EXAMPLE).lattice
+            >>> lattice['+1',] < lattice['-3',] < lattice[()]
+            True
         """
         return self._extent & other._extent == self._extent != other._extent
 
-    def properly_subsumes(self, other):
+    def properly_subsumes(self, other: 'Concept') -> bool:
         """Proper subsumption comparison.
 
         Args:
-            other (Concept): :class:`.Concept` instance from the same lattice.
+            other: :class:`.Concept` instance from the same lattice.
 
         Returns:
             bool: ``True`` if ``self`` properly subsumes ``other`` else ``False``.
+
+        Example:
+            >>> import concepts
+            >>> lattice = concepts.Context.fromstring(concepts.EXAMPLE).lattice
+            >>> lattice['+1',] > lattice['+1', '+sg'] > lattice['+1', '-1']
+            True
         """
         return self._extent | other._extent == self._extent != other._extent
 
     __lt__ = properly_implies
+
     __gt__ = properly_subsumes
 
-    def join(self, other):
+    def join(self, other: 'Concept') -> 'Concept':
         """Least upper bound, supremum, or, generalization.
 
         Args:
-            other (Concept): :class:`.Concept` instance from the same lattice.
+            other: :class:`.Concept` instance from the same lattice.
 
         Returns:
-            Concept: :class:`.Concept` instance from the same lattice.
+            :class:`.Concept` instance from the same lattice.
+
+        Example:
+            >>> import concepts
+            >>> lattice = concepts.Context.fromstring(concepts.EXAMPLE).lattice
+            >>> lattice['+1',].join(lattice['+2',])
+            <Concept {1sg, 1pl, 2sg, 2pl} <-> [-3] <=> -3>
+            >>> lattice['+2',] | lattice['+1',]
+            <Concept {1sg, 1pl, 2sg, 2pl} <-> [-3] <=> -3>
         """
         common = self._extent | other._extent
         extent = self.lattice._context._extents.double(common)
         return self.lattice._mapping[extent]
 
-    def meet(self, other):
+    def meet(self, other: 'Concept') -> 'Concept':
         """Greatest lower bound, infimum, and, unification.
 
         Args:
-            other (Concept): :class:`.Concept` instance from the same lattice.
+            other: :class:`.Concept` instance from the same lattice.
 
         Returns:
-            Concept: :class:`.Concept` instance from the same lattice.
+            :class:`.Concept` instance from the same lattice.
+
+        Example:
+            >>> import concepts
+            >>> lattice = concepts.Context.fromstring(concepts.EXAMPLE).lattice
+            >>> lattice['-1', '-2'].meet(lattice['-pl',])
+            <Atom {3sg} <-> [-1 -2 +3 +sg -pl] <=> 3sg>
+            >>> lattice['-pl',] & lattice['-1', '-2']
+            <Atom {3sg} <-> [-1 -2 +3 +sg -pl] <=> 3sg>
         """
         common = self._extent & other._extent
         extent = self.lattice._context._extents.double(common)
         return self.lattice._mapping[extent]
 
     __or__ = join
+
     __and__ = meet
 
-    def incompatible_with(self, other):
+    def incompatible_with(self, other: 'Concept') -> bool:
         """Infimum meet comparison.
 
         Args:
-            other (Concept): :class:`.Concept` instance from the same lattice.
+            other: :class:`.Concept` instance from the same lattice.
 
         Returns:
             bool: ``True`` if ``self`` is incompatible with ``other`` else ``False``.
+
+        Example:
+            >>> import concepts
+            >>> lattice = concepts.Context.fromstring(concepts.EXAMPLE).lattice
+            >>> lattice['+1',].incompatible_with(lattice['+3',])
+            True
+            >>> lattice['+1',].incompatible_with(lattice['+sg',])
+            False
         """
         return not self._extent & other._extent
 
-    def complement_of(self, other):
+    def complement_of(self, other: 'Concept') -> bool:
         """Infimum meet and supremum join comparison.
 
         Args:
-            other (Concept): :class:`.Concept` instance from the same lattice.
+            other: :class:`.Concept` instance from the same lattice.
 
         Returns:
             bool: ``True`` if ``self`` is the complement of ``other`` else ``False``.
+
+        Example:
+            >>> import concepts
+            >>> lattice = concepts.Context.fromstring(concepts.EXAMPLE).lattice
+            >>> lattice['+1',].complement_of(lattice['-1',])
+            True
+            >>> lattice['+1',].complement_of(lattice['+3',])
+            False
         """
         return (not self._extent & other._extent
                 and (self._extent | other._extent) == self.lattice.supremum._extent)
 
-    def subcontrary_with(self, other):
+    def subcontrary_with(self, other: 'Concept') -> bool:
         """Non-infimum meet and supremum join comparison.
 
         Args:
-            other (Concept): :class:`.Concept` instance from the same lattice.
+            other: :class:`.Concept` instance from the same lattice.
 
         Returns:
             bool: ``True`` if ``self`` is the subcontrary to ``other`` else ``False``.
+
+        Example:
+            >>> import concepts
+            >>> lattice = concepts.Context.fromstring(concepts.EXAMPLE).lattice
+            >>> lattice['-1',].subcontrary_with(lattice['-3',])
+            True
+            >>> lattice['-1',].subcontrary_with(lattice['+sg',])
+            False
         """
         return (self._extent & other._extent
                 and (self._extent | other._extent) == self.lattice.supremum._extent)
 
-    def orthogonal_to(self, other):
+    def orthogonal_to(self, other: 'Concept') -> bool:
         """Non-infimum meet, incomparable, and non-supremum join comparison.
 
         Args:
-            other (Concept): :class:`.Concept` instance from the same lattice.
+            other: :class:`.Concept` instance from the same lattice.
 
         Returns:
             bool: ``True`` if ``self`` is orthogonal to ``other`` else ``False``.
+
+        Example:
+            >>> import concepts
+            >>> lattice = concepts.Context.fromstring(concepts.EXAMPLE).lattice
+            >>> lattice['+1',].orthogonal_to(lattice['+sg',])
+            True
+            >>> lattice['+1',].orthogonal_to(lattice['+3',])
+            False
         """
         meet = self._extent & other._extent
         return (not not meet and meet != self._extent and meet != other._extent
