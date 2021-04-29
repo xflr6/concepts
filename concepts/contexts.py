@@ -397,6 +397,21 @@ class Context:
         return extent.members(), intent.members()
 
     def __str__(self) -> str:
+        """
+
+        Example:
+            >>> import concepts
+            >>> context = concepts.Context.fromstring(concepts.EXAMPLE)
+            >>> print(context)
+            <Context object mapping 6 objects to 10 properties [b9d20179] at 0x...>
+                   |+1|-1|+2|-2|+3|-3|+sg|+pl|-sg|-pl|
+                1sg|X |  |  |X |  |X |X  |   |   |X  |
+                1pl|X |  |  |X |  |X |   |X  |X  |   |
+                2sg|  |X |X |  |  |X |X  |   |   |X  |
+                2pl|  |X |X |  |  |X |   |X  |X  |   |
+                3sg|  |X |  |X |X |  |X  |   |   |X  |
+                3pl|  |X |  |X |X |  |   |X  |X  |   |
+        """
         return (f'{self!r}\n'
                 f'{self.tostring(indent=4)}')
 
@@ -536,6 +551,12 @@ class Context:
 
         Returns:
             The unsigned CRC32 checksum as hex-string.
+
+        Example:
+            >>> import concepts
+            >>> context = concepts.Context.fromstring(concepts.EXAMPLE)
+            >>> context.crc32()
+            'b9d20179'
         """
         return tools.crc32_hex(self.tostring().encode(encoding))
 
@@ -585,6 +606,19 @@ class Context:
 
         Returns:
             Definition: New :class:`.Definition` instance.
+
+        Example:
+            >>> import concepts
+            >>> context = concepts.Context.fromstring(concepts.EXAMPLE)
+            >>> context.definition()  # doctest: +NORMALIZE_WHITESPACE
+            <Definition(['1sg', '1pl', '2sg', '2pl', '3sg', '3pl'],
+                        ['+1', '-1', '+2', '-2', '+3', '-3', '+sg', '+pl', '-sg', '-pl'],
+                        [(True, False, False, True, False, True, True, False, False, True),
+                         (True, False, False, True, False, True, False, True, True, False),
+                         (False, True, True, False, False, True, True, False, False, True),
+                         (False, True, True, False, False, True, False, True, True, False),
+                         (False, True, False, True, True, False, True, False, False, True),
+                         (False, True, False, True, True, False, False, True, True, False)])>
         """
         return definitions.Definition(self.objects, self.properties, self.bools)
 
