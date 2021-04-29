@@ -19,43 +19,8 @@ class Lattice:
 
     Usage:
 
-    >>> from concepts import contexts
-
-    >>> l = contexts.Context.fromstring('''
-    ...    |+1|-1|+2|-2|+3|-3|+sg|+pl|-sg|-pl|
-    ... 1sg| X|  |  | X|  | X|  X|   |   |  X|
-    ... 1pl| X|  |  | X|  | X|   |  X|  X|   |
-    ... 2sg|  | X| X|  |  | X|  X|   |   |  X|
-    ... 2pl|  | X| X|  |  | X|   |  X|  X|   |
-    ... 3sg|  | X|  | X| X|  |  X|   |   |  X|
-    ... 3pl|  | X|  | X| X|  |   |  X|  X|   |
-    ... ''').lattice
-
-    >>> print(l)  # doctest: +ELLIPSIS
-    <Lattice object of 6 atoms 22 concepts 5 coatoms at 0x...>
-        {} <-> [+1 -1 +2 -2 +3 -3 +sg +pl -sg -pl]
-        {1sg} <-> [+1 -2 -3 +sg -pl] <=> 1sg
-        {1pl} <-> [+1 -2 -3 +pl -sg] <=> 1pl
-        {2sg} <-> [-1 +2 -3 +sg -pl] <=> 2sg
-        {2pl} <-> [-1 +2 -3 +pl -sg] <=> 2pl
-        {3sg} <-> [-1 -2 +3 +sg -pl] <=> 3sg
-        {3pl} <-> [-1 -2 +3 +pl -sg] <=> 3pl
-        {1sg, 1pl} <-> [+1 -2 -3] <=> +1
-        {1sg, 2sg} <-> [-3 +sg -pl]
-        {1sg, 3sg} <-> [-2 +sg -pl]
-        {1pl, 2pl} <-> [-3 +pl -sg]
-        {1pl, 3pl} <-> [-2 +pl -sg]
-        {2sg, 2pl} <-> [-1 +2 -3] <=> +2
-        {2sg, 3sg} <-> [-1 +sg -pl]
-        {2pl, 3pl} <-> [-1 +pl -sg]
-        {3sg, 3pl} <-> [-1 -2 +3] <=> +3
-        {1sg, 2sg, 3sg} <-> [+sg -pl] <=> +sg -pl
-        {1pl, 2pl, 3pl} <-> [+pl -sg] <=> +pl -sg
-        {1sg, 1pl, 2sg, 2pl} <-> [-3] <=> -3
-        {1sg, 1pl, 3sg, 3pl} <-> [-2] <=> -2
-        {2sg, 2pl, 3sg, 3pl} <-> [-1] <=> -1
-        {1sg, 1pl, 2sg, 2pl, 3sg, 3pl} <-> []
-
+    >>> import concepts
+    >>> l = concepts.Context.fromstring(concepts.EXAMPLE).lattice
 
     >>> l.infimum
     <Infimum {} <-> [+1 -1 +2 -2 +3 -3 +sg +pl -sg -pl]>
@@ -327,11 +292,41 @@ class Lattice:
         """
         return len(self._concepts)
 
-    def __str__(self):
+    def __str__(self) -> str:
+        """
+
+        Example:
+            >>> import concepts
+            >>> lattice = concepts.Context.fromstring(concepts.EXAMPLE).lattice
+            >>> print(lattice)  # doctest: +ELLIPSIS
+            <Lattice object of 6 atoms 22 concepts 5 coatoms at 0x...>
+                {} <-> [+1 -1 +2 -2 +3 -3 +sg +pl -sg -pl]
+                {1sg} <-> [+1 -2 -3 +sg -pl] <=> 1sg
+                {1pl} <-> [+1 -2 -3 +pl -sg] <=> 1pl
+                {2sg} <-> [-1 +2 -3 +sg -pl] <=> 2sg
+                {2pl} <-> [-1 +2 -3 +pl -sg] <=> 2pl
+                {3sg} <-> [-1 -2 +3 +sg -pl] <=> 3sg
+                {3pl} <-> [-1 -2 +3 +pl -sg] <=> 3pl
+                {1sg, 1pl} <-> [+1 -2 -3] <=> +1
+                {1sg, 2sg} <-> [-3 +sg -pl]
+                {1sg, 3sg} <-> [-2 +sg -pl]
+                {1pl, 2pl} <-> [-3 +pl -sg]
+                {1pl, 3pl} <-> [-2 +pl -sg]
+                {2sg, 2pl} <-> [-1 +2 -3] <=> +2
+                {2sg, 3sg} <-> [-1 +sg -pl]
+                {2pl, 3pl} <-> [-1 +pl -sg]
+                {3sg, 3pl} <-> [-1 -2 +3] <=> +3
+                {1sg, 2sg, 3sg} <-> [+sg -pl] <=> +sg -pl
+                {1pl, 2pl, 3pl} <-> [+pl -sg] <=> +pl -sg
+                {1sg, 1pl, 2sg, 2pl} <-> [-3] <=> -3
+                {1sg, 1pl, 3sg, 3pl} <-> [-2] <=> -2
+                {2sg, 2pl, 3sg, 3pl} <-> [-1] <=> -1
+                {1sg, 1pl, 2sg, 2pl, 3sg, 3pl} <-> []
+        """
         concepts = '\n'.join(f'    {c}' for c in self._concepts)
         return f'{self!r}\n{concepts}'
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return (f'<{self.__class__.__name__} object'
                 f' of {len(self.atoms)} atoms'
                 f' {len(self)} concepts'

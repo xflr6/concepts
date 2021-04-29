@@ -12,22 +12,7 @@ StrSequence = typing.Sequence[str]
 
 
 class Triple:
-    """Triple of ``(objects, properties, bools)`` for creating a context.
-
-    >>> t = Triple(['Mr. Praline', 'parrot'],
-    ...            ['alive', 'dead'],
-    ...            [(True, False), (False, True)])
-
-    >>> t  # doctest: +NORMALIZE_WHITESPACE
-    <Triple(['Mr. Praline', 'parrot'], ['alive', 'dead'],
-        [(True, False), (False, True)])>
-
-    >>> (t[0], t[1], t[2]) == (t.objects, t.properties, t.bools)
-    True
-
-    >>> t == (t.objects, t.properties, t.bools)
-    True
-    """
+    """Triple of ``(objects, properties, bools)`` for creating a context."""
 
     @classmethod
     def fromfile(cls, filename, frmat: str = 'cxt',
@@ -87,6 +72,16 @@ class Triple:
 
         Returns:
             bool: ``True`` if the definitions are equal, ``False`` otherwise.
+
+        Example:
+            >>> from concepts import Definition
+            >>> definition = Definition(['Mr. Praline', 'parrot'],
+            ...                         ['alive', 'dead'],
+            ...                         [(True, False), (False, True)])
+            >>> definition == (definition.objects,
+            ...                definition.properties,
+            ...                definition.bools)
+            True
         """
         if isinstance(other, Triple):  # order insensitive
             return (self._objects == other._objects
@@ -137,7 +132,12 @@ class Triple:
             True
             >>> definition['parrot', 'alive']
             False
-
+            >>> (definition[0],
+            ...  definition[1],
+            ...  definition[2]) == (definition.objects,
+            ...                     definition.properties,
+            ...                     definition.bools)
+            True
         """
         if isinstance(pair, int):
             return list(self)[pair]
@@ -207,6 +207,18 @@ class Triple:
         return self.tostring()
 
     def __repr__(self) -> str:
+        """
+
+        Example:
+            >>> from concepts import Definition
+            >>> definition = Definition(['Mr. Praline', 'parrot'],
+            ...                         ['alive', 'dead'],
+            ...                         [(True, False), (False, True)])
+            >>> definition  # doctest: +NORMALIZE_WHITESPACE
+            <Definition(['Mr. Praline', 'parrot'],
+                        ['alive', 'dead'],
+                        [(True, False), (False, True)])>
+        """
         return (f'<{self.__class__.__name__}('
                 f'{self._objects._items!r}, {self._properties._items!r},'
                 f' {self.bools!r})>')
