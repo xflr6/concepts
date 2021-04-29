@@ -1,6 +1,7 @@
 """Formal Concept Analysis concepts."""
 
 import operator
+import typing
 
 __all__ = ['Concept',
            'Infimum', 'Atom', 'Supremum']
@@ -13,32 +14,13 @@ class Concept:
 
     Usage:
 
-    >>> from concepts import contexts
-
-    >>> l = contexts.Context.fromstring('''
-    ...    |+1|-1|+2|-2|+3|-3|+sg|+pl|-sg|-pl|
-    ... 1sg| X|  |  | X|  | X|  X|   |   |  X|
-    ... 1pl| X|  |  | X|  | X|   |  X|  X|   |
-    ... 2sg|  | X| X|  |  | X|  X|   |   |  X|
-    ... 2pl|  | X| X|  |  | X|   |  X|  X|   |
-    ... 3sg|  | X|  | X| X|  |  X|   |   |  X|
-    ... 3pl|  | X|  | X| X|  |   |  X|  X|   |
-    ... ''').lattice
+    >>> import concepts
+    >>> l = concepts.Context.fromstring(concepts.EXAMPLE).lattice
 
     >>> c = l['+1',]
 
-    >>> c
-    <Concept {1sg, 1pl} <-> [+1 -2 -3] <=> +1>
-
-
     >>> c.index, c.dindex
     (7, 6)
-
-    >>> c.extent
-    ('1sg', '1pl')
-
-    >>> c.intent
-    ('+1', '-2', '-3')
 
     >>> c.objects
     ()
@@ -50,13 +32,6 @@ class Concept:
     >>> c.atoms  # doctest: +NORMALIZE_WHITESPACE
     (<Atom {1sg} <-> [+1 -2 -3 +sg -pl] <=> 1sg>,
      <Atom {1pl} <-> [+1 -2 -3 +pl -sg] <=> 1pl>)
-
-    >>> c.minimal()
-    ('+1',)
-
-    >>> list(c.attributes())
-    [('+1',), ('+1', '-2'), ('+1', '-3'), ('-2', '-3'), ('+1', '-2', '-3')]
-
 
     >>> c.upper_neighbors  # doctest: +NORMALIZE_WHITESPACE
     (<Concept {1sg, 1pl, 2sg, 2pl} <-> [-3] <=> -3>,
@@ -154,6 +129,14 @@ class Concept:
         return f'{{{extent}}} <-> [{intent}]{objects}{properties}'
 
     def __repr__(self):
+        """
+
+        Example:
+            >>> import concepts
+            >>> lattice = concepts.Context.fromstring(concepts.EXAMPLE).lattice
+            >>> lattice['+1',]
+            <Concept {1sg, 1pl} <-> [+1 -2 -3] <=> +1>
+        """
         return f'<{self.__class__.__name__} {self}>'
 
     def _eq(self, other):
@@ -180,29 +163,55 @@ class Concept:
         yield self._intent.members()
 
     @property
-    def extent(self):
-        """tuple[str, ...] The objects subsumed by the concept."""
+    def extent(self) -> typing.Tuple[str, ...]:
+        """The objects subsumed by the concept.
+
+        Example:
+            >>> import concepts
+            >>> lattice = concepts.Context.fromstring(concepts.EXAMPLE).lattice
+            >>> lattice['+1',].extent
+            ('1sg', '1pl')
+        """
         return self._extent.members()
 
     @property
-    def intent(self):
-        """tuple[str, ...] The properties implied by the concept."""
+    def intent(self) -> typing.Tuple[str, ...]:
+        """The properties implied by the concept."
+
+        Example:
+            >>> import concepts
+            >>> lattice = concepts.Context.fromstring(concepts.EXAMPLE).lattice
+            >>> lattice['+1',].intent
+            ('+1', '-2', '-3')
+        """
         return self._intent.members()
 
-    def minimal(self):
+    def minimal(self) -> typing.Tuple[str, ...]:
         """Shortlex minimal properties generating the concept.
 
         Returns:
-            tuple[str, ...]: Property name strings.
+            Property name strings.
+
+        Example:
+            >>> import concepts
+            >>> lattice = concepts.Context.fromstring(concepts.EXAMPLE).lattice
+            >>> lattice['+1',].minimal()
+            ('+1',)
         """
         return self.lattice._context._minimal(self._extent,
                                               self._intent).members()
 
-    def attributes(self):
+    def attributes(self) -> typing.Iterator[typing.Tuple[str]]:
         """Yield properties generating the concept in shortlex order.
 
         Yields:
             Tuples of property name strings.
+
+        Example:
+            >>> import concepts
+            >>> lattice = concepts.Context.fromstring(concepts.EXAMPLE).lattice
+            >>> list(lattice['+1',].attributes())
+            [('+1',), ('+1', '-2'), ('+1', '-3'), ('-2', '-3'), ('+1', '-2', '-3')]
         """
         minimize = self.lattice._context._minimize(self._extent, self._intent)
         return (i.members() for i in minimize)
@@ -358,11 +367,17 @@ class Concept:
 class Infimum(Concept):
     """Contradiction with empty ``extent`` and universal ``intent``."""
 
-    def minimal(self):
+    def minimal(self) -> typing.Tuple[str, ...]:
         """Shortlex minimal properties generating the concept.
 
         Returns:
-            tuple[str, ...]: Property name strings.
+            Property name strings.
+
+        Example:
+            >>> import concepts
+            >>> lattice = concepts.Context.fromstring(concepts.EXAMPLE).lattice
+            >>> lattice.infimum.minimal()
+            ('+1', '-1', '+2', '-2', '+3', '-3', '+sg', '+pl', '-sg', '-pl')
         """
         return self._intent.members()
 
