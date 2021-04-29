@@ -14,59 +14,19 @@ StrSequence = typing.Sequence[str]
 class Triple:
     """Triple of ``(objects, properties, bools)`` for creating a context.
 
-    >>> t = Triple(['Mr. Praline', 'parrot'], ['alive', 'dead'],
-    ...     [(True, False), (False, True)])
+    >>> t = Triple(['Mr. Praline', 'parrot'],
+    ...            ['alive', 'dead'],
+    ...            [(True, False), (False, True)])
 
     >>> t  # doctest: +NORMALIZE_WHITESPACE
     <Triple(['Mr. Praline', 'parrot'], ['alive', 'dead'],
         [(True, False), (False, True)])>
-
-    >>> print(t)
-               |alive|dead|
-    Mr. Praline|X    |    |
-    parrot     |     |X   |
-
-    >>> tuple(t)
-    (('Mr. Praline', 'parrot'), ('alive', 'dead'), [(True, False), (False, True)])
 
     >>> (t[0], t[1], t[2]) == (t.objects, t.properties, t.bools)
     True
 
     >>> t == (t.objects, t.properties, t.bools)
     True
-
-
-    >>> t['Mr. Praline', 'alive']
-    True
-
-    >>> t['parrot', 'alive']
-    False
-
-
-    >>> t.take(['parrot'])
-    <Triple(['parrot'], ['alive', 'dead'], [(False, True)])>
-
-    >>> t.take(properties=['dead'])
-    <Triple(['Mr. Praline', 'parrot'], ['dead'], [(False,), (True,)])>
-
-    >>> t.take(['Brian'], ['alive', 'holy'])
-    Traceback (most recent call last):
-        ...
-    KeyError: ['Brian', 'holy']
-
-    >>> t.take(['parrot', 'Mr. Praline'], ['alive'], reorder=True)
-    <Triple(['parrot', 'Mr. Praline'], ['alive'], [(False,), (True,)])>
-
-
-    >>> print(t.transposed())
-         |Mr. Praline|parrot|
-    alive|X          |      |
-    dead |           |X     |
-
-    >>> print(t.inverted())
-               |alive|dead|
-    Mr. Praline|     |X   |
-    parrot     |X    |    |
     """
 
     @classmethod
@@ -146,7 +106,17 @@ class Triple:
         return not self == other
 
     def __iter__(self):
-        """Yield ``objects``, ``properties``, and ``bools`` (e.g. for triple unpacking)."""
+        """Yield ``objects``, ``properties``, and ``bools`` (e.g. for triple unpacking).
+
+        Example:
+            >>> triple = Triple(['Mr. Praline', 'parrot'],
+            ...                 ['alive', 'dead'],
+            ...                 [(True, False), (False, True)])
+            >>> list(triple)  # doctest: +NORMALIZE_WHITESPACE
+            [('Mr. Praline', 'parrot'),
+             ('alive', 'dead'),
+             [(True, False), (False, True)]]
+        """
         yield self.objects
         yield self.properties
         yield self.bools
@@ -156,6 +126,16 @@ class Triple:
 
         Returns:
             bool: ``True`` if ``object`` has ``property`` else ``False``.
+
+        Example:
+            >>> triple = Triple(['Mr. Praline', 'parrot'],
+            ...                 ['alive', 'dead'],
+            ...                 [(True, False), (False, True)])
+            >>> triple['Mr. Praline', 'alive']
+            True
+            >>> triple['parrot', 'alive']
+            False
+
         """
         if isinstance(pair, int):
             return list(self)[pair]
@@ -198,6 +178,15 @@ class Triple:
 
         Returns:
             str: The definition as seralized string.
+
+        Example:
+            >>> triple = Triple(['Mr. Praline', 'parrot'],
+            ...                 ['alive', 'dead'],
+            ...                 [(True, False), (False, True)])
+            >>> print(triple)
+                       |alive|dead|
+            Mr. Praline|X    |    |
+            parrot     |     |X   |
         """
         return formats.Format[frmat].dumps(*self, **kwargs)
 
@@ -225,6 +214,21 @@ class Triple:
 
         Returns:
             Definition: A new :class:`.Definition` instance.
+
+        Example:
+            >>> triple = Triple(['Mr. Praline', 'parrot'],
+            ...                 ['alive', 'dead'],
+            ...                 [(True, False), (False, True)])
+            >>> triple.take(['parrot'])
+            <Triple(['parrot'], ['alive', 'dead'], [(False, True)])>
+            >>> triple.take(properties=['dead'])
+            <Triple(['Mr. Praline', 'parrot'], ['dead'], [(False,), (True,)])>
+            >>> triple.take(['Brian'], ['alive', 'holy'])
+            Traceback (most recent call last):
+                ...
+            KeyError: ['Brian', 'holy']
+            >>> triple.take(['parrot', 'Mr. Praline'], ['alive'], reorder=True)
+            <Triple(['parrot', 'Mr. Praline'], ['alive'], [(False,), (True,)])>
         """
         if (objects and not self._objects.issuperset(objects)
             or properties and not self._properties.issuperset(properties)):
@@ -252,6 +256,15 @@ class Triple:
 
         Returns:
             Definition: A new :class:`.Definition` instance.        
+
+        Example:
+            >>> triple = Triple(['Mr. Praline', 'parrot'],
+            ...                 ['alive', 'dead'],
+            ...                 [(True, False), (False, True)])
+            >>> print(triple.transposed())
+                 |Mr. Praline|parrot|
+            alive|X          |      |
+            dead |           |X     |
         """
         return self._fromargs(self._properties.copy(), self._objects.copy(),
                               {(p, o) for (o, p) in self._pairs})
@@ -261,6 +274,16 @@ class Triple:
 
         Returns:
             Definition: A new :class:`.Definition` instance.        
+
+        Example:
+            >>> triple = Triple(['Mr. Praline', 'parrot'],
+            ...                 ['alive', 'dead'],
+            ...                 [(True, False), (False, True)])
+            >>> print(triple.inverted())
+                       |alive|dead|
+            Mr. Praline|     |X   |
+            parrot     |X    |    |
+
         """
         pairs = self._pairs
         return self._fromargs(self._objects.copy(), self._properties.copy(),
