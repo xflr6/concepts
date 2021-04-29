@@ -109,10 +109,11 @@ class Triple:
         """Yield ``objects``, ``properties``, and ``bools`` (e.g. for triple unpacking).
 
         Example:
-            >>> triple = Triple(['Mr. Praline', 'parrot'],
-            ...                 ['alive', 'dead'],
-            ...                 [(True, False), (False, True)])
-            >>> list(triple)  # doctest: +NORMALIZE_WHITESPACE
+            >>> from concepts import Definition
+            >>> definition = Definition(['Mr. Praline', 'parrot'],
+            ...                         ['alive', 'dead'],
+            ...                         [(True, False), (False, True)])
+            >>> list(definition)  # doctest: +NORMALIZE_WHITESPACE
             [('Mr. Praline', 'parrot'),
              ('alive', 'dead'),
              [(True, False), (False, True)]]
@@ -128,12 +129,13 @@ class Triple:
             bool: ``True`` if ``object`` has ``property`` else ``False``.
 
         Example:
-            >>> triple = Triple(['Mr. Praline', 'parrot'],
-            ...                 ['alive', 'dead'],
-            ...                 [(True, False), (False, True)])
-            >>> triple['Mr. Praline', 'alive']
+            >>> from concepts import Definition
+            >>> definition = Definition(['Mr. Praline', 'parrot'],
+            ...                         ['alive', 'dead'],
+            ...                         [(True, False), (False, True)])
+            >>> definition['Mr. Praline', 'alive']
             True
-            >>> triple['parrot', 'alive']
+            >>> definition['parrot', 'alive']
             False
 
         """
@@ -147,22 +149,61 @@ class Triple:
 
     @property
     def objects(self) -> typing.Tuple[str, ...]:
-        """(Names of the) objects described by the definition."""
+        """(Names of the) objects described by the definition.
+
+        Example:
+            >>> from concepts import Definition
+            >>> definition = Definition(['Mr. Praline', 'parrot'],
+            ...                         ['alive', 'dead'],
+            ...                         [(True, False), (False, True)])
+            >>> definition.objects
+            ('Mr. Praline', 'parrot')
+        """
         return tuple(self._objects)
 
     @property
     def properties(self) -> typing.Tuple[str, ...]:
-        """(Names of the) properties that describe the objects."""
+        """(Names of the) properties that describe the objects.
+
+        Example:
+            >>> from concepts import Definition
+            >>> definition = Definition(['Mr. Praline', 'parrot'],
+            ...                         ['alive', 'dead'],
+            ...                         [(True, False), (False, True)])
+            >>> definition.properties
+            ('alive', 'dead')
+        """
         return tuple(self._properties)
 
     @property
     def bools(self) -> typing.List[typing.Tuple[bool, ...]]:
-        """Row-major :obj:`list` of boolean tuples."""
+        """Row-major :obj:`list` of boolean tuples.
+
+        Example:
+            >>> from concepts import Definition
+            >>> definition = Definition(['Mr. Praline', 'parrot'],
+            ...                         ['alive', 'dead'],
+            ...                         [(True, False), (False, True)])
+            >>> definition.bools
+            [(True, False), (False, True)]
+        """
         prop = self._properties
         pairs = self._pairs
         return [tuple((o, p) in pairs for p in prop) for o in self._objects]
 
     def __str__(self) -> str:
+        """
+
+        Example:
+            >>> from concepts import Definition
+            >>> definition = Definition(['Mr. Praline', 'parrot'],
+            ...                         ['alive', 'dead'],
+            ...                         [(True, False), (False, True)])
+            >>> print(definition)
+                       |alive|dead|
+            Mr. Praline|X    |    |
+            parrot     |     |X   |
+        """
         return self.tostring()
 
     def __repr__(self) -> str:
@@ -180,10 +221,11 @@ class Triple:
             str: The definition as seralized string.
 
         Example:
-            >>> triple = Triple(['Mr. Praline', 'parrot'],
-            ...                 ['alive', 'dead'],
-            ...                 [(True, False), (False, True)])
-            >>> print(triple)
+            >>> from concepts import Definition
+            >>> definition = Definition(['Mr. Praline', 'parrot'],
+            ...                         ['alive', 'dead'],
+            ...                         [(True, False), (False, True)])
+            >>> print(definition.tostring())
                        |alive|dead|
             Mr. Praline|X    |    |
             parrot     |     |X   |
@@ -198,6 +240,14 @@ class Triple:
 
         Returns:
             str: The unsigned CRC32 checksum as hex-string.
+
+        Example:
+            >>> from concepts import Definition
+            >>> definition = Definition(['Mr. Praline', 'parrot'],
+            ...                         ['alive', 'dead'],
+            ...                         [(True, False), (False, True)])
+            >>> definition.crc32()
+            '9642849e'
         """
         return tools.crc32_hex(self.tostring().encode(encoding))
 
@@ -216,19 +266,20 @@ class Triple:
             Definition: A new :class:`.Definition` instance.
 
         Example:
-            >>> triple = Triple(['Mr. Praline', 'parrot'],
-            ...                 ['alive', 'dead'],
-            ...                 [(True, False), (False, True)])
-            >>> triple.take(['parrot'])
-            <Triple(['parrot'], ['alive', 'dead'], [(False, True)])>
-            >>> triple.take(properties=['dead'])
-            <Triple(['Mr. Praline', 'parrot'], ['dead'], [(False,), (True,)])>
-            >>> triple.take(['Brian'], ['alive', 'holy'])
+            >>> from concepts import Definition
+            >>> definition = Definition(['Mr. Praline', 'parrot'],
+            ...                         ['alive', 'dead'],
+            ...                         [(True, False), (False, True)])
+            >>> definition.take(['parrot'])
+            <Definition(['parrot'], ['alive', 'dead'], [(False, True)])>
+            >>> definition.take(properties=['dead'])
+            <Definition(['Mr. Praline', 'parrot'], ['dead'], [(False,), (True,)])>
+            >>> definition.take(['Brian'], ['alive', 'holy'])
             Traceback (most recent call last):
                 ...
             KeyError: ['Brian', 'holy']
-            >>> triple.take(['parrot', 'Mr. Praline'], ['alive'], reorder=True)
-            <Triple(['parrot', 'Mr. Praline'], ['alive'], [(False,), (True,)])>
+            >>> definition.take(['parrot', 'Mr. Praline'], ['alive'], reorder=True)
+            <Definition(['parrot', 'Mr. Praline'], ['alive'], [(False,), (True,)])>
         """
         if (objects and not self._objects.issuperset(objects)
             or properties and not self._properties.issuperset(properties)):
@@ -258,10 +309,11 @@ class Triple:
             Definition: A new :class:`.Definition` instance.        
 
         Example:
-            >>> triple = Triple(['Mr. Praline', 'parrot'],
-            ...                 ['alive', 'dead'],
-            ...                 [(True, False), (False, True)])
-            >>> print(triple.transposed())
+            >>> from concepts import Definition
+            >>> definition = Definition(['Mr. Praline', 'parrot'],
+            ...                         ['alive', 'dead'],
+            ...                         [(True, False), (False, True)])
+            >>> print(definition.transposed())
                  |Mr. Praline|parrot|
             alive|X          |      |
             dead |           |X     |
@@ -276,10 +328,11 @@ class Triple:
             Definition: A new :class:`.Definition` instance.        
 
         Example:
-            >>> triple = Triple(['Mr. Praline', 'parrot'],
-            ...                 ['alive', 'dead'],
-            ...                 [(True, False), (False, True)])
-            >>> print(triple.inverted())
+            >>> from concepts import Definition
+            >>> definition = Definition(['Mr. Praline', 'parrot'],
+            ...                         ['alive', 'dead'],
+            ...                         [(True, False), (False, True)])
+            >>> print(definition.inverted())
                        |alive|dead|
             Mr. Praline|     |X   |
             parrot     |X    |    |
