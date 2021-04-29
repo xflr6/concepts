@@ -153,6 +153,7 @@ class Concept:
         Yields:
             :class:`.Concept` instances.
 
+        Example:
             >>> import concepts
             >>> lattice = concepts.Context.fromstring(concepts.EXAMPLE).lattice
             >>> list(lattice['+1',].upset())  # doctest: +NORMALIZE_WHITESPACE
