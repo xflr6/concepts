@@ -44,8 +44,8 @@ class Context:
 
         Example:
             >>> import concepts
-            >>> c = concepts.Context.fromstring(concepts.EXAMPLE)
-            >>> print(c)  # doctest: +ELLIPSIS
+            >>> context = concepts.Context.fromstring(concepts.EXAMPLE)
+            >>> print(context)  # doctest: +ELLIPSIS
             <Context object mapping 6 objects to 10 properties [b9d20179] at 0x...>
                    |+1|-1|+2|-2|+3|-3|+sg|+pl|-sg|-pl|
                 1sg|X |  |  |X |  |X |X  |   |   |X  |
@@ -307,8 +307,8 @@ class Context:
 
         Example:
             >>> import concepts
-            >>> c = concepts.Context.fromstring(concepts.EXAMPLE)
-            >>> c.intension(['1sg'])
+            >>> context = concepts.Context.fromstring(concepts.EXAMPLE)
+            >>> context.intension(['1sg'])
             ('+1', '-2', '-3', '+sg', '-pl')
         """
         intent = self._Objects.frommembers(objects).prime()
@@ -329,8 +329,8 @@ class Context:
 
         Example:
             >>> import concepts
-            >>> c = concepts.Context.fromstring(concepts.EXAMPLE)
-            >>> c.extension(['+1'])
+            >>> context = concepts.Context.fromstring(concepts.EXAMPLE)
+            >>> context.extension(['+1'])
             ('1sg', '1pl')
         """
         extent = self._Properties.frommembers(properties).prime()
@@ -352,8 +352,8 @@ class Context:
 
         Example:
             >>> import concepts
-            >>> c = concepts.Context.fromstring(concepts.EXAMPLE)
-            >>> c.neighbors(['1sg', '1pl', '2pl'])
+            >>> context = concepts.Context.fromstring(concepts.EXAMPLE)
+            >>> context.neighbors(['1sg', '1pl', '2pl'])
             [(('1sg', '1pl', '2sg', '2pl', '3sg', '3pl'), ())]
         """
         objects = self._Objects.frommembers(objects).double()
@@ -376,12 +376,12 @@ class Context:
 
         Example:
             >>> import concepts
-            >>> c = concepts.Context.fromstring(concepts.EXAMPLE)
-            >>> c['1sg',]
+            >>> context = concepts.Context.fromstring(concepts.EXAMPLE)
+            >>> context['1sg',]
             (('1sg',), ('+1', '-2', '-3', '+sg', '-pl'))
-            >>> c['1sg', '1pl', '2pl']
+            >>> context['1sg', '1pl', '2pl']
             (('1sg', '1pl', '2sg', '2pl'), ('-3',))
-            >>> c['-1', '-sg']
+            >>> context['-1', '-sg']
             (('2pl', '3pl'), ('-1', '+pl', '-sg'))
         """
         try:
@@ -426,9 +426,38 @@ class Context:
 
         Example:
             >>> import concepts
-            >>> c = concepts.Context.fromstring(concepts.EXAMPLE)
-            >>> list(c.todict().keys())
-            ['objects', 'properties', 'context', 'lattice']
+            >>> context = concepts.Context.fromstring(concepts.EXAMPLE)
+            >>> context.todict()  # doctest: +NORMALIZE_WHITESPACE
+            {'objects': ('1sg', '1pl', '2sg', '2pl', '3sg', '3pl'),
+             'properties': ('+1', '-1', '+2', '-2', '+3', '-3', '+sg', '+pl', '-sg', '-pl'),
+             'context': [(0, 3, 5, 6, 9),
+                         (0, 3, 5, 7, 8),
+                         (1, 2, 5, 6, 9),
+                         (1, 2, 5, 7, 8),
+                         (1, 3, 4, 6, 9),
+                         (1, 3, 4, 7, 8)],
+             'lattice': [((), (0, 1, 2, 3, 4, 5, 6, 7, 8, 9), (1, 2, 3, 4, 5, 6), ()),
+                         ((0,), (0, 3, 5, 6, 9), (7, 8, 9), (0,)),
+                         ((1,), (0, 3, 5, 7, 8), (7, 10, 11), (0,)),
+                         ((2,), (1, 2, 5, 6, 9), (8, 12, 13), (0,)),
+                         ((3,), (1, 2, 5, 7, 8), (10, 12, 14), (0,)),
+                         ((4,), (1, 3, 4, 6, 9), (9, 13, 15), (0,)),
+                         ((5,), (1, 3, 4, 7, 8), (11, 14, 15), (0,)),
+                         ((0, 1), (0, 3, 5), (18, 19), (1, 2)),
+                         ((0, 2), (5, 6, 9), (16, 18), (1, 3)),
+                         ((0, 4), (3, 6, 9), (16, 19), (1, 5)),
+                         ((1, 3), (5, 7, 8), (17, 18), (2, 4)),
+                         ((1, 5), (3, 7, 8), (17, 19), (2, 6)),
+                         ((2, 3), (1, 2, 5), (18, 20), (3, 4)),
+                         ((2, 4), (1, 6, 9), (16, 20), (3, 5)),
+                         ((3, 5), (1, 7, 8), (17, 20), (4, 6)),
+                         ((4, 5), (1, 3, 4), (19, 20), (5, 6)),
+                         ((0, 2, 4), (6, 9), (21,), (8, 9, 13)),
+                         ((1, 3, 5), (7, 8), (21,), (10, 11, 14)),
+                         ((0, 1, 2, 3), (5,), (21,), (7, 8, 10, 12)),
+                         ((0, 1, 4, 5), (3,), (21,), (7, 9, 11, 15)),
+                         ((2, 3, 4, 5), (1,), (21,), (12, 13, 14, 15)),
+                         ((0, 1, 2, 3, 4, 5), (), (), (18, 19, 20, 16, 17))]}
         """
         result = {'objects': self.objects,
                   'properties': self.properties,
@@ -516,8 +545,8 @@ class Context:
 
         Example:
             >>> import concepts
-            >>> c = concepts.Context.fromstring(concepts.EXAMPLE)
-            >>> c.objects
+            >>> context = concepts.Context.fromstring(concepts.EXAMPLE)
+            >>> context.objects
             ('1sg', '1pl', '2sg', '2pl', '3sg', '3pl')
         """
         return self._Objects._members
@@ -528,8 +557,8 @@ class Context:
 
         Example:
             >>> import concepts
-            >>> c = concepts.Context.fromstring(concepts.EXAMPLE)
-            >>> c.properties
+            >>> context = concepts.Context.fromstring(concepts.EXAMPLE)
+            >>> context.properties
             ('+1', '-1', '+2', '-2', '+3', '-3', '+sg', '+pl', '-sg', '-pl')
         """
         return self._Properties._members
@@ -540,8 +569,8 @@ class Context:
 
         Example:
             >>> import concepts
-            >>> c = concepts.Context.fromstring(concepts.EXAMPLE)
-            >>> c.bools  # doctest: +NORMALIZE_WHITESPACE
+            >>> context = concepts.Context.fromstring(concepts.EXAMPLE)
+            >>> context.bools  # doctest: +NORMALIZE_WHITESPACE
             [(True, False, False, True, False, True, True, False, False, True),
              (True, False, False, True, False, True, False, True, True, False),
              (False, True, True, False, False, True, True, False, False, True),
@@ -565,8 +594,8 @@ class Context:
 
         Example:
             >>> import concepts
-            >>> c = concepts.Context.fromstring(concepts.EXAMPLE)
-            >>> print(c.relations())
+            >>> context = concepts.Context.fromstring(concepts.EXAMPLE)
+            >>> print(context.relations())
             +sg equivalent   -pl
             +pl equivalent   -sg
             +1  complement   -1

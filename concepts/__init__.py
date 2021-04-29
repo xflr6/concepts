@@ -1,5 +1,3 @@
-# concepts - implement basic formal concept analysis
-
 """Formal Concept Analysis (FCA) with Python."""
 
 import typing
@@ -33,7 +31,8 @@ def load(filename, encoding: str = 'utf-8', frmat: typing.Optional[str] = None):
         Context: New :class:`.Context` instance.
 
     Example:
-        >>> load('examples/liveinwater.txt')  # doctest: +ELLIPSIS
+        >>> import concepts
+        >>> concepts.load('examples/liveinwater.txt')  # doctest: +ELLIPSIS
         <Context object mapping 8 objects to 9 properties [b1e86589] at 0x...>
     """
     return Context.fromfile(filename, frmat, encoding)
@@ -50,7 +49,8 @@ def load_cxt(filename, encoding: typing.Optional[str] = None):
         Context: New :class:`.Context` instance.
 
     Example:
-        >>> load_cxt('examples/digits.cxt')  # doctest: +ELLIPSIS
+        >>> import concepts
+        >>> concepts.load_cxt('examples/digits.cxt')  # doctest: +ELLIPSIS
         <Context object mapping 10 objects to 7 properties [51e571e6] at 0x...>
     """
     return Context.fromfile(filename, 'cxt', encoding)
@@ -68,7 +68,8 @@ def load_csv(filename, dialect='excel', encoding: str = 'utf-8'):
         Context: New :class:`.Context` instance.
 
     Example:
-        >>> load_csv('examples/vowels.csv')  # doctest: +ELLIPSIS
+        >>> import concepts
+        >>> concepts.load_csv('examples/vowels.csv')  # doctest: +ELLIPSIS
         <Context object mapping 12 objects to 8 properties [a717eee4] at 0x...>
     """
     return Context.fromfile(filename, 'csv', encoding, dialect=dialect)
@@ -85,7 +86,8 @@ def make_context(source: str, frmat: str = 'table'):
         Context: New :class:`.Context` instance.
 
     Example:
-        >>> make_context('''
+        >>> import concepts
+        >>> concepts.make_context('''
         ...      |male|female|adult|child|
         ... man  |  X |      |  X  |     |
         ... woman|    |   X  |  X  |     |
