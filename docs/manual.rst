@@ -48,16 +48,16 @@ identify them.
 
 .. code:: python
 
-    >>> from concepts import Context
+    >>> import concepts
 
-    >>> c = Context.fromstring('''
+    >>> context = concepts.Context.fromstring('''
     ...            |human|knight|king |mysterious|
     ... King Arthur|  X  |  X   |  X  |          |
     ... Sir Robin  |  X  |  X   |     |          |
     ... holy grail |     |      |     |     X    |
     ... ''')
 
-    >>> c  # doctest: +ELLIPSIS
+    >>> context  # doctest: +ELLIPSIS
     <Context object mapping 3 objects to 4 properties [dae7402a] at 0x...>
 
 You can also load contexts from files in different **plain-text formats**, see
@@ -68,13 +68,13 @@ After creation, the parsed content of the table is available on the
 
 .. code:: python
 
-    >>> c.objects  # row headings
+    >>> context.objects  # row headings
     ('King Arthur', 'Sir Robin', 'holy grail')
 
-    >>> c.properties  # column headings
+    >>> context.properties  # column headings
     ('human', 'knight', 'king', 'mysterious')
 
-    >>> c.bools  # data cells
+    >>> context.bools  # data cells
     [(True, True, True, False), (True, True, False, False), (False, False, False, True)]
 
 
@@ -85,10 +85,10 @@ as the **common objects** for a collection of properties (common *extent*,
 
 .. code:: python
 
-    >>> c.intension(['King Arthur', 'Sir Robin'])  # common properties?
+    >>> context.intension(['King Arthur', 'Sir Robin'])  # common properties?
     ('human', 'knight')
 
-    >>> c.extension(['knight', 'mysterious'])  # objects with these properties?
+    >>> context.extension(['knight', 'mysterious'])  # objects with these properties?
     ()
 
 In FCA these operations are called *derivations* and usually notated with the
@@ -96,10 +96,10 @@ In FCA these operations are called *derivations* and usually notated with the
 
 .. code:: python
 
-    >>> c.extension(['knight', 'king'])
+    >>> context.extension(['knight', 'king'])
     ('King Arthur',)
 
-    >>> c.extension(['mysterious', 'human'])
+    >>> context.extension(['mysterious', 'human'])
     ()
 
 
@@ -117,13 +117,13 @@ of objects or properties with the :meth:`~.Context.__getitem__` method of the
 
 .. code:: python
 
-    >>> c['king',]  # closest concept matching intent/extent
+    >>> context['king',]  # closest concept matching intent/extent
     (('King Arthur',), ('human', 'knight', 'king'))
 
-    >>> assert c.intension(('King Arthur',)) == ('human', 'knight', 'king')
-    >>> assert c.extension(('human', 'knight', 'king')) == ('King Arthur',)
+    >>> assert context.intension(('King Arthur',)) == ('human', 'knight', 'king')
+    >>> assert context.extension(('human', 'knight', 'king')) == ('King Arthur',)
 
-    >>> c['King Arthur', 'Sir Robin']
+    >>> context['King Arthur', 'Sir Robin']
     (('King Arthur', 'Sir Robin'), ('human', 'knight'))
 
 Within each :class:`~.Context`, there is a **maximally general
@@ -132,7 +132,7 @@ an *empty* intent (*supremum*).
 
 .. code:: python
 
-    >>> c['Sir Robin', 'holy grail']  # maximal concept, supremum
+    >>> context['Sir Robin', 'holy grail']  # maximal concept, supremum
     (('King Arthur', 'Sir Robin', 'holy grail'), ())
 
 
@@ -141,7 +141,7 @@ and having all :attr:`~.Context.properties` as intent (*infimum*).
 
 .. code:: python
 
-    >>> c['mysterious', 'knight']  # minimal concept, infimum
+    >>> context['mysterious', 'knight']  # minimal concept, infimum
     ((), ('human', 'knight', 'king', 'mysterious'))
 
 The concepts of a context can be ordered by extent set-inclusion (or, dually,
@@ -161,16 +161,16 @@ visit all concepts:
 
 .. code:: python
 
-    >>> c  # doctest: +ELLIPSIS
+    >>> context  # doctest: +ELLIPSIS
     <Context object mapping 3 objects to 4 properties [dae7402a] at 0x...>
     
-    >>> l = c.lattice
+    >>> lattice = context.lattice
 
-    >>> l  # doctest: +ELLIPSIS
+    >>> lattice  # doctest: +ELLIPSIS
     <Lattice object of 2 atoms 5 concepts 2 coatoms at 0x...>
 
-    >>> for extent, intent in l:
-    ...     print(f'{extent!r} {intent!r}')
+    >>> for extent, intent in lattice:
+    ...     print(extent, intent)
     () ('human', 'knight', 'king', 'mysterious')
     ('King Arthur',) ('human', 'knight', 'king')
     ('holy grail',) ('mysterious',)
@@ -182,16 +182,16 @@ Individual :class:`~.lattices.Concept` objets can be retrieved from the
 
 .. code:: python
 
-    >>> l.infimum  # first concept, index 0
+    >>> lattice.infimum  # first concept, index 0
     <Infimum {} <-> [human knight king mysterious]>
 
-    >>> l.supremum  # last concept
+    >>> lattice.supremum  # last concept
     <Supremum {King Arthur, Sir Robin, holy grail} <-> []>
 
-    >>> l[1]
+    >>> lattice[1]
     <Atom {King Arthur} <-> [human knight king] <=> King Arthur <=> king>
 
-    >>> l['mysterious',]
+    >>> lattice['mysterious',]
     <Atom {holy grail} <-> [mysterious] <=> holy grail <=> mysterious>
 
 
@@ -201,11 +201,11 @@ subconcepts):
 
 .. code:: python
 
-    >>> l.infimum.upper_neighbors  # doctest: +NORMALIZE_WHITESPACE
+    >>> lattice.infimum.upper_neighbors  # doctest: +NORMALIZE_WHITESPACE
     (<Atom {King Arthur} <-> [human knight king] <=> King Arthur <=> king>,
      <Atom {holy grail} <-> [mysterious] <=> holy grail <=> mysterious>)
 
-    >>> l[1].lower_neighbors
+    >>> lattice[1].lower_neighbors
     (<Infimum {} <-> [human knight king mysterious]>,)
 
 
@@ -216,7 +216,7 @@ To visualize the :class:`.Lattice`, use its :meth:`~.Lattice.graphviz` method:
 
 .. code:: python
 
-    >>> dot = l.graphviz()
+    >>> dot = lattice.graphviz()
 
     >>> print(dot.source)  # doctest: +ELLIPSIS, +NORMALIZE_WHITESPACE
     // <Lattice object of 2 atoms 5 concepts 2 coatoms at 0x...>
@@ -249,14 +249,14 @@ For example:
 
 .. code:: python
 
-    >>> h = Context.fromstring('''
+    >>> human = concepts.Context.fromstring('''
     ...      |male|female|adult|child|
     ... man  |  X |      |  X  |     |
     ... woman|    |   X  |  X  |     |
     ... boy  |  X |      |     |  X  |
     ... girl |    |   X  |     |  X  |
     ... ''')
-    >>> dot = h.lattice.graphviz()
+    >>> dot = human.lattice.graphviz()
 
     >>> print(dot.source)  # doctest: +ELLIPSIS, +NORMALIZE_WHITESPACE
     // <Lattice object of 4 atoms 10 concepts 4 coatoms at 0x...>
@@ -283,8 +283,8 @@ A more complex example:
 
 .. code:: python
 
-    >>> w = Context.fromfile('examples/liveinwater.cxt')
-    >>> dot = w.lattice.graphviz()
+    >>> water = concepts.Context.fromfile('examples/liveinwater.cxt')
+    >>> dot = water.lattice.graphviz()
 
     >>> print(dot.source)  # doctest: +ELLIPSIS, +NORMALIZE_WHITESPACE
     // <Lattice object of 4 atoms 19 concepts 4 coatoms at 0x...>
@@ -320,7 +320,7 @@ The style of the graph can be customized by modifying the ``graph_attr``,
 
 .. code:: python
 
-    >>> o = Context.fromstring('''
+    >>> objects = concepts.Context.fromstring('''
     ...        |property1|property2|property3|
     ... Object1|    X    |         |    X    |
     ... Object2|         |    X    |         |
@@ -328,7 +328,7 @@ The style of the graph can be customized by modifying the ``graph_attr``,
     ... Object4|         |    X    |         |
     ... Object5|    X    |    X    |         |
     ... ''')
-    >>> dot = o.lattice.graphviz()
+    >>> dot = objects.lattice.graphviz()
     >>> dot
     <graphviz.dot.Digraph object at 0x...>
 
@@ -389,15 +389,15 @@ For loading, use :meth:`.Context.fromfile` or :meth:`.Context.fromstring`:
 
 .. code:: python
 
-    >>> c1 = Context.fromfile('examples/liveinwater.cxt')
+    >>> c1 = concepts.Context.fromfile('examples/liveinwater.cxt')
     >>> c1  # doctest: +ELLIPSIS
     <Context object mapping 8 objects to 9 properties [b1e86589] at 0x...>
 
-    >>> c2 = Context.fromfile('examples/liveinwater.csv', frmat='csv')
+    >>> c2 = concepts.Context.fromfile('examples/liveinwater.csv', frmat='csv')
     >>> c2  # doctest: +ELLIPSIS
     <Context object mapping 8 objects to 9 properties [b1e86589] at 0x...>
 
-    >>> c3 = Context.fromfile('examples/liveinwater.txt', frmat='table')
+    >>> c3 = concepts.Context.fromfile('examples/liveinwater.txt', frmat='table')
     >>> c3  # doctest: +ELLIPSIS
     <Context object mapping 8 objects to 9 properties [b1e86589] at 0x...>
 
@@ -435,8 +435,8 @@ compute:
 
 .. code:: python
 
-    >>> c = Context.fromjson('examples/example.json', encoding='utf-8')
-    >>> c
+    >>> context = concepts.Context.fromjson('examples/example.json', encoding='utf-8')
+    >>> context
     <Context object mapping 6 objects to 10 properties [b9d20179] at 0x...>
 
 The same custom storage format is also available as plain Python :obj:`dict`,
@@ -446,7 +446,7 @@ etc. Use :meth:`~.Context.todict` and  :meth:`.Context.fromdict`:
 
 .. code:: python
 
-    >>> print(', '.join(sorted(c.todict())))
+    >>> print(', '.join(sorted(context.todict())))
     context, lattice, objects, properties
 
 See :ref:`json_format` for details.
@@ -461,7 +461,7 @@ With :mod:`pickle`
 
     >>> import pickle
 
-    >>> pickle.loads(pickle.dumps(c)) == c
+    >>> pickle.loads(pickle.dumps(context)) == context
     True
 
 

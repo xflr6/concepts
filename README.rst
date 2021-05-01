@@ -51,15 +51,14 @@ a simple ASCII-art style cross-table with *object* rows and *property* columns
 
 .. code:: python
 
-    >>> from concepts import Context
-
-    >>> c = Context.fromstring('''
+    >>> import concepts
+    >>> context = concepts.Context.fromstring('''
     ...            |human|knight|king |mysterious|
     ... King Arthur|  X  |  X   |  X  |          |
     ... Sir Robin  |  X  |  X   |     |          |
     ... holy grail |     |      |     |     X    |
     ... ''')
-    >>> c  # doctest: +ELLIPSIS
+    >>> context  # doctest: +ELLIPSIS
     <Context object mapping 3 objects to 4 properties [dae7402a] at 0x...>
 
 
@@ -68,10 +67,10 @@ Query **common properties** of objects or **common objects** of properties
 
 .. code:: python
 
-    >>> c.intension(['King Arthur', 'Sir Robin'])
+    >>> context.intension(['King Arthur', 'Sir Robin'])
     ('human', 'knight')
 
-    >>> c.extension(['knight', 'mysterious'])
+    >>> context.extension(['knight', 'mysterious'])
     ()
 
 Get the closest matching **objects-properties pair** of objects or properties
@@ -79,18 +78,18 @@ Get the closest matching **objects-properties pair** of objects or properties
 
 .. code:: python
 
-    >>> c['Sir Robin', 'holy grail']
+    >>> context['Sir Robin', 'holy grail']
     (('King Arthur', 'Sir Robin', 'holy grail'), ())
 
-    >>> c['king',]
+    >>> context['king',]
     (('King Arthur',), ('human', 'knight', 'king'))
 
 Iterate over the **concept lattice** of all objects-properties pairs:
 
 .. code:: python
 
-    >>> for extent, intent in c.lattice:
-    ...     print(f'{extent!r} {intent!r}')
+    >>> for extent, intent in context.lattice:
+    ...     print(extent, intent)
     () ('human', 'knight', 'king', 'mysterious')
     ('King Arthur',) ('human', 'knight', 'king')
     ('holy grail',) ('mysterious',)
@@ -102,7 +101,7 @@ directly render it and display the resulting PDF):
 
 .. code:: python
 
-    >>> c.lattice.graphviz()  # doctest: +ELLIPSIS
+    >>> context.lattice.graphviz()  # doctest: +ELLIPSIS
     <graphviz.dot.Digraph object at 0x...>
 
 .. image:: https://raw.github.com/xflr6/concepts/master/docs/holy-grail.png
