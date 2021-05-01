@@ -394,7 +394,9 @@ class Definition(Triple):
         Definition: New :class:`.Definition` instance.
 
     Example:
-        >>> Definition(['man', 'woman'], ['male', 'female'], [(True, False), (False, True)])
+        >>> Definition(['man', 'woman'],
+        ...            ['male', 'female'],
+        ...            [(True, False), (False, True)])
         <Definition(['man', 'woman'], ['male', 'female'], [(True, False), (False, True)])>
 
 
@@ -525,6 +527,17 @@ class Definition(Triple):
 
         Returns:
             ``None``
+
+        Example:
+            >>> import concepts
+            >>> definition = concepts.Definition(['King Arthur', 'holy grail'],
+            ...                                  ['human'],
+            ...                                  [(True,), (False,)])
+            >>> definition.rename_object('holy grail', 'grail')
+            >>> print(definition)
+                       |human|
+            King Arthur|X    |
+            grail      |     |
         """
         self._objects.replace(old, new)
         pairs = self._pairs
@@ -540,6 +553,17 @@ class Definition(Triple):
 
         Returns:
             ``None``
+
+        Example:
+            >>> import concepts
+            >>> definition = concepts.Definition(['King Arthur', 'grail'],
+            ...                                  ['holy'],
+            ...                                  [(False,), (True,)])
+            >>> definition.rename_property('holy', 'mysterious')
+            >>> print(definition)
+                       |mysterious|
+            King Arthur|          |
+            grail      |X         |
         """
         self._properties.replace(old, new)
         pairs = self._pairs
@@ -555,6 +579,17 @@ class Definition(Triple):
 
         Returns:
             ``None``
+
+        Example:
+            >>> import concepts
+            >>> definition = concepts.Definition(['King Arthur', 'grail'],
+            ...                                  ['holy'],
+            ...                                  [(False,), (True,)])
+            >>> definition.move_object('grail', 0)
+            >>> print(definition)
+                       |holy|
+            grail      |X   |
+            King Arthur|    |
         """
         self._objects.move(obj, index)
 
@@ -567,10 +602,33 @@ class Definition(Triple):
 
         Returns:
             ``None``
+
+        Example:
+            >>> import concepts
+            >>> definition = concepts.Definition(['King Arthur'],
+            ...                                  ['human', 'night', 'holy'],
+            ...                                  [(True, True, False)])
+            >>> definition.move_property('holy', 0)
+            >>> print(definition)
+                       |holy|human|night|
+            King Arthur|    |X    |X    |
         """
         self._properties.move(prop, index)
 
     def __setitem__(self, pair, value) -> None:
+        """
+
+        Example:
+            >>> import concepts
+            >>> definition = concepts.Definition(['King Arthur', 'grail'],
+            ...                                  ['holy'],
+            ...                                  [(False,), (True,)])
+            >>> definition['King Arthur', 'holy'] = True
+            >>> print(definition)
+                       |holy|
+            King Arthur|X   |
+            grail      |X   |
+        """
         if isinstance(pair, int):
             raise ValueError("can't set item")
         o, p = pair
@@ -594,6 +652,8 @@ class Definition(Triple):
         Example:
             >>> import concepts
             >>> definition = concepts.Definition()
+            >>> print(definition)
+            |
             >>> definition.add_object('King Arthur')
             >>> print(definition)
                        |
@@ -620,6 +680,8 @@ class Definition(Triple):
         Example:
             >>> import concepts
             >>> definition = concepts.Definition()
+            >>> print(definition)
+            |
             >>> definition.add_property('mysterious')
             >>> print(definition)
             |mysterious|
