@@ -42,6 +42,9 @@ class Context:
             source: Formal context table as plain-text string.
             frmat: Format of the context string (``'table'``, ``'cxt'``, ``'csv'``).
 
+        Returns:
+            New :class:`.Context` instance.
+
         Example:
             >>> import concepts
             >>> context = concepts.Context.fromstring(concepts.EXAMPLE)
@@ -73,6 +76,9 @@ class Context:
             encoding: Encoding of the file (``'utf-8'``, ``'latin1'``, ``'ascii'``, ...).
             frmat: Format of the file (``'table'``, ``'cxt'``, ``'csv'``).
                    If ``None`` (default), infer ``frmat`` from ``filename`` suffix.
+
+        Returns:
+            New :class:`.Context` instance.
         """
         if frmat is None:
             frmat = formats.Format.infer_format(filename)
@@ -98,6 +104,9 @@ class Context:
             require_lattice: Raise if no lattice in json serialization.
             raw: If set, sort so the input sequences can be in any order.
                  If unset (default), assume input is already ordered for speedup
+
+        Returns:
+            New :class:`.Context` instance.
         """
         d = tools.load_json(path_or_fileobj, encoding=encoding)
         return cls.fromdict(d,
@@ -117,6 +126,9 @@ class Context:
             require_lattice: raise if no lattice in ``d``
             raw: If set, sort so the input sequences can be in any order.
                  If unset (default), assume input is already ordered for speedup.
+
+        Returns:
+            New :class:`.Context` instance.
         """
         required_keys = ('objects', 'properties', 'context')
         try:
@@ -176,6 +188,9 @@ class Context:
             properties: Iterable of property label strings.
             bools: Iterable of ``len(objects)`` tuples of ``len(properties)`` booleans.
 
+        Returns:
+            ``None``.
+
         Example:
             >>> from concepts import Context
             >>> Context(['man', 'woman'],
@@ -227,21 +242,25 @@ class Context:
 
         Args:
             state: Pair of ``intents`` and ``extents``.
+
+        Returns:
+            ``None``.
         """
         self._intents, self._extents = state
         self._Properties = self._intents.BitSet
         self._Objects = self._extents.BitSet
 
-    def __eq__(self, other: 'Context'):
+    def __eq__(self, other: 'Context') -> typing.Union[bool, type(NotImplemented)]:
         """Return whether two contexts are equivalent.
 
         Args:
             other (Context): Another :class:`.Context` instance.
 
         Returns:
-            bool: ``True`` if the contexts are equal, ``False`` otherwise.
+            ``True`` if the contexts are equal, ``False`` otherwise.
 
-        Ignores ``self.lattice`` and ``other.lattice`` objects.
+        Note:
+            Ignores ``self.lattice`` and ``other.lattice`` objects.
         """
         if not isinstance(other, Context):
             return NotImplemented
@@ -250,14 +269,14 @@ class Context:
                 and self.properties == other.properties
                 and self.bools == other.bools)
 
-    def __ne__(self, other: 'Context'):
+    def __ne__(self, other: 'Context') -> typing.Union[bool, type(NotImplemented)]:
         """Return whether two contexts are inequivalent.
 
         Args:
             other (Context): Another :class:`.Context` instance.
 
         Returns:
-            bool: ``True`` if the contexts are unequal, ``False`` otherwise.
+            ``True`` if the contexts are unequal, ``False`` otherwise.
 
         Ignores ``self.lattice`` and ``other.lattice`` objects.
         """
@@ -399,6 +418,9 @@ class Context:
     def __str__(self) -> str:
         """
 
+        Returns:
+            The ``repr()`` of the context  followed by its table representation.
+
         Example:
             >>> import concepts
             >>> context = concepts.Context.fromstring(concepts.EXAMPLE)
@@ -500,6 +522,9 @@ class Context:
             ingnore_lattice: Omit ``'lattice'`` in result.
                 If ``None``, ``'lattice'`` is omitted if it has not
                 yet been computed.
+
+        Returns:
+            ``None``
         """
         d = self.todict(ignore_lattice=ignore_lattice)
         tools.dump_json(d, path_or_fileobj, encoding=encoding,
@@ -528,9 +553,12 @@ class Context:
                **kwargs) -> None:
         """Save the context serialized to file in the given format.
 
-         Args:
-            frmat (str): Format of the string (``'table'``, ``'cxt'``, ``'csv'``).
-            encoding (str): Encoding of the file (``'utf-8'``, ``'latin1'``, ``'ascii'``, ...).
+        Args:
+            frmat: Format of the string (``'table'``, ``'cxt'``, ``'csv'``).
+            encoding: Encoding of the file (``'utf-8'``, ``'latin1'``, ``'ascii'``, ...).
+
+        Returns:
+            ``None``
         """
         frmat = formats.Format[frmat]
 
@@ -547,7 +575,7 @@ class Context:
         """Return hex-encoded unsigned CRC32 over encoded context table string.
 
         Args:
-            encoding (str): Encoding of the serialzation (``'utf-8'``, ``'latin1'``, ``'ascii'``, ...).
+            encoding: Encoding of the serialzation (``'utf-8'``, ``'latin1'``, ``'ascii'``, ...).
 
         Returns:
             The unsigned CRC32 checksum as hex-string.
@@ -564,6 +592,9 @@ class Context:
     def objects(self) -> typing.Tuple[str, ...]:
         """(Names of the) objects described by the context.
 
+        Returns:
+            Context object labels.
+
         Example:
             >>> import concepts
             >>> context = concepts.Context.fromstring(concepts.EXAMPLE)
@@ -576,6 +607,9 @@ class Context:
     def properties(self) -> typing.Tuple[str, ...]:
         """(Names of the) properties that describe the objects.
 
+        Returns:
+            Context property labels.
+
         Example:
             >>> import concepts
             >>> context = concepts.Context.fromstring(concepts.EXAMPLE)
@@ -587,6 +621,9 @@ class Context:
     @property
     def bools(self) -> typing.List[typing.Tuple[bool, ...]]:
         """Row-wise boolean relation matrix between objects and properties.
+
+        Returns:
+            Table with the relation between context ``objects`` and ``properties``.
 
         Example:
             >>> import concepts
@@ -626,6 +663,12 @@ class Context:
                   include_unary: bool = False) -> 'junctors.Relations':
         """Return the logical relations between the context properties.
 
+        Args:
+            include_unary: Include unary relations in result.
+
+        Returns:
+            Collection of binary (and optionally unary) logical relations.
+
         Example:
             >>> import concepts
             >>> context = concepts.Context.fromstring(concepts.EXAMPLE)
@@ -658,5 +701,9 @@ class Context:
 
     @tools.lazyproperty
     def lattice(self) -> 'lattices.Lattice':
-        """The concept lattice of the formal context."""
+        """The concept lattice of the formal context.
+
+        Returns:
+             lattices.Lattice: Cached or new :class:`lattices.Lattice` instance.
+        """
         return lattices.Lattice(self)

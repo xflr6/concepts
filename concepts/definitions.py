@@ -15,14 +15,15 @@ class Triple:
     """Triple of ``(objects, properties, bools)`` for creating a context."""
 
     @classmethod
-    def fromfile(cls, filename, frmat: str = 'cxt',
+    def fromfile(cls, filename,
+                 frmat: str = 'cxt',
                  encoding: typing.Optional[str] = None, **kwargs):
         """Return a new definiton from file source in given format.
 
-         Args:
+        Args:
             filename: Path to the file to load the context from.
-            frmat (str): Format of the file (``'table'``, ``'cxt'``, ``'csv'``).
-            encoding (str): Encoding of the file (``'utf-8'``, ``'latin1'``, ``'ascii'``, ...).
+            frmat: File format (``'table'``, ``'cxt'``, ``'csv'``).
+            encoding: File encoding (``'utf-8'``, ``'latin1'``, ``'ascii'``, ...).
 
         Returns:
             Definition: A new :class:`.Definition` instance.
@@ -64,14 +65,14 @@ class Triple:
                               self._properties.copy(),
                               self._pairs.copy())
 
-    def __eq__(self, other):
+    def __eq__(self, other) -> bool:
         """Return whether two definitions are equivalent.
 
         Args:
             other (Definition): Another :class:`.Definition` instance.
 
         Returns:
-            bool: ``True`` if the definitions are equal, ``False`` otherwise.
+            ``True`` if the definitions are equal, ``False`` otherwise.
 
         Example:
             >>> from concepts import Definition
@@ -89,14 +90,14 @@ class Triple:
                     and self._pairs == other._pairs)
         return (self.objects, self.properties, self.bools) == other
 
-    def __ne__(self, other):
+    def __ne__(self, other) -> bool:
         """Return whether two definitions are inequivalent.
 
         Args:
             other (Definition): Another :class:`.Definition` instance.
 
         Returns:
-            bool: ``True`` if the definitions are unequal, ``False`` otherwise.
+            ``True`` if the definitions are unequal, ``False`` otherwise.
         """
         return not self == other
 
@@ -121,7 +122,7 @@ class Triple:
         """Return the relation value for an (object, property) pair.
 
         Returns:
-            bool: ``True`` if ``object`` has ``property`` else ``False``.
+            ``True`` if ``object`` has ``property`` else ``False``.
 
         Example:
             >>> from concepts import Definition
@@ -230,7 +231,7 @@ class Triple:
             frmat: Format of the string (``'table'``, ``'cxt'``, ``'csv'``).
 
         Returns:
-            str: The definition as seralized string.
+            The definition as seralized string.
 
         Example:
             >>> from concepts import Definition
@@ -248,10 +249,10 @@ class Triple:
         """Return hex-encoded unsigned CRC32 over encoded definition table string.
 
         Args:
-            encoding (str): Encoding of the serialzation (``'utf-8'``, ``'latin1'``, ``'ascii'``, ...).
+            encoding: Encoding of the serialzation (``'utf-8'``, ``'latin1'``, ``'ascii'``, ...).
 
         Returns:
-            str: The unsigned CRC32 checksum as hex-string.
+            The unsigned CRC32 checksum as hex-string.
 
         Example:
             >>> from concepts import Definition
@@ -522,6 +523,9 @@ class Definition(Triple):
         Args:
             old: Current name of the object.
             new: New name for the object.
+
+        Returns:
+            ``None``
         """
         self._objects.replace(old, new)
         pairs = self._pairs
@@ -534,6 +538,9 @@ class Definition(Triple):
         Args:
             old: Current name of the property.
             new: New name for the property.
+
+        Returns:
+            ``None``
         """
         self._properties.replace(old, new)
         pairs = self._pairs
@@ -546,6 +553,9 @@ class Definition(Triple):
         Args:
             obj: Name of the object to move.
             index: Index for the object to move to.
+
+        Returns:
+            ``None``
         """
         self._objects.move(obj, index)
 
@@ -555,6 +565,9 @@ class Definition(Triple):
         Args:
             prop: Name of the property to move.
             index: Index for the property to move to.
+
+        Returns:
+            ``None``
         """
         self._properties.move(prop, index)
 
@@ -575,6 +588,9 @@ class Definition(Triple):
         Args:
             obj: Name of the object to add.
             properties: Iterable of property name strings.
+
+        Returns:
+            ``None``
         """
         self._objects.add(obj)
         self._properties |= properties
@@ -586,6 +602,9 @@ class Definition(Triple):
         Args:
             prop: Name of the property to add.
             objects: Iterable of object name strings.
+
+        Returns:
+            ``None``
         """
         self._properties.add(prop)
         self._objects |= objects
@@ -596,6 +615,9 @@ class Definition(Triple):
 
         Args:
             obj: Name of the object to remove.
+
+        Returns:
+            ``None``
         """
         self._objects.remove(obj)
         self._pairs.difference_update((obj, p) for p in self._properties)
@@ -605,12 +627,19 @@ class Definition(Triple):
 
         Args:
             prop: Name of the property to remove.
+
+        Returns:
+            ``None``
         """
         self._properties.remove(prop)
         self._pairs.difference_update((o, prop) for o in self._objects)
 
     def remove_empty_objects(self) -> typing.List[str]:
-        """Remove objects without any ``True`` property, return removed objects."""
+        """Remove objects without any ``True`` property
+
+        Returns:
+            Removed object labels.
+        """
         nonempty_objects = {o for o, _ in self._pairs}
         empty_objects = [o for o in self._objects if o not in nonempty_objects]
         for o in empty_objects:
@@ -618,19 +647,26 @@ class Definition(Triple):
         return empty_objects
 
     def remove_empty_properties(self) -> typing.List[str]:
-        """Remove properties without any ``True`` object, return removed properties."""
+        """Remove properties without any ``True`` object.
+
+        Returns:
+            Removed property labels.
+        """
         nonempty_properties = {p for _, p in self._pairs}
         empty_properties = [p for p in self._properties if p not in nonempty_properties]
         for p in empty_properties:
             self._properties.remove(p)
         return empty_properties
 
-    def set_object(self, obj: str, properties: StrSequence):
+    def set_object(self, obj: str, properties: StrSequence) -> None:
         """Add an object to the definition and set its ``properties``.
 
         Args:
             obj: Name of the object to add.
             properties: Property name strings.
+
+        Returns:
+            ``None``
         """
         self._objects.add(obj)
         properties = set(properties)
@@ -645,10 +681,12 @@ class Definition(Triple):
     def set_property(self, prop: str, objects: StrSequence) -> None:
         """Add a property to the definition and set its ``objects``.
 
-
         Args:
             prop: Name of the property to add.
             objects: Iterable of object name strings.
+
+        Returns:
+            ``None``
         """
         self._properties.add(prop)
         objects = set(objects)
@@ -681,6 +719,9 @@ class Definition(Triple):
         Args:
             other: Another :class:`.Definition` instance.
             ignore_conflicts:  Allow overwrite from other.
+
+        Returns:
+            ``None``
         """
         if not ignore_conflicts:
             ensure_compatible(self, other)
