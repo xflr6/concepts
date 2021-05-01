@@ -14,30 +14,30 @@ modification, and combination of contexts is supported by using
 
 .. code:: python
 
-    >>> from concepts import Definition, Context
+    >>> import concepts
 
-    >>> d = Definition()
+    >>> definition = concepts.Definition()
 
-    >>> d.add_object('man', ['male'])
-    >>> d.add_object('woman', ['female'])
+    >>> definition.add_object('man', ['male'])
+    >>> definition.add_object('woman', ['female'])
 
-    >>> d
+    >>> definition
     <Definition(['man', 'woman'], ['male', 'female'], [(True, False), (False, True)])>
 
-    >>> d.add_property('adult', ['man', 'woman'])
-    >>> d.add_property('child', ['boy', 'girl'])
+    >>> definition.add_property('adult', ['man', 'woman'])
+    >>> definition.add_property('child', ['boy', 'girl'])
 
-    >>> print(d)
+    >>> print(definition)
          |male|female|adult|child|
     man  |X   |      |X    |     |
     woman|    |X     |X    |     |
     boy  |    |      |     |X    |
     girl |    |      |     |X    |
 
-    >>> d['boy', 'male'] = True
-    >>> d.add_object('girl', ['female'])
+    >>> definition['boy', 'male'] = True
+    >>> definition.add_object('girl', ['female'])
 
-    >>> print(Context(*d))  # doctest: +ELLIPSIS
+    >>> print(concepts.Context(*definition))  # doctest: +ELLIPSIS
     <Context object mapping 4 objects to 4 properties [65aa9782] at 0x...>
              |male|female|adult|child|
         man  |X   |      |X    |     |
@@ -51,14 +51,14 @@ the resulting context:
 
 .. code:: python
 
-    >>> c = Context.fromstring('''
+    >>> context = concepts.Context.fromstring('''
     ...            |human|knight|king |mysterious|
     ... King Arthur|  X  |  X   |  X  |          |
     ... Sir Robin  |  X  |  X   |     |          |
     ... holy grail |     |      |     |     X    |
     ... ''')
 
-    >>> h = Context.fromstring('''
+    >>> human = concepts.Context.fromstring('''
     ...      |male|female|adult|child|
     ... man  |  X |      |  X  |     |
     ... woman|    |   X  |  X  |     |
@@ -66,9 +66,9 @@ the resulting context:
     ... girl |    |   X  |     |  X  |
     ... ''')
 
-    >>> u = c.definition() | h.definition()
+    >>> union = context.definition() | human.definition()
 
-    >>> print(u)
+    >>> print(union)
                |human|knight|king|mysterious|male|female|adult|child|
     King Arthur|X    |X     |X   |          |    |      |     |     |
     Sir Robin  |X    |X     |    |          |    |      |     |     |
@@ -78,11 +78,11 @@ the resulting context:
     boy        |     |      |    |          |X   |      |     |X    |
     girl       |     |      |    |          |    |X     |     |X    |
 
-    >>> u.add_property('human', ['man', 'woman', 'boy', 'girl'])
-    >>> u.add_object('King Arthur', ['male', 'adult'])
-    >>> u.add_object('Sir Robin', ['male', 'adult'])
+    >>> union.add_property('human', ['man', 'woman', 'boy', 'girl'])
+    >>> union.add_object('King Arthur', ['male', 'adult'])
+    >>> union.add_object('Sir Robin', ['male', 'adult'])
 
-    >>> print(u)
+    >>> print(union)
                |human|knight|king|mysterious|male|female|adult|child|
     King Arthur|X    |X     |X   |          |X   |      |X    |     |
     Sir Robin  |X    |X     |    |          |X   |      |X    |     |
@@ -92,7 +92,7 @@ the resulting context:
     boy        |X    |      |    |          |X   |      |     |X    |
     girl       |X    |      |    |          |    |X     |     |X    |
 
-    >>> Context(*u).lattice  # doctest: +ELLIPSIS
+    >>> concepts.Context(*union).lattice  # doctest: +ELLIPSIS
     <Lattice object of 5 atoms 14 concepts 2 coatoms at 0x...>
 
 .. image:: _static/union.svg
@@ -109,15 +109,15 @@ the resulting context:
 
     CONTEXT = 'examples/relations.csv'
 
-    c = concepts.load_csv(CONTEXT)
+    context = concepts.load_csv(CONTEXT)
 
     df = pd.read_csv(CONTEXT, index_col='name')
     objects = df.index.tolist()
     properties = list(df)
     bools = list(df.fillna(False).astype(bool).itertuples(index=False, name=None))
 
-    c_ = concepts.Context(objects, properties, bools)
-    assert c_ == c
+    context_ = concepts.Context(objects, properties, bools)
+    assert context_ == context
 
 
 .. _json_format:

@@ -17,11 +17,11 @@ digits.cxt
 
 .. code:: python
 
-    from concepts import Context
+    import concepts
     
-    d = Context.fromfile('examples/digits.cxt')
+    digits = concepts.Context.fromfile('examples/digits.cxt')
     
-    d.lattice.graphviz(view=True)
+    digits.lattice.graphviz(view=True)
 
 .. image:: _static/digits.svg
     :align: center
@@ -35,11 +35,11 @@ relations.csv
 
 .. code:: python
 
-    from concepts import Context
+    import concepts
     
-    r = Context.fromfile('examples/relations.csv', frmat='csv')
+    relations = concepts.Context.fromfile('examples/relations.csv', frmat='csv')
     
-    r.lattice.graphviz(view=True)
+    relations.lattice.graphviz(view=True)
 
 .. image:: _static/relations.svg
     :align: center
@@ -53,11 +53,11 @@ example.json
 
 .. code:: python
 
-    from concepts import Context
+    import concepts
     
-    e = Context.fromjson('examples/example.json', require_lattice=True)
+    example = concepts.Context.fromjson('examples/example.json', require_lattice=True)
     
-    e.lattice.graphviz(view=True)
+    example.lattice.graphviz(view=True)
 
 .. image:: _static/example.svg
     :align: center
