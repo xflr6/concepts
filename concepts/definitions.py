@@ -590,6 +590,18 @@ class Definition(Triple):
 
         Returns:
             ``None``
+
+        Example:
+            >>> import concepts
+            >>> definition = concepts.Definition()
+            >>> definition.add_object('King Arthur')
+            >>> print(definition)
+                       |
+            King Arthur|
+            >>> definition.add_object('King Arthur', ['human', 'knight', 'king'])
+            >>> print(definition)
+                       |human|knight|king|
+            King Arthur|X    |X     |X   |
         """
         self._objects.add(obj)
         self._properties |= properties
@@ -604,6 +616,18 @@ class Definition(Triple):
 
         Returns:
             ``None``
+
+        Example:
+            >>> import concepts
+            >>> definition = concepts.Definition()
+            >>> definition.add_property('mysterious')
+            >>> print(definition)
+            |mysterious|
+            >>> definition.add_property('mysterious', ['holy grail', 'Sir Robin'])
+            >>> print(definition)
+                      |mysterious|
+            holy grail|X         |
+            Sir Robin |X         |
         """
         self._properties.add(prop)
         self._objects |= objects
