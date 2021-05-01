@@ -398,124 +398,8 @@ class Definition(Triple):
         ...            ['male', 'female'],
         ...            [(True, False), (False, True)])
         <Definition(['man', 'woman'], ['male', 'female'], [(True, False), (False, True)])>
-
-
-    >>> d = Definition()
-
-    >>> d
-    <Definition([], [], [])>
-
-    >>> d.add_object('King Arthur')
-
-    >>> print(d)
-               |
-    King Arthur|
-
-    >>> d.add_object('Sir Robin', ['human', 'knight'])
-    >>> d.add_object('holy grail')
-
-    >>> print(d)
-               |human|knight|
-    King Arthur|     |      |
-    Sir Robin  |X    |X     |
-    holy grail |     |      |
-
-    >>> d.add_object('King Arthur', ['human', 'knight', 'king'])
-    >>> d.add_property('mysterious', ['holy grail', 'Sir Robin'])
-
-    >>> print(d)
-               |human|knight|king|mysterious|
-    King Arthur|X    |X     |X   |          |
-    Sir Robin  |X    |X     |    |X         |
-    holy grail |     |      |    |X         |
-
-    >>> d['Sir Robin', 'mysterious'] = False
-
-    >>> print(d)
-               |human|knight|king|mysterious|
-    King Arthur|X    |X     |X   |          |
-    Sir Robin  |X    |X     |    |          |
-    holy grail |     |      |    |X         |
-
-    >>> e = d.copy()
-    >>> e.move_object('holy grail', 0)
-    >>> e.move_property('mysterious', 0)
-    >>> e.move_property('king', 1)
-    >>> print(e)
-               |mysterious|king|human|knight|
-    holy grail |X         |    |     |      |
-    King Arthur|          |X   |X    |X     |
-    Sir Robin  |          |    |X    |X     |
-
-    >>> e = d.copy()
-    >>> e.rename_object('Sir Robin', 'Launcelot')
-    >>> e.add_property('brave', ['Launcelot'])
-    >>> e.rename_object('holy grail', 'grail')
-    >>> e.rename_property('mysterious', 'holy')
-
-    >>> print(e)
-               |human|knight|king|holy|brave|
-    King Arthur|X    |X     |X   |    |     |
-    Launcelot  |X    |X     |    |    |X    |
-    grail      |     |      |    |X   |     |
-
-    >>> print(e | d)
-               |human|knight|king|holy|brave|mysterious|
-    King Arthur|X    |X     |X   |    |     |          |
-    Launcelot  |X    |X     |    |    |X    |          |
-    grail      |     |      |    |X   |     |          |
-    Sir Robin  |X    |X     |    |    |     |          |
-    holy grail |     |      |    |    |     |X         |
-
-    >>> print(e & d)
-               |human|knight|king|
-    King Arthur|X    |X     |X   |
-
-    >>> e.remove_object('grail')
-    >>> e.remove_property('holy')
-    >>> e.rename_object('King Arthur', 'Arthur')
-    >>> e.set_property('king', [])
-    >>> e.set_object('Launcelot', ['human'])
-
-    >>> print(e)
-             |human|knight|king|brave|
-    Arthur   |X    |X     |    |     |
-    Launcelot|X    |      |    |     |
-
-    >>> e.set_property('knight', ['Launcelot'])
-
-    >>> print(e)
-             |human|knight|king|brave|
-    Arthur   |X    |      |    |     |
-    Launcelot|X    |X     |    |     |
-
-    >>> e.remove_empty_objects()
-    []
-    >>> print(e)
-             |human|knight|king|brave|
-    Arthur   |X    |      |    |     |
-    Launcelot|X    |X     |    |     |
-
-    >>> e.remove_empty_properties()
-    ['king', 'brave']
-    >>> print(e)
-             |human|knight|
-    Arthur   |X    |      |
-    Launcelot|X    |X     |
-
-    >>> e.add_object('Spam')
-    >>> print(e)
-             |human|knight|
-    Arthur   |X    |      |
-    Launcelot|X    |X     |
-    Spam     |     |      |
-
-    >>> e.remove_empty_objects()
-    ['Spam']
-    >>> print(e)
-             |human|knight|
-    Arthur   |X    |      |
-    Launcelot|X    |X     |
+        >>> Definition()
+        <Definition([], [], [])>
     """
 
     def rename_object(self, old: str, new: str) -> None:
@@ -703,6 +587,16 @@ class Definition(Triple):
 
         Returns:
             ``None``
+
+        Example:
+            >>> import concepts
+            >>> definition = concepts.Definition(['King Arthur', 'holy grail'],
+            ...                                  ['human'],
+            ...                                  [(True,), (False,)])
+            >>> definition.remove_object('holy grail')
+            >>> print(definition)
+                       |human|
+            King Arthur|X    |
         """
         self._objects.remove(obj)
         self._pairs.difference_update((obj, p) for p in self._properties)
@@ -715,6 +609,17 @@ class Definition(Triple):
 
         Returns:
             ``None``
+
+        Example:
+            >>> import concepts
+            >>> definition = concepts.Definition(['King Arthur', 'holy grail'],
+            ...                                  ['human'],
+            ...                                  [(True,), (False,)])
+            >>> definition.remove_property('human')
+            >>> print(definition)
+                       |
+            King Arthur|
+            holy grail |
         """
         self._properties.remove(prop)
         self._pairs.difference_update((o, prop) for o in self._objects)
@@ -724,7 +629,18 @@ class Definition(Triple):
 
         Returns:
             Removed object names.
-        """
+
+        Example:
+            >>> import concepts
+            >>> definition = concepts.Definition(['King Arthur', 'holy grail'],
+            ...                                  ['human'],
+            ...                                  [(True,), (False,)])
+            >>> definition.remove_empty_objects()
+            ['holy grail']
+            >>> print(definition)
+                       |human|
+            King Arthur|X    |
+            """
         nonempty_objects = {o for o, _ in self._pairs}
         empty_objects = [o for o in self._objects if o not in nonempty_objects]
         for o in empty_objects:
@@ -736,6 +652,18 @@ class Definition(Triple):
 
         Returns:
             Removed property names.
+
+        Example:
+            >>> import concepts
+            >>> definition = concepts.Definition(['King Arthur', 'holy grail'],
+            ...                                  ['moose'],
+            ...                                  [(False,), (False,)])
+            >>> definition.remove_empty_properties()
+            ['moose']
+            >>> print(definition)
+                       |
+            King Arthur|
+            holy grail |
         """
         nonempty_properties = {p for _, p in self._pairs}
         empty_properties = [p for p in self._properties if p not in nonempty_properties]
@@ -752,6 +680,17 @@ class Definition(Triple):
 
         Returns:
             ``None``
+
+        Example:
+            >>> import concepts
+            >>> definition = concepts.Definition(['King Arthur', 'holy grail'],
+            ...                                  ['moose'],
+            ...                                  [(False,), (True,)])
+            >>> definition.set_object('holy grail', ['holy'])
+            >>> print(definition)
+                       |moose|holy|
+            King Arthur|     |    |
+            holy grail |     |X   |
         """
         self._objects.add(obj)
         properties = set(properties)
@@ -772,6 +711,17 @@ class Definition(Triple):
 
         Returns:
             ``None``
+
+        Example:
+            >>> import concepts
+            >>> definition = concepts.Definition(['King Arthur', 'holy grail'],
+            ...                                  ['moose'],
+            ...                                  [(False,), (True,)])
+            >>> definition.set_property('moose', [])
+            >>> print(definition)
+                       |moose|
+            King Arthur|     |
+            holy grail |     |
         """
         self._properties.add(prop)
         objects = set(objects)
@@ -790,6 +740,21 @@ class Definition(Triple):
         Args:
             other: Another :class:`.Definition` instance.
             ignore_conflicts: Allow overwrite from other.
+
+        
+        Example:
+            >>> import concepts
+            >>> definition = concepts.Definition(['King Arthur'],
+            ...                                  ['human'],
+            ...                                  [(True,)])
+            >>> other = concepts.Definition(['grail'],
+            ...                             ['holy'],
+            ...                             [(True,)])
+            >>> definition.union_update(other)
+            >>> print(definition)
+                       |human|holy|
+            King Arthur|X    |    |
+            grail      |     |X   |
         """
         if not ignore_conflicts:
             ensure_compatible(self, other)
@@ -807,6 +772,19 @@ class Definition(Triple):
 
         Returns:
             ``None``
+
+        Example:
+            >>> import concepts
+            >>> definition = concepts.Definition(['King Arthur'],
+            ...                                  ['human'],
+            ...                                  [(True,)])
+            >>> other = concepts.Definition(['King Arthur', 'grail'],
+            ...                             ['human', 'holy'],
+            ...                             [(True, True), (False, True)])
+            >>> definition.intersection_update(other)
+            >>> print(definition)
+                       |human|
+            King Arthur|X    |
         """
         if not ignore_conflicts:
             ensure_compatible(self, other)
@@ -831,6 +809,20 @@ class Definition(Triple):
 
         Returns:
             Definition: A new :class:`.Definition` instance.
+
+        Example:
+            >>> import concepts
+            >>> definition = concepts.Definition(['King Arthur'],
+            ...                                  ['human'],
+            ...                                  [(True,)])
+            >>> other = concepts.Definition(['grail'],
+            ...                             ['holy'],
+            ...                             [(True,)])
+            >>> print(definition.union(other))
+                       |human|holy|
+            King Arthur|X    |    |
+            grail      |     |X   |
+
         """
         result = self.copy()
         result.union_update(other, ignore_conflicts)
@@ -846,6 +838,18 @@ class Definition(Triple):
 
         Returns:
             Definition: A new :class:`.Definition` instance.
+
+        Example:
+            >>> import concepts
+            >>> definition = concepts.Definition(['King Arthur'],
+            ...                                  ['human'],
+            ...                                  [(True,)])
+            >>> other = concepts.Definition(['King Arthur', 'grail'],
+            ...                             ['human', 'holy'],
+            ...                             [(True, True), (False, True)])
+            >>> print(definition.intersection(other))
+                       |human|
+            King Arthur|X    |
         """
         result = self.copy()
         result.intersection_update(other, ignore_conflicts)
