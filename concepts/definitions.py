@@ -271,8 +271,8 @@ class Triple:
         """Return a subset with given ``objects``/``properties`` as new definition.
 
         Args:
-            objects: Object label strings.
-            properties: Property label strings.
+            objects: Object names.
+            properties: Property names.
             reorder: Return subset in ``objects`` and ``properties`` order.
 
         Returns:
@@ -386,8 +386,8 @@ class Definition(Triple):
     Create definition from ``objects``, ``properties``, and ``bools`` correspondence.
 
     Args:
-        objects: Object label strings.
-        properties: Property label strings.
+        objects: Object names.
+        properties: Property names.
         bools: Row-major sequence of boolean sequences.
 
     Returns:
@@ -397,7 +397,6 @@ class Definition(Triple):
         >>> Definition(['man', 'woman'], ['male', 'female'], [(True, False), (False, True)])
         <Definition(['man', 'woman'], ['male', 'female'], [(True, False), (False, True)])>
 
-    Usage:
 
     >>> d = Definition()
 
@@ -638,7 +637,7 @@ class Definition(Triple):
         """Remove objects without any ``True`` property
 
         Returns:
-            Removed object labels.
+            Removed object names.
         """
         nonempty_objects = {o for o, _ in self._pairs}
         empty_objects = [o for o in self._objects if o not in nonempty_objects]
@@ -650,7 +649,7 @@ class Definition(Triple):
         """Remove properties without any ``True`` object.
 
         Returns:
-            Removed property labels.
+            Removed property names.
         """
         nonempty_properties = {p for _, p in self._pairs}
         empty_properties = [p for p in self._properties if p not in nonempty_properties]
