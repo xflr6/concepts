@@ -1,5 +1,6 @@
-#!/usr/bin/env python
-# visualize-examples.py
+#!/usr/bin/env python3
+
+"""Visualize ``examples/*``."""
 
 import concepts.visualize
 
