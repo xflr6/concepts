@@ -9,30 +9,8 @@ __all__ = ['Concept',
 from . import algorithms
 
 
-class Concept:
-    """Formal concept as pair of extent and intent.
-
-    Example:
-
-    >>> import concepts
-    >>> lattice = concepts.Context.fromstring(concepts.EXAMPLE).lattice
-    >>> concept = lattice['+1',]
-    >>> concept.index, concept.dindex
-    (7, 6)
-    >>> concept.objects
-    ()
-    >>> concept.properties
-    ('+1',)
-    >>> concept.atoms  # doctest: +NORMALIZE_WHITESPACE
-    (<Atom {1sg} <-> [+1 -2 -3 +sg -pl] <=> 1sg>,
-     <Atom {1pl} <-> [+1 -2 -3 +pl -sg] <=> 1pl>)
-    >>> concept.upper_neighbors  # doctest: +NORMALIZE_WHITESPACE
-    (<Concept {1sg, 1pl, 2sg, 2pl} <-> [-3] <=> -3>,
-     <Concept {1sg, 1pl, 3sg, 3pl} <-> [-2] <=> -2>)
-    >>> concept.lower_neighbors  # doctest: +NORMALIZE_WHITESPACE
-    (<Atom {1sg} <-> [+1 -2 -3 +sg -pl] <=> 1sg>,
-     <Atom {1pl} <-> [+1 -2 -3 +pl -sg] <=> 1pl>)
-    """
+class Pair:
+    """Formal concept as pair of extent and intent."""
 
     objects = ()
 
@@ -51,6 +29,14 @@ class Concept:
         self.lower_neighbors = lower  #: The directly subsumed concepts.
 
     def __str__(self) -> str:
+        """
+
+        Example:
+            >>> import concepts
+            >>> lattice = concepts.Context.fromstring(concepts.EXAMPLE).lattice
+            >>> print(lattice['+1',])
+            {1sg, 1pl} <-> [+1 -2 -3] <=> +1
+        """
         extent = ', '.join(self._extent.members())
         intent = ' '.join(self._intent.members())
         objects = ' <=> {}'.format(' '.join(self.objects)) if self.objects else ''
@@ -87,7 +73,15 @@ class Concept:
         return True
 
     def __iter__(self):
-        """Yield ``extent`` and ``intent`` (e.g. for pair unpacking)."""
+        """Yield ``extent`` and ``intent`` (e.g. for pair unpacking).
+
+        Example:
+            >>> import concepts
+            >>> lattice = concepts.Context.fromstring(concepts.EXAMPLE).lattice
+            >>> extent, intent = lattice['+1',]
+            >>> print(extent, intent)
+            ('1sg', '1pl') ('+1', '-2', '-3')
+        """
         yield self._extent.members()
         yield self._intent.members()
 
@@ -183,6 +177,10 @@ class Concept:
         """
         return algorithms.iterunion([self], _sortkey, _next_concepts)
 
+
+class OrderableMixin:
+    """Concept implication and subsumption as order comparison operators."""
+
     def implies(self, other: 'Concept') -> bool:
         """Implication comparison.
 
@@ -201,6 +199,8 @@ class Concept:
             False
         """
         return self._extent & other._extent == self._extent
+
+    __le__ = implies
 
     def subsumes(self, other: 'Concept') -> bool:
         """Subsumption comparison.
@@ -221,8 +221,6 @@ class Concept:
         """
         return self._extent | other._extent == self._extent
 
-    __le__ = implies
-
     __ge__ = subsumes
 
     def properly_implies(self, other: 'Concept') -> bool:
@@ -242,6 +240,8 @@ class Concept:
         """
         return self._extent & other._extent == self._extent != other._extent
 
+    __lt__ = properly_implies
+
     def properly_subsumes(self, other: 'Concept') -> bool:
         """Proper subsumption comparison.
 
@@ -259,9 +259,11 @@ class Concept:
         """
         return self._extent | other._extent == self._extent != other._extent
 
-    __lt__ = properly_implies
-
     __gt__ = properly_subsumes
+
+
+class TransformableMixin:
+    """Concept join and meet as ``|`` and ``&`` operations."""
 
     def join(self, other: 'Concept') -> 'Concept':
         """Least upper bound, supremum, or, generalization.
@@ -284,6 +286,8 @@ class Concept:
         extent = self.lattice._context._extents.double(common)
         return self.lattice._mapping[extent]
 
+    __or__ = join
+
     def meet(self, other: 'Concept') -> 'Concept':
         """Greatest lower bound, infimum, and, unification.
 
@@ -305,9 +309,91 @@ class Concept:
         extent = self.lattice._context._extents.double(common)
         return self.lattice._mapping[extent]
 
-    __or__ = join
-
     __and__ = meet
+
+
+class RelationsMixin:
+    """Concept logical connective methods."""
+
+    def incompatible_with(self, other: 'Concept') -> bool:
+        """Infimum meet comparison.
+
+        Args:
+            other: :class:`.Concept` instance from the same lattice.
+
+        Returns:
+            bool: ``True`` if ``self`` is incompatible with ``other`` else ``False``.
+
+        Example:
+            >>> import concepts
+            >>> lattice = concepts.Context.fromstring(concepts.EXAMPLE).lattice
+            >>> lattice['+1',].incompatible_with(lattice['+3',])
+            True
+            >>> lattice['+1',].incompatible_with(lattice['+sg',])
+            False
+        """
+        return not self._extent & other._extent
+
+    def complement_of(self, other: 'Concept') -> bool:
+        """Infimum meet and supremum join comparison.
+
+        Args:
+            other: :class:`.Concept` instance from the same lattice.
+
+        Returns:
+            bool: ``True`` if ``self`` is the complement of ``other`` else ``False``.
+
+        Example:
+            >>> import concepts
+            >>> lattice = concepts.Context.fromstring(concepts.EXAMPLE).lattice
+            >>> lattice['+1',].complement_of(lattice['-1',])
+            True
+            >>> lattice['+1',].complement_of(lattice['+3',])
+            False
+        """
+        return (not self._extent & other._extent
+                and (self._extent | other._extent) == self.lattice.supremum._extent)
+
+    def subcontrary_with(self, other: 'Concept') -> bool:
+        """Non-infimum meet and supremum join comparison.
+
+        Args:
+            other: :class:`.Concept` instance from the same lattice.
+
+        Returns:
+            bool: ``True`` if ``self`` is the subcontrary to ``other`` else ``False``.
+
+        Example:
+            >>> import concepts
+            >>> lattice = concepts.Context.fromstring(concepts.EXAMPLE).lattice
+            >>> lattice['-1',].subcontrary_with(lattice['-3',])
+            True
+            >>> lattice['-1',].subcontrary_with(lattice['+sg',])
+            False
+        """
+        return (self._extent & other._extent
+                and (self._extent | other._extent) == self.lattice.supremum._extent)
+
+    def orthogonal_to(self, other: 'Concept') -> bool:
+        """Non-infimum meet, incomparable, and non-supremum join comparison.
+
+        Args:
+            other: :class:`.Concept` instance from the same lattice.
+
+        Returns:
+            bool: ``True`` if ``self`` is orthogonal to ``other`` else ``False``.
+
+        Example:
+            >>> import concepts
+            >>> lattice = concepts.Context.fromstring(concepts.EXAMPLE).lattice
+            >>> lattice['+1',].orthogonal_to(lattice['+sg',])
+            True
+            >>> lattice['+1',].orthogonal_to(lattice['+3',])
+            False
+        """
+        meet = self._extent & other._extent
+        return (not not meet and meet != self._extent and meet != other._extent
+                and (self._extent | other._extent) != self.lattice.supremum._extent)
 
     def incompatible_with(self, other: 'Concept') -> bool:
         """Infimum meet comparison.
@@ -390,8 +476,56 @@ class Concept:
                 and (self._extent | other._extent) != self.lattice.supremum._extent)
 
 
+class Concept(RelationsMixin, TransformableMixin, OrderableMixin, Pair):
+    """Formal concept as pair of extent and intent.
+
+    Example:
+
+        >>> import concepts
+        >>> lattice = concepts.Context.fromstring(concepts.EXAMPLE).lattice
+        >>> concept = lattice['+1',]
+        >>> concept
+        <Concept {1sg, 1pl} <-> [+1 -2 -3] <=> +1>
+        >>> concept.index, concept.dindex
+        (7, 6)
+        >>> concept.objects, concept.properties
+        ((), ('+1',))
+        >>> concept.atoms  # doctest: +NORMALIZE_WHITESPACE
+        (<Atom {1sg} <-> [+1 -2 -3 +sg -pl] <=> 1sg>,
+         <Atom {1pl} <-> [+1 -2 -3 +pl -sg] <=> 1pl>)
+        >>> concept.upper_neighbors  # doctest: +NORMALIZE_WHITESPACE
+        (<Concept {1sg, 1pl, 2sg, 2pl} <-> [-3] <=> -3>,
+         <Concept {1sg, 1pl, 3sg, 3pl} <-> [-2] <=> -2>)
+        >>> concept.lower_neighbors  # doctest: +NORMALIZE_WHITESPACE
+        (<Atom {1sg} <-> [+1 -2 -3 +sg -pl] <=> 1sg>,
+         <Atom {1pl} <-> [+1 -2 -3 +pl -sg] <=> 1pl>)
+    """
+
+
 class Infimum(Concept):
-    """Contradiction with empty ``extent`` and universal ``intent``."""
+    """Contradiction with empty ``extent`` and universal ``intent``.
+
+    Example:
+        >>> import concepts
+        >>> lattice = concepts.Context.fromstring(concepts.EXAMPLE).lattice
+        >>> lattice.infimum
+        <Infimum {} <-> [+1 -1 +2 -2 +3 -3 +sg +pl -sg -pl]>
+        >>> lattice.infimum.index, lattice.infimum.dindex
+        (0, 21)
+        >>> lattice.infimum.objects, lattice.infimum.properties
+        ((), ())
+        >>> lattice.infimum.atoms
+        ()
+        >>> lattice.infimum.upper_neighbors  # doctest: +NORMALIZE_WHITESPACE
+        (<Atom {1sg} <-> [+1 -2 -3 +sg -pl] <=> 1sg>,
+         <Atom {1pl} <-> [+1 -2 -3 +pl -sg] <=> 1pl>,
+         <Atom {2sg} <-> [-1 +2 -3 +sg -pl] <=> 2sg>,
+         <Atom {2pl} <-> [-1 +2 -3 +pl -sg] <=> 2pl>,
+         <Atom {3sg} <-> [-1 -2 +3 +sg -pl] <=> 3sg>,
+         <Atom {3pl} <-> [-1 -2 +3 +pl -sg] <=> 3pl>)
+        >>> lattice.infimum.lower_neighbors
+        ()
+    """
 
     def minimal(self) -> typing.Tuple[str, ...]:
         """Shortlex minimal properties generating the concept.
@@ -404,13 +538,67 @@ class Infimum(Concept):
             >>> lattice = concepts.Context.fromstring(concepts.EXAMPLE).lattice
             >>> lattice.infimum.minimal()
             ('+1', '-1', '+2', '-2', '+3', '-3', '+sg', '+pl', '-sg', '-pl')
+
+        Note:
+            For :class:`.Infimum`, this returns **all** properties instead of
+            the first contradictory subset of properties.
         """
         return self._intent.members()
 
 
 class Atom(Concept):
-    """Concept which is a minimal non-zero element in its lattice."""
+    """Concept which is a minimal non-zero element in its lattice.
+
+    Example:
+        >>> import concepts
+        >>> lattice = concepts.Context.fromstring(concepts.EXAMPLE).lattice
+        >>> lattice.atoms  # doctest: +NORMALIZE_WHITESPACE
+        (<Atom {1sg} <-> [+1 -2 -3 +sg -pl] <=> 1sg>,
+         <Atom {1pl} <-> [+1 -2 -3 +pl -sg] <=> 1pl>,
+         <Atom {2sg} <-> [-1 +2 -3 +sg -pl] <=> 2sg>,
+         <Atom {2pl} <-> [-1 +2 -3 +pl -sg] <=> 2pl>,
+         <Atom {3sg} <-> [-1 -2 +3 +sg -pl] <=> 3sg>,
+         <Atom {3pl} <-> [-1 -2 +3 +pl -sg] <=> 3pl>)
+        >>> lattice.atoms[0].index, lattice.atoms[0].dindex
+        (1, 15)
+        >>> lattice.atoms[0].objects, lattice.atoms[0].properties
+        (('1sg',), ())
+        >>> lattice.atoms[0].atoms
+        (<Atom {1sg} <-> [+1 -2 -3 +sg -pl] <=> 1sg>,)
+        >>> lattice.atoms[0].upper_neighbors  # doctest: +NORMALIZE_WHITESPACE
+        (<Concept {1sg, 1pl} <-> [+1 -2 -3] <=> +1>,
+         <Concept {1sg, 2sg} <-> [-3 +sg -pl]>,
+         <Concept {1sg, 3sg} <-> [-2 +sg -pl]>)
+        >>> lattice.atoms[0].lower_neighbors  # doctest: +NORMALIZE_WHITESPACE
+        (<Infimum {} <-> [+1 -1 +2 -2 +3 -3 +sg +pl -sg -pl]>,)
+    """
 
 
 class Supremum(Concept):
-    """Tautology with universal ``extent`` and empty ``intent``."""
+    """Tautology with universal ``extent`` and empty ``intent``.
+
+    Example:
+        >>> import concepts
+        >>> lattice = concepts.Context.fromstring(concepts.EXAMPLE).lattice
+        >>> lattice.supremum
+        <Supremum {1sg, 1pl, 2sg, 2pl, 3sg, 3pl} <-> []>
+        >>> lattice.supremum.index, lattice.supremum.dindex
+        (21, 0)
+        >>> lattice.supremum.objects, lattice.supremum.properties
+        ((), ())
+        >>> lattice.supremum.atoms  # doctest: +NORMALIZE_WHITESPACE
+        (<Atom {1sg} <-> [+1 -2 -3 +sg -pl] <=> 1sg>,
+         <Atom {1pl} <-> [+1 -2 -3 +pl -sg] <=> 1pl>,
+         <Atom {2sg} <-> [-1 +2 -3 +sg -pl] <=> 2sg>,
+         <Atom {2pl} <-> [-1 +2 -3 +pl -sg] <=> 2pl>,
+         <Atom {3sg} <-> [-1 -2 +3 +sg -pl] <=> 3sg>,
+         <Atom {3pl} <-> [-1 -2 +3 +pl -sg] <=> 3pl>)
+        >>> lattice.supremum.upper_neighbors
+        ()
+        >>> lattice.supremum.lower_neighbors  # doctest: +NORMALIZE_WHITESPACE
+        (<Concept {1sg, 1pl, 2sg, 2pl} <-> [-3] <=> -3>,
+         <Concept {1sg, 1pl, 3sg, 3pl} <-> [-2] <=> -2>,
+         <Concept {2sg, 2pl, 3sg, 3pl} <-> [-1] <=> -1>,
+         <Concept {1sg, 2sg, 3sg} <-> [+sg -pl] <=> +sg -pl>,
+         <Concept {1pl, 2pl, 3pl} <-> [+pl -sg] <=> +pl -sg>)
+    """
