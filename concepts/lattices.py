@@ -243,6 +243,15 @@ class Lattice:
 
         Yields:
             All :class:`.Concept` instances from this lattice.
+
+        Example:
+            >>> import concepts
+            >>> lattice = concepts.Context.fromstring(concepts.EXAMPLE).lattice
+            >>> iterconcepts = iter(lattice)
+            >>> next(iterconcepts)
+            <Infimum {} <-> [+1 -1 +2 -2 +3 -3 +sg +pl -sg -pl]>
+            >>> next(iterconcepts)
+            <Atom {1sg} <-> [+1 -2 -3 +sg -pl] <=> 1sg>
         """
         return iter(self._concepts)
 
@@ -251,11 +260,17 @@ class Lattice:
 
         Returns:
             Number of lattice concepts.
+
+        Example:
+            >>> import concepts
+            >>> lattice = concepts.Context.fromstring(concepts.EXAMPLE).lattice
+            >>> len(lattice)
+            22
         """
         return len(self._concepts)
 
     def __str__(self) -> str:
-        """
+        """Return the full string representation of the lattice.
 
         Example:
             >>> import concepts
@@ -289,7 +304,7 @@ class Lattice:
         return f'{self!r}\n{concepts}'
 
     def __repr__(self) -> str:
-        """
+        """Return the debug string representation of the lattice.
 
         Example:
             >>> lattice = contexts.Context.fromstring('''
@@ -418,6 +433,17 @@ class Lattice:
 
         Yields:
             :class:`.Concept` instances from this lattice.
+
+        Example:
+            >>> import concepts
+            >>> lattice = concepts.Context.fromstring(concepts.EXAMPLE).lattice
+            >>> list(lattice.upset_union([lattice['+1',], lattice['+2',]]))  # doctest: +NORMALIZE_WHITESPACE
+            [<Concept {1sg, 1pl} <-> [+1 -2 -3] <=> +1>,
+             <Concept {2sg, 2pl} <-> [-1 +2 -3] <=> +2>,
+             <Concept {1sg, 1pl, 2sg, 2pl} <-> [-3] <=> -3>,
+             <Concept {1sg, 1pl, 3sg, 3pl} <-> [-2] <=> -2>,
+             <Concept {2sg, 2pl, 3sg, 3pl} <-> [-1] <=> -1>,
+             <Supremum {1sg, 1pl, 2sg, 2pl, 3sg, 3pl} <-> []>]
         """
         concepts = tools.maximal(concepts, comparison=Concept.properly_subsumes)
         return algorithms.iterunion(concepts, _sortkey, _next_concepts)
@@ -433,6 +459,18 @@ class Lattice:
 
         Yields:
             :class:`.Concept` instances from this lattice.
+
+        Example:
+            >>> import concepts
+            >>> lattice = concepts.Context.fromstring(concepts.EXAMPLE).lattice
+            >>> list(lattice.downset_union([lattice['+1',], lattice['+2',]]))  # doctest: +NORMALIZE_WHITESPACE
+            [<Concept {1sg, 1pl} <-> [+1 -2 -3] <=> +1>,
+             <Concept {2sg, 2pl} <-> [-1 +2 -3] <=> +2>,
+             <Atom {1sg} <-> [+1 -2 -3 +sg -pl] <=> 1sg>,
+             <Atom {1pl} <-> [+1 -2 -3 +pl -sg] <=> 1pl>,
+             <Atom {2sg} <-> [-1 +2 -3 +sg -pl] <=> 2sg>,
+             <Atom {2pl} <-> [-1 +2 -3 +pl -sg] <=> 2pl>,
+             <Infimum {} <-> [+1 -1 +2 -2 +3 -3 +sg +pl -sg -pl]>]
         """
         concepts = tools.maximal(concepts, comparison=Concept.properly_implies)
         return algorithms.iterunion(concepts, _sortkey, _next_concepts)
