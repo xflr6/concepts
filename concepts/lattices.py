@@ -1,9 +1,8 @@
-# lattices.py - build FCA concepts lattice from context
-
-"""Formal Concept Analysis concept lattices."""
+"""Formal Concept Analysis concept lattices from contexts."""
 
 import heapq
 import operator
+import typing
 
 from . import algorithms
 from . import contexts
@@ -17,66 +16,11 @@ __all__ = ['Lattice']
 class Lattice:
     """Formal concept lattice as directed acyclic graph of concepts.
 
-    Usage:
-
-    >>> import concepts
-    >>> l = concepts.Context.fromstring(concepts.EXAMPLE).lattice
-
-    >>> l.infimum
-    <Infimum {} <-> [+1 -1 +2 -2 +3 -3 +sg +pl -sg -pl]>
-
-    >>> l.supremum
-    <Supremum {1sg, 1pl, 2sg, 2pl, 3sg, 3pl} <-> []>
-
-    >>> l.atoms  # doctest: +NORMALIZE_WHITESPACE
-    (<Atom {1sg} <-> [+1 -2 -3 +sg -pl] <=> 1sg>,
-     <Atom {1pl} <-> [+1 -2 -3 +pl -sg] <=> 1pl>,
-     <Atom {2sg} <-> [-1 +2 -3 +sg -pl] <=> 2sg>,
-     <Atom {2pl} <-> [-1 +2 -3 +pl -sg] <=> 2pl>,
-     <Atom {3sg} <-> [-1 -2 +3 +sg -pl] <=> 3sg>,
-     <Atom {3pl} <-> [-1 -2 +3 +pl -sg] <=> 3pl>)
-
-
-    >>> l['1sg', '1pl', '2pl']
-    <Concept {1sg, 1pl, 2sg, 2pl} <-> [-3] <=> -3>
-
-    >>> l['-1', '-sg']
-    <Concept {2pl, 3pl} <-> [-1 +pl -sg]>
-
-    >>> l(['+1', '-sg'])
-    <Atom {1pl} <-> [+1 -2 -3 +pl -sg] <=> 1pl>
-
-
-    >>> l.join([l['1sg',], l['1pl',], l['2sg',]])
-    <Concept {1sg, 1pl, 2sg, 2pl} <-> [-3] <=> -3>
-
-    >>> l.join([])
-    <Infimum {} <-> [+1 -1 +2 -2 +3 -3 +sg +pl -sg -pl]>
-
-    >>> l.meet([l['-1',], l['-2',], l['-pl',]])
-    <Atom {3sg} <-> [-1 -2 +3 +sg -pl] <=> 3sg>
-
-    >>> l.meet([])
-    <Supremum {1sg, 1pl, 2sg, 2pl, 3sg, 3pl} <-> []>
-
-
-    >>> l = contexts.Context.fromstring('''
-    ...    |+1|-1|+2|-2|+3|-3|+sg|+du|+pl|-sg|-du|-pl|
-    ... 1s | X|  |  | X|  | X|  X|   |   |   |  X|  X|
-    ... 1de| X|  |  | X|  | X|   |  X|   |  X|   |  X|
-    ... 1pe| X|  |  | X|  | X|   |   |  X|  X|  X|   |
-    ... 1di| X|  | X|  |  | X|   |  X|   |  X|   |  X|
-    ... 1pi| X|  | X|  |  | X|   |   |  X|  X|  X|   |
-    ... 2s |  | X| X|  |  | X|  X|   |   |   |  X|  X|
-    ... 2d |  | X| X|  |  | X|   |  X|   |  X|   |  X|
-    ... 2p |  | X| X|  |  | X|   |   |  X|  X|  X|   |
-    ... 3s |  | X|  | X| X|  |  X|   |   |   |  X|  X|
-    ... 3d |  | X|  | X| X|  |   |  X|   |  X|   |  X|
-    ... 3p |  | X|  | X| X|  |   |   |  X|  X|  X|   |
-    ... ''').lattice
-
-    >>> l  # doctest: +ELLIPSIS
-    <Lattice object of 11 atoms 65 concepts 6 coatoms at 0x...>
+    Example:
+        >>> import concepts
+        >>> lattice = concepts.Context.fromstring(concepts.EXAMPLE).lattice
+        >>> lattice
+        <Lattice object of 6 atoms 22 concepts 5 coatoms at 0x...>
     """
 
     @staticmethod
@@ -88,7 +32,7 @@ class Lattice:
         return concept._extent.shortlex()
 
     @classmethod
-    def _fromlist(cls, context, lattice, unordered):
+    def _fromlist(cls, context, lattice, unordered) -> 'Lattice':
         make_objects = context._Objects.fromint
         make_properties = context._Properties.fromint
         inst = object.__new__(cls)
@@ -121,7 +65,7 @@ class Lattice:
         cls._init(inst, context, concepts)
         return inst
 
-    def __init__(self, context: 'contexts.Context', infimum=()):
+    def __init__(self, context: 'contexts.Context', infimum=()) -> None:
         """Create lattice from context."""
         concepts = [Concept(self, *args)
                     for args in context._lattice(infimum)]
@@ -146,7 +90,7 @@ class Lattice:
     def _init(inst,
               context: 'contexts.Context',
               concepts,
-              mapping=None, unpickle=False):
+              mapping=None, unpickle=False) -> None:
         inst._context = context
         inst._concepts = concepts
 
@@ -209,7 +153,7 @@ class Lattice:
         context, concepts = state
         self._init(self, context, concepts, unpickle=True)
 
-    def _eq(self, other):
+    def _eq(self, other) -> typing.Union[type(NotImplemented), bool]:
         """Return ``True`` if two lattices are equivalent.
 
         Notes:
@@ -246,26 +190,44 @@ class Lattice:
                  tuple(l.index for l in c.lower_neighbors),
                 ) for c in self._concepts]
 
-    def __call__(self, properties):
+    def __call__(self, properties: typing.Tuple[str]) -> Concept:
         """Return concept having all given ``properties`` as intension.
 
         Args:
-            properties (tuple[str]): Tuple of property names.
+            properties: Tuple of property names.
 
         Returns:
-            Concept: :class:`.Concept` instance from this lattice.
+            :class:`.Concept` instance from this lattice.
+
+        Example:
+            >>> import concepts
+            >>> lattice = concepts.Context.fromstring(concepts.EXAMPLE).lattice
+            >>> lattice(['+1', '-sg'])
+            <Atom {1pl} <-> [+1 -2 -3 +pl -sg] <=> 1pl>
         """
         extent = self._context.extension(properties, raw=True)
         return self._mapping[extent]
 
-    def __getitem__(self, key):
+    def __getitem__(self, key: typing.Union[int, typing.Tuple[str, ...]]
+                    ) -> Concept:
         """Return concept by index, intension, or extension.
 
         Args:
             key: Integer index, properties tuple, or objects tuple.
 
         Returns:
-            Concept: :class:`.Concept` instance from this lattice.
+            :class:`.Concept` instance from this lattice.
+
+        Example:
+            >>> import concepts
+            >>> lattice = concepts.Context.fromstring(concepts.EXAMPLE).lattice
+            >>> lattice[1:3]  # doctest: +NORMALIZE_WHITESPACE
+            [<Atom {1sg} <-> [+1 -2 -3 +sg -pl] <=> 1sg>,
+             <Atom {1pl} <-> [+1 -2 -3 +pl -sg] <=> 1pl>]
+            >>> lattice['-1', '-sg']
+            <Concept {2pl, 3pl} <-> [-1 +pl -sg]>
+            >>> lattice['1sg', '1pl', '2pl']
+            <Concept {1sg, 1pl, 2sg, 2pl} <-> [-3] <=> -3>
         """
         if isinstance(key, (int, slice)):
             return self._concepts[key]
@@ -276,7 +238,7 @@ class Lattice:
         extent, intent = self._context.__getitem__(key, raw=True)
         return self._mapping[extent]
 
-    def __iter__(self):
+    def __iter__(self) -> typing.Iterator[Concept]:
         """Yield all concepts of the lattice.
 
         Yields:
@@ -284,11 +246,11 @@ class Lattice:
         """
         return iter(self._concepts)
 
-    def __len__(self):
+    def __len__(self) -> int:
         """Return the number of concepts in the lattice.
 
         Returns:
-            int: Number of lattice concepts.
+            Number of lattice concepts.
         """
         return len(self._concepts)
 
@@ -327,6 +289,26 @@ class Lattice:
         return f'{self!r}\n{concepts}'
 
     def __repr__(self) -> str:
+        """
+
+        Example:
+            >>> lattice = contexts.Context.fromstring('''
+            ...    |+1|-1|+2|-2|+3|-3|+sg|+du|+pl|-sg|-du|-pl|
+            ... 1s | X|  |  | X|  | X|  X|   |   |   |  X|  X|
+            ... 1de| X|  |  | X|  | X|   |  X|   |  X|   |  X|
+            ... 1pe| X|  |  | X|  | X|   |   |  X|  X|  X|   |
+            ... 1di| X|  | X|  |  | X|   |  X|   |  X|   |  X|
+            ... 1pi| X|  | X|  |  | X|   |   |  X|  X|  X|   |
+            ... 2s |  | X| X|  |  | X|  X|   |   |   |  X|  X|
+            ... 2d |  | X| X|  |  | X|   |  X|   |  X|   |  X|
+            ... 2p |  | X| X|  |  | X|   |   |  X|  X|  X|   |
+            ... 3s |  | X|  | X| X|  |  X|   |   |   |  X|  X|
+            ... 3d |  | X|  | X| X|  |   |  X|   |  X|   |  X|
+            ... 3p |  | X|  | X| X|  |   |   |  X|  X|  X|   |
+            ... ''').lattice
+            >>> lattice  # doctest: +ELLIPSIS
+            <Lattice object of 11 atoms 65 concepts 6 coatoms at 0x...>
+        """
         return (f'<{self.__class__.__name__} object'
                 f' of {len(self.atoms)} atoms'
                 f' {len(self)} concepts'
@@ -334,53 +316,105 @@ class Lattice:
                 f' at {id(self):#x}>')
 
     @property
-    def infimum(self):
-        """Concept: The most specific concept of the lattice."""
+    def infimum(self) -> Infimum:
+        """The most specific concept of the lattice.
+
+        Returns:
+            Infimum concept of the lattice.
+
+        Example:
+            >>> import concepts
+            >>> lattice = concepts.Context.fromstring(concepts.EXAMPLE).lattice
+            >>> lattice.infimum
+            <Infimum {} <-> [+1 -1 +2 -2 +3 -3 +sg +pl -sg -pl]>
+        """
         return self._concepts[0]
 
     @property
-    def supremum(self):
-        """Concept: The most general concept of the lattice."""
+    def supremum(self) -> Supremum:
+        """The most general concept of the lattice.
+
+        Returns:
+            Supremum concept of the lattice.
+
+        Example:
+            >>> import concepts
+            >>> lattice = concepts.Context.fromstring(concepts.EXAMPLE).lattice
+            >>> lattice.supremum
+            <Supremum {1sg, 1pl, 2sg, 2pl, 3sg, 3pl} <-> []>
+        """
         return self._concepts[-1]
 
     @property
-    def atoms(self):
-        """tuple[Concept, ...]: The minimal non-infimum concepts of the lattice."""
+    def atoms(self) -> typing.Tuple[Atom, ...]:
+        """The minimal non-infimum concepts of the lattice.
+
+        Returns:
+            Atom concepts of the lattice.
+
+        Example:
+            >>> import concepts
+            >>> lattice = concepts.Context.fromstring(concepts.EXAMPLE).lattice
+            >>> lattice.atoms  # doctest: +NORMALIZE_WHITESPACE
+            (<Atom {1sg} <-> [+1 -2 -3 +sg -pl] <=> 1sg>,
+             <Atom {1pl} <-> [+1 -2 -3 +pl -sg] <=> 1pl>,
+             <Atom {2sg} <-> [-1 +2 -3 +sg -pl] <=> 2sg>,
+             <Atom {2pl} <-> [-1 +2 -3 +pl -sg] <=> 2pl>,
+             <Atom {3sg} <-> [-1 -2 +3 +sg -pl] <=> 3sg>,
+             <Atom {3pl} <-> [-1 -2 +3 +pl -sg] <=> 3pl>)
+        """
         return self.infimum.upper_neighbors
 
-    def join(self, concepts):
+    def join(self, concepts: typing.Iterable[Concept]) -> Concept:
         """Return the nearest concept that subsumes all given concepts.
 
         Args:
-            concepts: Iterable of :class:`.Concept` instances from this lattice.
+            concepts: :class:`.Concept` instances from this lattice.
 
         Returns:
-            Concept: :class:`.Concept` instance from this lattice.
+            :class:`.Concept` instance from this lattice.
+
+        Example:
+            >>> import concepts
+            >>> lattice = concepts.Context.fromstring(concepts.EXAMPLE).lattice
+            >>> lattice.join([])
+            <Infimum {} <-> [+1 -1 +2 -2 +3 -3 +sg +pl -sg -pl]>
+            >>> lattice.join([lattice['1sg',], lattice['1pl',], lattice['2sg',]])
+            <Concept {1sg, 1pl, 2sg, 2pl} <-> [-3] <=> -3>
         """
         extents = (c._extent for c in concepts)
         join = self._context._Objects.reduce_or(extents)
         return self._mapping[join.double()]
 
-    def meet(self, concepts):
+    def meet(self, concepts: typing.Iterable[Concept]) -> Concept:
         """Return the nearest concept that implies all given concepts.
 
         Args:
-            concepts: Iterable of :class:`.Concept` instances from this lattice.
+            concepts: :class:`.Concept` instances from this lattice.
 
         Returns:
-            Concept: :class:`.Concept` instance from this lattice.
+            :class:`.Concept` instance from this lattice.
+
+        Example:
+            >>> import concepts
+            >>> lattice = concepts.Context.fromstring(concepts.EXAMPLE).lattice
+            >>> lattice.meet([])
+            <Supremum {1sg, 1pl, 2sg, 2pl, 3sg, 3pl} <-> []>
+            >>> lattice.meet([lattice['-1',], lattice['-2',], lattice['-pl',]])
+            <Atom {3sg} <-> [-1 -2 +3 +sg -pl] <=> 3sg>
         """
         extents = (c._extent for c in concepts)
         meet = self._context._Objects.reduce_and(extents)
         return self._mapping[meet.double()]
 
-    def upset_union(self, concepts,
+    def upset_union(self, concepts: typing.Iterable[Concept],
                     _sortkey=operator.attrgetter('index'),
-                    _next_concepts=operator.attrgetter('upper_neighbors')):
+                    _next_concepts=operator.attrgetter('upper_neighbors')
+                    ) -> typing.Iterator[Concept]:
         """Yield all concepts that subsume any of the given ones.
 
         Args:
-            concepts: Iterable of :class:`.Concept` instances from this lattice.
+            concepts: :class:`.Concept` instances from this lattice.
 
         Yields:
             :class:`.Concept` instances from this lattice.
@@ -388,13 +422,14 @@ class Lattice:
         concepts = tools.maximal(concepts, comparison=Concept.properly_subsumes)
         return algorithms.iterunion(concepts, _sortkey, _next_concepts)
 
-    def downset_union(self, concepts,
+    def downset_union(self, concepts: typing.Iterable[Concept],
                     _sortkey=operator.attrgetter('dindex'),
-                    _next_concepts=operator.attrgetter('lower_neighbors')):
+                    _next_concepts=operator.attrgetter('lower_neighbors')
+                      ) -> typing.Iterator[Concept]:
         """Yield all concepts that imply any of the given ones.
 
         Args:
-            concepts: Iterable of :class:`.Concept` instances from this lattice.
+            concepts: :class:`.Concept` instances from this lattice.
 
         Yields:
             :class:`.Concept` instances from this lattice.
@@ -402,14 +437,17 @@ class Lattice:
         concepts = tools.maximal(concepts, comparison=Concept.properly_implies)
         return algorithms.iterunion(concepts, _sortkey, _next_concepts)
 
-    def upset_generalization(self, concepts):  # EXPERIMENTAL
+    def upset_generalization(self, concepts: typing.Iterable[Concept]) -> typing.Iterator[Concept]:  
         """Yield all concepts that subsume only the given ones.
 
         Args:
-            concepts: Iterable of :class:`.Concept` instances from this lattice.
+            concepts: :class:`.Concept` instances from this lattice.
 
         Yields:
             :class:`.Concept` instances from this lattice.
+
+        Note:
+            This method is EXPERIMENTAL and might change without notice.
         """
         heap = [(c.index, c)
                 for c in tools.maximal(concepts,
@@ -430,16 +468,19 @@ class Lattice:
                     for c in concept.upper_neighbors:
                         push(heap, (c.index, c))
 
-    def graphviz(self, filename=None, directory=None, render=False, view=False,
-                 make_object_label=' '.join, make_property_label=' '.join,
-                 **kwargs):
+    def graphviz(self, filename=None, directory=None,
+                 render: bool = False,
+                 view: bool  = False,
+                 make_object_label=' '.join,
+                 make_property_label=' '.join,
+                 **kwargs) -> 'graphviz.Digraph':
         """Return DOT source for visualizing the lattice graph.
 
         Args:
             filename: Path to the DOT source file for the Digraph.
             directory: (Sub)directory for DOT source saving and rendering.
-            render (bool): Call ``.render()`` on the result.
-            view (bool): Call ``.render(view=True)`` on the result.
+            render: Call ``.render()`` on the result.
+            view: Call ``.render(view=True)`` on the result.
             make_object_label: Callable with iterable of objects argument
                                returning a string to be used as object label.
             make_property_label: Callable with iterable of properties argument
