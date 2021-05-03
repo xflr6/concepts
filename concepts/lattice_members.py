@@ -109,36 +109,6 @@ class Pair:
         """
         return self._intent.members()
 
-    def minimal(self) -> typing.Tuple[str, ...]:
-        """Shortlex minimal properties generating the concept.
-
-        Returns:
-            Property name strings.
-
-        Example:
-            >>> import concepts
-            >>> lattice = concepts.Context.fromstring(concepts.EXAMPLE).lattice
-            >>> lattice['+1',].minimal()
-            ('+1',)
-        """
-        return self.lattice._context._minimal(self._extent,
-                                              self._intent).members()
-
-    def attributes(self) -> typing.Iterator[typing.Tuple[str]]:
-        """Yield properties generating the concept in shortlex order.
-
-        Yields:
-            Tuples of property name strings.
-
-        Example:
-            >>> import concepts
-            >>> lattice = concepts.Context.fromstring(concepts.EXAMPLE).lattice
-            >>> list(lattice['+1',].attributes())
-            [('+1',), ('+1', '-2'), ('+1', '-3'), ('-2', '-3'), ('+1', '-2', '-3')]
-        """
-        minimize = self.lattice._context._minimize(self._extent, self._intent)
-        return (i.members() for i in minimize)
-
     def upset(self,
               _sortkey=operator.attrgetter('index'),
               _next_concepts=operator.attrgetter('upper_neighbors')):
@@ -500,6 +470,40 @@ class Concept(RelationsMixin, TransformableMixin, OrderableMixin, Pair):
         (<Atom {1sg} <-> [+1 -2 -3 +sg -pl] <=> 1sg>,
          <Atom {1pl} <-> [+1 -2 -3 +pl -sg] <=> 1pl>)
     """
+
+    def minimal(self) -> typing.Tuple[str, ...]:
+        """Shortlex minimal properties generating the concept.
+
+        Returns:
+            Property name strings.
+
+        Example:
+            >>> import concepts
+            >>> lattice = concepts.Context.fromstring(concepts.EXAMPLE).lattice
+            >>> lattice['+1',].minimal()
+            ('+1',)
+
+        Note:
+            For :class:`.Infimum`, this returns **all** properties instead of
+            the first contradictory subset of properties.
+        """
+        return self.lattice._context._minimal(self._extent,
+                                              self._intent).members()
+
+    def attributes(self) -> typing.Iterator[typing.Tuple[str]]:
+        """Yield properties generating the concept in shortlex order.
+
+        Yields:
+            Tuples of property name strings.
+
+        Example:
+            >>> import concepts
+            >>> lattice = concepts.Context.fromstring(concepts.EXAMPLE).lattice
+            >>> list(lattice['+1',].attributes())
+            [('+1',), ('+1', '-2'), ('+1', '-3'), ('-2', '-3'), ('+1', '-2', '-3')]
+        """
+        minimize = self.lattice._context._minimize(self._extent, self._intent)
+        return (i.members() for i in minimize)
 
 
 class Infimum(Concept):
