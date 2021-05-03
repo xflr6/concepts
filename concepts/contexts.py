@@ -254,10 +254,16 @@ class Context:
         """Return whether two contexts are equivalent.
 
         Args:
-            other (Context): Another :class:`.Context` instance.
+            other: Another :class:`.Context` instance.
 
         Returns:
             ``True`` if the contexts are equal, ``False`` otherwise.
+
+        Example:
+            >>> import concepts
+            >>> context = concepts.Context.fromstring(concepts.EXAMPLE)
+            >>> context == context.copy()
+            True
 
         Note:
             Ignores ``self.lattice`` and ``other.lattice`` objects.
@@ -273,12 +279,21 @@ class Context:
         """Return whether two contexts are inequivalent.
 
         Args:
-            other (Context): Another :class:`.Context` instance.
+            other: Another :class:`.Context` instance.
 
         Returns:
             ``True`` if the contexts are unequal, ``False`` otherwise.
 
-        Ignores ``self.lattice`` and ``other.lattice`` objects.
+        Example:
+            >>> import concepts
+            >>> context = concepts.Context.fromstring(concepts.EXAMPLE)
+            >>> definition = context.definition()
+            >>> definition['1sg', '+3'] = True
+            >>> context != concepts.Context(*definition)
+            True
+
+        Note:
+            Ignores ``self.lattice`` and ``other.lattice`` objects.
         """
         if not isinstance(other, Context):
             return NotImplemented
@@ -416,7 +431,7 @@ class Context:
         return extent.members(), intent.members()
 
     def __str__(self) -> str:
-        """
+        """Return the full string representation of the context.
 
         Returns:
             The ``repr()`` of the context  followed by its table representation.
@@ -438,6 +453,14 @@ class Context:
                 f'{self.tostring(indent=4)}')
 
     def __repr__(self) -> str:
+        """Return the debug string representation of the context.
+
+        Example:
+            >>> import concepts
+            >>> context = concepts.Context.fromstring(concepts.EXAMPLE)
+            >>> context
+            <Context object mapping 6 objects to 10 properties [b9d20179] at 0x...>
+        """
         return (f'<{self.__class__.__name__} object'
                 f' mapping {len(self.objects)} objects'
                 f' to {len(self.properties)} properties'
