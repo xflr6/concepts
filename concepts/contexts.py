@@ -13,24 +13,8 @@ from . import tools
 __all__ = ['Context']
 
 
-class Context:
-    """Formal context defining a relation between objects and properties.
-
-    Create context from ``objects``, ``properties``, and ``bools`` correspondence.
-
-    Args:
-        objects: Iterable of object label strings.
-        properties: Iterable of property label strings.
-        bools: Iterable of ``len(objects)`` tuples of ``len(properties)`` booleans.
-
-    Returns:
-        Context: New :class:`.Context` instance.
-
-    Example:
-        >>> from concepts import Context
-        >>> Context(['man', 'woman'], ['male', 'female'], [(True, False), (False, True)])  # doctest: +ELLIPSIS
-        <Context object mapping 2 objects to 2 properties [47e29724] at 0x...>
-    """
+class Data:
+    """Formal context as relation between two bitsets."""
 
     @classmethod
     def fromstring(cls, source: str,
@@ -250,6 +234,83 @@ class Context:
         self._Properties = self._intents.BitSet
         self._Objects = self._extents.BitSet
 
+
+class FormattingMixin:
+
+    def __str__(self) -> str:
+        """Return the full string representation of the context.
+
+        Returns:
+            The ``repr()`` of the context  followed by its table representation.
+
+        Example:
+            >>> import concepts
+            >>> context = concepts.Context.fromstring(concepts.EXAMPLE)
+            >>> print(context)
+            <Context object mapping 6 objects to 10 properties [b9d20179] at 0x...>
+                   |+1|-1|+2|-2|+3|-3|+sg|+pl|-sg|-pl|
+                1sg|X |  |  |X |  |X |X  |   |   |X  |
+                1pl|X |  |  |X |  |X |   |X  |X  |   |
+                2sg|  |X |X |  |  |X |X  |   |   |X  |
+                2pl|  |X |X |  |  |X |   |X  |X  |   |
+                3sg|  |X |  |X |X |  |X  |   |   |X  |
+                3pl|  |X |  |X |X |  |   |X  |X  |   |
+        """
+        return (f'{self!r}\n'
+                f'{self.tostring(indent=4)}')
+
+    def __repr__(self) -> str:
+        """Return the debug string representation of the context.
+
+        Example:
+            >>> import concepts
+            >>> context = concepts.Context.fromstring(concepts.EXAMPLE)
+            >>> context
+            <Context object mapping 6 objects to 10 properties [b9d20179] at 0x...>
+        """
+        return (f'<{self.__class__.__name__} object'
+                f' mapping {len(self.objects)} objects'
+                f' to {len(self.properties)} properties'
+                f' [{self.crc32()}] at {id(self):#x}>')
+
+    def tostring(self, frmat: str = 'table', **kwargs) -> str:
+        """Return the context serialized in the given string-based format.
+
+        Args:
+            frmat: Format of the string (``'table'``, ``'cxt'``, ``'csv'``).
+
+        Returns:
+            The context as seralized string.
+        """
+        frmat = formats.Format[frmat]
+
+        assert '_serialized' not in kwargs
+        if frmat is formats.PythonLiteral:
+            kwargs['_serialized'] = self.todict(ignore_lattice=None)
+
+        return frmat.dumps(self.objects, self.properties, self.bools, **kwargs)
+
+    def crc32(self,
+              encoding: str = 'utf-8') -> str:
+        """Return hex-encoded unsigned CRC32 over encoded context table string.
+
+        Args:
+            encoding: Encoding of the serialzation (``'utf-8'``, ``'latin1'``, ``'ascii'``, ...).
+
+        Returns:
+            The unsigned CRC32 checksum as hex-string.
+
+        Example:
+            >>> import concepts
+            >>> context = concepts.Context.fromstring(concepts.EXAMPLE)
+            >>> context.crc32()
+            'b9d20179'
+        """
+        return tools.crc32_hex(self.tostring().encode(encoding))
+
+
+class ComparableMixin:
+
     def __eq__(self, other: 'Context') -> typing.Union[bool, type(NotImplemented)]:
         """Return whether two contexts are equivalent.
 
@@ -300,33 +361,42 @@ class Context:
 
         return not self == other
 
-    def _lattice(self, infimum=()):
-        """Yield ``(extent, intent, upper, lower)`` in short lexicographic order.
 
-        cf. C. Lindig. 2000. Fast Concept Analysis.
+class PrimeMixin:
+
+    def __getitem__(self, items: typing.Iterable[str],
+                    raw: bool = False) -> typing.Tuple[typing.Tuple[str, ...],
+                                                       typing.Tuple[str, ...]]:
+        """Return ``(extension, intension)`` pair by shared objects or properties.
+
+        Args:
+            items: Iterable of :obj:`str` labels either taken from ``self.objects`` or from ``self.properties``.
+            raw: Return raw ``(extent, intent)`` pair instead of :obj:`str` tuples.
+
+        Returns:
+            The smallest concept having all ``items`` as ``(extent, intent)`` pair.
+
+        Example:
+            >>> import concepts
+            >>> context = concepts.Context.fromstring(concepts.EXAMPLE)
+            >>> context['1sg',]
+            (('1sg',), ('+1', '-2', '-3', '+sg', '-pl'))
+            >>> context['1sg', '1pl', '2pl']
+            (('1sg', '1pl', '2sg', '2pl'), ('-3',))
+            >>> context['-1', '-sg']
+            (('2pl', '3pl'), ('-1', '+pl', '-sg'))
         """
-        return algorithms.lattice(self._Objects, infimum=infimum)
+        try:
+            extent = self._Objects.frommembers(items)
+        except KeyError:
+            intent = self._Properties.frommembers(items)
+            intent, extent = intent.doubleprime()
+        else:
+            extent, intent = extent.doubleprime()
 
-    def _neighbors(self, objects):
-        """Yield upper neighbors from extent (in colex order?).
-
-        cf. C. Lindig. 2000. Fast Concept Analysis.
-        """
-        return algorithms.neighbors(objects, Objects=self._Objects)
-
-    def _minimal(self, extent, intent):
-        """Return short lexicograpically minimum intent generating extent."""
-        return next(self._minimize(extent, intent))
-
-    def _minimize(self, extent, intent):
-        """Yield short lexicograpically ordered extent generating intents."""
-        if not extent:
-            yield intent
-            return
-
-        for it in intent.powerset():
-            if it.prime() == extent:
-                yield it
+        if raw:
+            return extent, intent
+        return extent.members(), intent.members()
 
     def intension(self, objects: typing.Iterable[str],
                   raw: bool = False) -> typing.Tuple[str, ...]:
@@ -372,6 +442,41 @@ class Context:
             return extent
         return extent.members()
 
+
+class MinimizeMixin:
+
+    @classmethod
+    def _minimal(cls, extent, intent):
+        """Return short lexicograpically minimum intent generating extent."""
+        return next(cls._minimize(extent, intent))
+
+    @staticmethod
+    def _minimize(extent, intent):
+        """Yield short lexicograpically ordered extent generating intents."""
+        if not extent:
+            yield intent
+            return
+
+        for it in intent.powerset():
+            if it.prime() == extent:
+                yield it
+
+class LatticeMixin:
+
+    def _lattice(self, infimum=()):
+        """Yield ``(extent, intent, upper, lower)`` in short lexicographic order.
+
+        cf. C. Lindig. 2000. Fast Concept Analysis.
+        """
+        return algorithms.lattice(self._Objects, infimum=infimum)
+
+    def _neighbors(self, objects):
+        """Yield upper neighbors from extent (in colex order?).
+
+        cf. C. Lindig. 2000. Fast Concept Analysis.
+        """
+        return algorithms.neighbors(objects, Objects=self._Objects)
+
     def neighbors(self, objects: typing.Iterable[str],
                   raw: bool = False) -> typing.List[typing.Tuple[typing.Tuple[str, ...],
                                                                  typing.Tuple[str, ...]]]:
@@ -396,75 +501,63 @@ class Context:
         return [(extent.members(), intent.members())
                 for extent, intent in self._neighbors(objects)]
 
-    def __getitem__(self, items: typing.Iterable[str],
-                    raw: bool = False) -> typing.Tuple[typing.Tuple[str, ...],
-                                                       typing.Tuple[str, ...]]:
-        """Return ``(extension, intension)`` pair by shared objects or properties.
+    @tools.lazyproperty
+    def lattice(self) -> 'lattices.Lattice':
+        """The concept lattice of the formal context.
+
+        Returns:
+             lattices.Lattice: Cached or new :class:`lattices.Lattice` instance.
+        """
+        return lattices.Lattice(self)
+
+
+class ExportableMixin:
+
+    def tofile(self, filename,
+               frmat: str = 'cxt',
+               encoding: str = 'utf-8',
+               **kwargs) -> None:
+        """Save the context serialized to file in the given format.
 
         Args:
-            items: Iterable of :obj:`str` labels either taken from ``self.objects`` or from ``self.properties``.
-            raw: Return raw ``(extent, intent)`` pair instead of :obj:`str` tuples.
+            frmat: Format of the string (``'table'``, ``'cxt'``, ``'csv'``).
+            encoding: Encoding of the file (``'utf-8'``, ``'latin1'``, ``'ascii'``, ...).
 
         Returns:
-            The smallest concept having all ``items`` as ``(extent, intent)`` pair.
-
-        Example:
-            >>> import concepts
-            >>> context = concepts.Context.fromstring(concepts.EXAMPLE)
-            >>> context['1sg',]
-            (('1sg',), ('+1', '-2', '-3', '+sg', '-pl'))
-            >>> context['1sg', '1pl', '2pl']
-            (('1sg', '1pl', '2sg', '2pl'), ('-3',))
-            >>> context['-1', '-sg']
-            (('2pl', '3pl'), ('-1', '+pl', '-sg'))
+            ``None``
         """
-        try:
-            extent = self._Objects.frommembers(items)
-        except KeyError:
-            intent = self._Properties.frommembers(items)
-            intent, extent = intent.doubleprime()
-        else:
-            extent, intent = extent.doubleprime()
+        frmat = formats.Format[frmat]
 
-        if raw:
-            return extent, intent
-        return extent.members(), intent.members()
+        assert '_serialized' not in kwargs
+        if frmat is formats.PythonLiteral:
+            kwargs['_serialized'] = self.todict(ignore_lattice=None)
 
-    def __str__(self) -> str:
-        """Return the full string representation of the context.
+        frmat.dump(filename,
+                   self.objects, self.properties, self.bools,
+                   encoding=encoding, **kwargs)
+
+    def tojson(self, path_or_fileobj,
+               encoding: str = 'utf-8',
+               indent: typing.Optional[int] = None,
+               sort_keys: bool = True,
+               ignore_lattice: bool = False) -> None:
+        """Write serialized context as json to path or file-like object.
+
+        Args:
+            path_or_fileobj: :obj:`str`, :class:`os.PathLike`, or file-like object open for writing.
+            encoding: Ignored for file-like objects under Python 3.
+            indent: :func:`json.dump` ``indent`` for pretty-printing.
+            sort_keys: :func:`json.dump` ``sort_keys`` for diffability.
+            ingnore_lattice: Omit ``'lattice'`` in result.
+                If ``None``, ``'lattice'`` is omitted if it has not
+                yet been computed.
 
         Returns:
-            The ``repr()`` of the context  followed by its table representation.
-
-        Example:
-            >>> import concepts
-            >>> context = concepts.Context.fromstring(concepts.EXAMPLE)
-            >>> print(context)
-            <Context object mapping 6 objects to 10 properties [b9d20179] at 0x...>
-                   |+1|-1|+2|-2|+3|-3|+sg|+pl|-sg|-pl|
-                1sg|X |  |  |X |  |X |X  |   |   |X  |
-                1pl|X |  |  |X |  |X |   |X  |X  |   |
-                2sg|  |X |X |  |  |X |X  |   |   |X  |
-                2pl|  |X |X |  |  |X |   |X  |X  |   |
-                3sg|  |X |  |X |X |  |X  |   |   |X  |
-                3pl|  |X |  |X |X |  |   |X  |X  |   |
+            ``None``
         """
-        return (f'{self!r}\n'
-                f'{self.tostring(indent=4)}')
-
-    def __repr__(self) -> str:
-        """Return the debug string representation of the context.
-
-        Example:
-            >>> import concepts
-            >>> context = concepts.Context.fromstring(concepts.EXAMPLE)
-            >>> context
-            <Context object mapping 6 objects to 10 properties [b9d20179] at 0x...>
-        """
-        return (f'<{self.__class__.__name__} object'
-                f' mapping {len(self.objects)} objects'
-                f' to {len(self.properties)} properties'
-                f' [{self.crc32()}] at {id(self):#x}>')
+        d = self.todict(ignore_lattice=ignore_lattice)
+        tools.dump_json(d, path_or_fileobj, encoding=encoding,
+                        indent=indent, sort_keys=sort_keys)
 
     def todict(self, ignore_lattice: bool = False
                ) -> typing.Dict[str,
@@ -530,86 +623,27 @@ class Context:
             result['lattice'] = self.lattice._tolist()
         return result
 
-    def tojson(self, path_or_fileobj,
-               encoding: str = 'utf-8',
-               indent: typing.Optional[int] = None,
-               sort_keys: bool = True,
-               ignore_lattice: bool = False) -> None:
-        """Write serialized context as json to path or file-like object.
 
-        Args:
-            path_or_fileobj: :obj:`str`, :class:`os.PathLike`, or file-like object open for writing.
-            encoding: Ignored for file-like objects under Python 3.
-            indent: :func:`json.dump` ``indent`` for pretty-printing.
-            sort_keys: :func:`json.dump` ``sort_keys`` for diffability.
-            ingnore_lattice: Omit ``'lattice'`` in result.
-                If ``None``, ``'lattice'`` is omitted if it has not
-                yet been computed.
+class Context(ExportableMixin, LatticeMixin,
+              MinimizeMixin, PrimeMixin,
+              ComparableMixin, FormattingMixin, Data):
+    """Formal context defining a relation between objects and properties.
 
-        Returns:
-            ``None``
-        """
-        d = self.todict(ignore_lattice=ignore_lattice)
-        tools.dump_json(d, path_or_fileobj, encoding=encoding,
-                        indent=indent, sort_keys=sort_keys)
+    Create context from ``objects``, ``properties``, and ``bools`` correspondence.
 
-    def tostring(self, frmat: str = 'table', **kwargs) -> str:
-        """Return the context serialized in the given string-based format.
+    Args:
+        objects: Iterable of object label strings.
+        properties: Iterable of property label strings.
+        bools: Iterable of ``len(objects)`` tuples of ``len(properties)`` booleans.
 
-        Args:
-            frmat: Format of the string (``'table'``, ``'cxt'``, ``'csv'``).
+    Returns:
+        Context: New :class:`.Context` instance.
 
-        Returns:
-            The context as seralized string.
-        """
-        frmat = formats.Format[frmat]
-
-        assert '_serialized' not in kwargs
-        if frmat is formats.PythonLiteral:
-            kwargs['_serialized'] = self.todict(ignore_lattice=None)
-
-        return frmat.dumps(self.objects, self.properties, self.bools, **kwargs)
-
-    def tofile(self, filename,
-               frmat: str = 'cxt',
-               encoding: str = 'utf-8',
-               **kwargs) -> None:
-        """Save the context serialized to file in the given format.
-
-        Args:
-            frmat: Format of the string (``'table'``, ``'cxt'``, ``'csv'``).
-            encoding: Encoding of the file (``'utf-8'``, ``'latin1'``, ``'ascii'``, ...).
-
-        Returns:
-            ``None``
-        """
-        frmat = formats.Format[frmat]
-
-        assert '_serialized' not in kwargs
-        if frmat is formats.PythonLiteral:
-            kwargs['_serialized'] = self.todict(ignore_lattice=None)
-
-        frmat.dump(filename,
-                   self.objects, self.properties, self.bools,
-                   encoding=encoding, **kwargs)
-
-    def crc32(self,
-              encoding: str = 'utf-8') -> str:
-        """Return hex-encoded unsigned CRC32 over encoded context table string.
-
-        Args:
-            encoding: Encoding of the serialzation (``'utf-8'``, ``'latin1'``, ``'ascii'``, ...).
-
-        Returns:
-            The unsigned CRC32 checksum as hex-string.
-
-        Example:
-            >>> import concepts
-            >>> context = concepts.Context.fromstring(concepts.EXAMPLE)
-            >>> context.crc32()
-            'b9d20179'
-        """
-        return tools.crc32_hex(self.tostring().encode(encoding))
+    Example:
+        >>> from concepts import Context
+        >>> Context(['man', 'woman'], ['male', 'female'], [(True, False), (False, True)])  # doctest: +ELLIPSIS
+        <Context object mapping 2 objects to 2 properties [47e29724] at 0x...>
+    """
 
     @property
     def objects(self) -> typing.Tuple[str, ...]:
@@ -721,12 +755,3 @@ class Context:
         return junctors.Relations(self.properties,
                                   self._extents.bools(),
                                   include_unary)
-
-    @tools.lazyproperty
-    def lattice(self) -> 'lattices.Lattice':
-        """The concept lattice of the formal context.
-
-        Returns:
-             lattices.Lattice: Cached or new :class:`lattices.Lattice` instance.
-        """
-        return lattices.Lattice(self)
