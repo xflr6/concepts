@@ -264,6 +264,55 @@ class Triple:
         """
         return tools.crc32_hex(self.tostring().encode(encoding))
 
+
+class TransformableMixin:
+    """Transformation-methods for triple of context-creating ``(objects, properties, bools)``."""
+
+    def inverted(self):
+        """Return a new definition flipping all booleans.
+
+        Returns:
+            Definition: A new :class:`.Definition` instance.        
+
+        Example:
+            >>> from concepts import Definition
+            >>> definition = Definition(['Mr. Praline', 'parrot'],
+            ...                         ['alive', 'dead'],
+            ...                         [(True, False), (False, True)])
+            >>> print(definition.inverted())
+                       |alive|dead|
+            Mr. Praline|     |X   |
+            parrot     |X    |    |
+
+        """
+        pairs = self._pairs
+        return self._fromargs(self._objects.copy(), self._properties.copy(),
+                              {(o, p) for o in self._objects for p in self._properties
+                               if (o, p) not in pairs})
+
+    __invert__ = inverted
+
+    def transposed(self):
+        """Return a new definition swapping ``objects`` and ``properties``.
+
+        Returns:
+            Definition: A new :class:`.Definition` instance.        
+
+        Example:
+            >>> from concepts import Definition
+            >>> definition = Definition(['Mr. Praline', 'parrot'],
+            ...                         ['alive', 'dead'],
+            ...                         [(True, False), (False, True)])
+            >>> print(definition.transposed())
+                 |Mr. Praline|parrot|
+            alive|X          |      |
+            dead |           |X     |
+        """
+        return self._fromargs(self._properties.copy(), self._objects.copy(),
+                              {(p, o) for (o, p) in self._pairs})
+
+    __neg__ = transposed
+
     def take(self,
              objects: typing.Optional[StrSequence] = None,
              properties: typing.Optional[StrSequence] = None,
@@ -315,51 +364,6 @@ class Triple:
                               {(o, p) for o in obj for p in prop
                                if (o, p) in pairs})
 
-    def transposed(self):
-        """Return a new definition swapping ``objects`` and ``properties``.
-
-        Returns:
-            Definition: A new :class:`.Definition` instance.        
-
-        Example:
-            >>> from concepts import Definition
-            >>> definition = Definition(['Mr. Praline', 'parrot'],
-            ...                         ['alive', 'dead'],
-            ...                         [(True, False), (False, True)])
-            >>> print(definition.transposed())
-                 |Mr. Praline|parrot|
-            alive|X          |      |
-            dead |           |X     |
-        """
-        return self._fromargs(self._properties.copy(), self._objects.copy(),
-                              {(p, o) for (o, p) in self._pairs})
-
-    def inverted(self):
-        """Return a new definition flipping all booleans.
-
-        Returns:
-            Definition: A new :class:`.Definition` instance.        
-
-        Example:
-            >>> from concepts import Definition
-            >>> definition = Definition(['Mr. Praline', 'parrot'],
-            ...                         ['alive', 'dead'],
-            ...                         [(True, False), (False, True)])
-            >>> print(definition.inverted())
-                       |alive|dead|
-            Mr. Praline|     |X   |
-            parrot     |X    |    |
-
-        """
-        pairs = self._pairs
-        return self._fromargs(self._objects.copy(), self._properties.copy(),
-                              {(o, p) for o in self._objects for p in self._properties
-                               if (o, p) not in pairs})
-
-    __neg__ = transposed
-
-    __invert__ = inverted
-
 
 def conflicting_pairs(left, right):
     """Yield all ``(object, property)`` pairs where the two definitions disagree."""
@@ -380,27 +384,32 @@ def ensure_compatible(left, right):
                          f' {conflicts!r}')
 
 
-class Definition(Triple):
-    """Mutable triple of ``(objects, properties, bools)`` for creating a context.
+class MutableMixin:
+    """Mutation-methods for triple of context-creating ``(objects, properties, bools)``."""
 
-    Create definition from ``objects``, ``properties``, and ``bools`` correspondence.
+    def __setitem__(self, pair, value) -> None:
+        """
 
-    Args:
-        objects: Object names.
-        properties: Property names.
-        bools: Row-major sequence of boolean sequences.
-
-    Returns:
-        Definition: New :class:`.Definition` instance.
-
-    Example:
-        >>> Definition(['man', 'woman'],
-        ...            ['male', 'female'],
-        ...            [(True, False), (False, True)])
-        <Definition(['man', 'woman'], ['male', 'female'], [(True, False), (False, True)])>
-        >>> Definition()
-        <Definition([], [], [])>
-    """
+        Example:
+            >>> import concepts
+            >>> definition = concepts.Definition(['King Arthur', 'grail'],
+            ...                                  ['holy'],
+            ...                                  [(False,), (True,)])
+            >>> definition['King Arthur', 'holy'] = True
+            >>> print(definition)
+                       |holy|
+            King Arthur|X   |
+            grail      |X   |
+        """
+        if isinstance(pair, int):
+            raise ValueError("can't set item")
+        o, p = pair
+        self._objects.add(o)
+        self._properties.add(p)
+        if value:
+            self._pairs.add(pair)
+        else:
+            self._pairs.discard(pair)
 
     def rename_object(self, old: str, new: str) -> None:
         """Replace the name of an object by a new one.
@@ -498,30 +507,6 @@ class Definition(Triple):
             King Arthur|    |X    |X    |
         """
         self._properties.move(prop, index)
-
-    def __setitem__(self, pair, value) -> None:
-        """
-
-        Example:
-            >>> import concepts
-            >>> definition = concepts.Definition(['King Arthur', 'grail'],
-            ...                                  ['holy'],
-            ...                                  [(False,), (True,)])
-            >>> definition['King Arthur', 'holy'] = True
-            >>> print(definition)
-                       |holy|
-            King Arthur|X   |
-            grail      |X   |
-        """
-        if isinstance(pair, int):
-            raise ValueError("can't set item")
-        o, p = pair
-        self._objects.add(o)
-        self._properties.add(p)
-        if value:
-            self._pairs.add(pair)
-        else:
-            self._pairs.discard(pair)
 
     def add_object(self, obj: str, properties: StrSequence = ()) -> None:
         """Add an object to the definition and add ``properties`` as related.
@@ -858,3 +843,26 @@ class Definition(Triple):
     __or__ = union
 
     __and__ = intersection
+
+
+class Definition(MutableMixin, TransformableMixin, Triple):
+    """Mutable triple of ``(objects, properties, bools)`` for creating a context.
+
+    Create definition from ``objects``, ``properties``, and ``bools`` correspondence.
+
+    Args:
+        objects: Object names.
+        properties: Property names.
+        bools: Row-major sequence of boolean sequences.
+
+    Returns:
+        Definition: New :class:`.Definition` instance.
+
+    Example:
+        >>> Definition(['man', 'woman'],
+        ...            ['male', 'female'],
+        ...            [(True, False), (False, True)])
+        <Definition(['man', 'woman'], ['male', 'female'], [(True, False), (False, True)])>
+        >>> Definition()
+        <Definition([], [], [])>
+    """
