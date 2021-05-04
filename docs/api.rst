@@ -53,7 +53,7 @@ Definition
     :members:
         fromfile, copy,
         __iter__, __getitem__,
-        objects, properties, bools,
+        objects, properties, bools, shape,
         tostring, crc32,
         take, transposed, inverted,
         rename_object, rename_property,

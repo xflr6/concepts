@@ -4,6 +4,7 @@ import typing
 
 from . import formats
 from . import tools
+from . import contexts
 
 __all__ = ['Definition']
 
@@ -191,6 +192,23 @@ class Triple:
         prop = self._properties
         pairs = self._pairs
         return [tuple((o, p) in pairs for p in prop) for o in self._objects]
+    
+    @property
+    def shape(self) -> 'contexts.Shape':
+        """Return shape/dimensions of the context.
+
+        Returns:
+            Shape: New :class:`.Shape` instance.
+
+        Example:
+            >>> import concepts
+            >>> definition = concepts.Definition(['King Arthur', 'grail'],
+            ...                                  ['holy'],
+            ...                                  [(False,), (True,)])
+            >>> definition.shape
+            Shape(objects=2, properties=1)
+        """
+        return contexts.Shape(len(self.objects), len(self.properties))
 
     def __str__(self) -> str:
         """
