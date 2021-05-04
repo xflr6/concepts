@@ -9,7 +9,7 @@ Drop Python 2 support.
 
 Drop Python 3.5 support and tag Python3.9 support.
 
-Add ``Context.shape`` method which returns ``ContextShape`` representing
+Add ``Context.shape`` method which returns ``Shape`` representing
 dimentions of the context.
 
 
