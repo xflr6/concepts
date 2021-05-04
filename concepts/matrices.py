@@ -1,5 +1,3 @@
-# matrices.py - boolean matrices as row bitsets and column bitsets
-
 """Boolean matrices as collections of row and column vectors."""
 
 import bitsets
@@ -27,8 +25,8 @@ class Vectors(bitsets.series.Tuple):
         Prime = other.BitSet.supremum  # noqa: N806
         Double = self.BitSet.supremum  # noqa: N806
 
-        _prime = other.BitSet.fromint
-        _double = self.BitSet.fromint
+        make_prime = other.BitSet.fromint
+        make_double = self.BitSet.fromint
 
         def prime(bitset):
             """FCA derivation operator (extent->intent, intent->extent)."""
@@ -43,7 +41,7 @@ class Vectors(bitsets.series.Tuple):
                 i += shift
                 bitset >>= shift
 
-            return _prime(prime)
+            return make_prime(prime)
 
         def double(bitset):
             """FCA double derivation operator (extent->extent, intent->intent)."""
@@ -69,7 +67,7 @@ class Vectors(bitsets.series.Tuple):
                 i += shift
                 prime >>= shift
 
-            return _double(double)
+            return make_double(double)
 
         def doubleprime(bitset):
             """FCA single and double derivation (extent->extent+intent, intent->intent+extent)."""
@@ -96,7 +94,7 @@ class Vectors(bitsets.series.Tuple):
                 i += shift
                 bitset >>= shift
 
-            return _double(double), _prime(prime)
+            return make_double(double), make_prime(prime)
 
         self.prime = self.BitSet.prime = prime
         self.double = self.BitSet.double = double
@@ -148,7 +146,8 @@ class Relation(tuple):
 
     def __reduce__(self):
         X, Y = (v.BitSet for v in self)  # noqa: N806
-        bools = self[0].bools()
-        ids = (X._id, Y._id)
-        args = (X.__name__, Y.__name__, X._members, Y._members, bools, ids)
-        return self.__class__, args
+        return (self.__class__,
+                (X.__name__, Y.__name__,
+                 X._members, Y._members,
+                 self[0].bools(),
+                 (X._id, Y._id)))
