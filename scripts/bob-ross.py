@@ -28,7 +28,7 @@ OPEN_KWARGS = {'encoding': 'ascii', 'newline': '\n'}
 
 CXT = CSV.with_suffix('.cxt')
 
-TARGET = pathlib.Path(os.pardir) / 'examples' / 'bob_ross.cxt'
+TARGET = pathlib.Path(os.pardir) / 'examples' / 'bob-ross.cxt'
 
 
 def read_episodes(path, *, dialect: typing.Union[csv.Dialect, str] = 'excel',

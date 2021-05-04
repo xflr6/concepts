@@ -6,7 +6,7 @@ import concepts
 from concepts import algorithms
 from concepts import formats
 
-BOB_ROSS = pathlib.Path('bob_ross.cxt')
+BOB_ROSS = pathlib.Path('bob-ross.cxt')
 
 ENCODING = 'utf-8'
 
