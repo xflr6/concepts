@@ -3,8 +3,8 @@ import pickle
 
 import pytest
 
-from concepts import Context
-from concepts.lattices import Concept
+import concepts
+from concepts import lattices
 
 
 def test_eq_nonlattice(lattice):
@@ -15,18 +15,18 @@ def test_eq(lattice):
     assert lattice._eq(lattice)
 
     d = lattice._context.definition()
-    assert lattice._eq(Context(*d).lattice)
+    assert lattice._eq(concepts.Context(*d).lattice)
 
     d.add_object('X', ['mysterious', 'child'])
-    assert not lattice._eq(Context(*d).lattice)
+    assert not lattice._eq(concepts.Context(*d).lattice)
     d.remove_object('X')
 
     d.move_object('3pl', 0)
-    assert not lattice._eq(Context(*d).lattice)
+    assert not lattice._eq(concepts.Context(*d).lattice)
 
 
 def test_eq_mapping(lattice):
-    other = Context(*lattice._context.definition()).lattice
+    other = concepts.Context(*lattice._context.definition()).lattice
     k, v = other._mapping.popitem()
     assert not other._eq(lattice)
 
@@ -36,7 +36,7 @@ def test_eq_mapping(lattice):
 
 
 def test_eq_concepts(lattice):
-    other = Context(*lattice._context.definition()).lattice
+    other = concepts.Context(*lattice._context.definition()).lattice
     c = other[16]
 
     for attname in ('index', 'dindex'):
@@ -66,7 +66,7 @@ def test_concept_eq(lattice):
 
 def test_concept_eq_neighors(lattice):
     c = lattice[7]
-    mock_concept = functools.partial(Concept, c.lattice, c._extent, c._intent)
+    mock_concept = functools.partial(lattices.Concept, c.lattice, c._extent, c._intent)
     assert not c._eq(mock_concept(c.upper_neighbors[1:], c.lower_neighbors))
     assert not c._eq(mock_concept(c.upper_neighbors, c.lower_neighbors[1:]))
     assert not c._eq(mock_concept(tuple(reversed(c.upper_neighbors)),
@@ -126,23 +126,23 @@ def test_minimal(lattice):
 
 
 def test_minimum():
-    l = Context(('spam',), ('ham',), [(True,)]).lattice
+    l = concepts.Context(('spam',), ('ham',), [(True,)]).lattice
     assert len(l) == 1
     assert l.infimum is l.supremum
     assert l.atoms == ()
 
 
 def test_trivial():
-    l = Context(('spam',), ('ham',), [(False,)]).lattice
+    l = concepts.Context(('spam',), ('ham',), [(False,)]).lattice
     assert len(l) == 2
     assert l.infimum is not l.supremum
     assert l.atoms == (l.supremum,)
 
 
 def test_nonatomic():
-    m = Context(('spam', 'eggs'), ('ham',), [(True,), (True,)]).lattice
+    m = concepts.Context(('spam', 'eggs'), ('ham',), [(True,), (True,)]).lattice
     assert [tuple(c) for c in m] == [(('spam', 'eggs'), ('ham',))]
-    t = Context(('spam', 'eggs'), ('ham',), [(False,), (False,)]).lattice
+    t = concepts.Context(('spam', 'eggs'), ('ham',), [(False,), (False,)]).lattice
     assert [tuple(c) for c in t] == [((), ('ham',)), (('spam', 'eggs'), ())]
 
 

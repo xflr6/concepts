@@ -1,11 +1,13 @@
 import pytest
 
-from concepts import Definition
+import concepts
 
 
 def test_fromfile(filename='examples/gewaesser.cxt'):
     objects = ('Fluss', 'Bach', 'Kanal', 'Graben', 'See', 'Tuempel', 'Teich', 'Becken')
+
     properties = ('fliessend', 'stehend', 'natuerlich', 'kuenstlich', 'gross', 'klein')
+
     bools = [(True, False, True, False, True, False),
              (True, False, True, False, False, True),
              (True, False, False, True, True, False),
@@ -14,22 +16,28 @@ def test_fromfile(filename='examples/gewaesser.cxt'):
              (False, True, True, False, False, True),
              (False, True, False, True, True, False),
              (False, True, False, True, False, True)]
-    assert Definition.fromfile(filename) == (objects, properties, bools)
+
+    assert concepts.Definition.fromfile(filename) == (objects,
+                                                      properties,
+                                                      bools)
 
 
 def test_duplicate_object():
     with pytest.raises(ValueError, match=r'duplicate objects'):
-        Definition(('spam', 'spam'), (), [])
+        concepts.Definition(('spam', 'spam'), (), [])
 
 
 def test_duplicate_property():
     with pytest.raises(ValueError, match=r'duplicate properties'):
-        Definition((), ('spam', 'spam'), [])
+        concepts.Definition((), ('spam', 'spam'), [])
 
 
 @pytest.fixture(scope='module')
 def definition():
-    return Definition(('spam', 'eggs'), ('ni',), [(True,), (False,)])
+    return concepts.Definition(('spam', 'eggs'),
+                               ('ni',),
+                               [(True,),
+                                (False,)])
 
 
 def test_ne(definition):
@@ -61,58 +69,125 @@ def test_setitem_int(definition):
 
 
 def test_union_compatible():
-    a = Definition(('spam', 'eggs'), ('ni',), [(True,), (False,)])
-    b = Definition(('ham', 'spam'), ('nini', 'ni',), [(True, True), (False, True)])
-    assert a.union(b) == Definition(('spam', 'eggs', 'ham'), ('ni', 'nini'),
-                                    [(True, False), (False, False), (True, True)])
+    a = concepts.Definition(('spam', 'eggs'),
+                            ('ni',),
+                            [(True,),
+                             (False,)])
+
+    b = concepts.Definition(('ham', 'spam'),
+                            ('nini', 'ni'),
+                            [(True, True),
+                             (False, True)])
+
+    assert a.union(b) == concepts.Definition(('spam', 'eggs', 'ham'),
+                                             ('ni', 'nini'),
+                                             [(True, False),
+                                              (False, False),
+                                              (True, True)])
 
 
 def test_union_conflicting():
-    a = Definition(('spam', 'eggs'), ('ni',), [(True,), (False,)])
-    b = Definition(('ham', 'spam'), ('nini', 'ni',), [(True, True), (False, False)])
+    a = concepts.Definition(('spam', 'eggs'), ('ni',), [(True,), (False,)])
+    b = concepts.Definition(('ham', 'spam'), ('nini', 'ni'),
+                            [(True, True), (False, False)])
     with pytest.raises(ValueError, match=r"\[\('spam', 'ni'\)\]"):
         a.union(b)
 
 
 def test_union_ignoring():
-    a = Definition(('spam', 'eggs'), ('ni',), [(True,), (False,)])
-    b = Definition(('ham', 'spam'), ('nini', 'ni',), [(True, True), (False, False)])
+    a = concepts.Definition(('spam', 'eggs'),
+                            ('ni',),
+                            [(True,),
+                             (False,)])
+
+    b = concepts.Definition(('ham', 'spam'),
+                            ('nini', 'ni'),
+                            [(True, True),
+                             (False, False)])
+
     assert a.union(b, ignore_conflicts=True) == \
-        Definition(('spam', 'eggs', 'ham'), ('ni', 'nini'),
-                   [(True, False), (False, False), (True, True)])
+        concepts.Definition(('spam', 'eggs', 'ham'),
+                            ('ni', 'nini'),
+                            [(True, False),
+                             (False, False),
+                             (True, True)])
 
 
 def test_union_augmented():
-    a = Definition(('spam', 'eggs'), ('ni',), [(True,), (False,)])
-    b = Definition(('ham', 'spam'), ('nini', 'ni',), [(True, True), (False, True)])
+    a = concepts.Definition(('spam', 'eggs'),
+                            ('ni',),
+                            [(True,), (False,)])
+
+    b = concepts.Definition(('ham', 'spam'),
+                            ('nini', 'ni'),
+                            [(True, True),
+                             (False, True)])
+
     a |= b
-    assert a == Definition(('spam', 'eggs', 'ham'), ('ni', 'nini'),
-                           [(True, False), (False, False), (True, True)])
+
+    assert a == concepts.Definition(('spam', 'eggs', 'ham'),
+                                    ('ni', 'nini'),
+                                    [(True, False),
+                                     (False, False),
+                                     (True, True)])
 
 
 def test_inters_compatible():
-    a = Definition(('spam', 'eggs'), ('ni',), [(True,), (False,)])
-    b = Definition(('ham', 'spam'), ('nini', 'ni',), [(True, True), (False, True)])
-    assert a.intersection(b) == Definition(['spam'], ['ni'], [(True,)])
+    a = concepts.Definition(('spam', 'eggs'),
+                            ('ni',),
+                            [(True,),
+                             (False,)])
+
+    b = concepts.Definition(('ham', 'spam'),
+                            ('nini', 'ni'),
+                            [(True, True),
+                             (False, True)])
+
+    assert a.intersection(b) == concepts.Definition(['spam'],
+                                                    ['ni'],
+                                                    [(True,)])
 
 
 def test_inters_conflicting():
-    a = Definition(('spam', 'eggs'), ('ni',), [(True,), (False,)])
-    b = Definition(('ham', 'spam'), ('nini', 'ni',), [(True, True), (False, False)])
+    a = concepts.Definition(('spam', 'eggs'),
+                            ('ni',),
+                            [(True,), (False,)])
+
+    b = concepts.Definition(('ham', 'spam'),
+                            ('nini', 'ni'),
+                            [(True, True),
+                             (False, False)])
+
     with pytest.raises(ValueError, match=r"\[\('spam', 'ni'\)\]"):
         a.intersection(b)
 
 
 def test_inters_ignoring():
-    a = Definition(('spam', 'eggs'), ('ni',), [(True,), (False,)])
-    b = Definition(('ham', 'spam'), ('nini', 'ni',), [(True, True), (False, False)])
-    assert a.intersection(b, ignore_conflicts=True) == Definition(['spam'],
-                                                                  ['ni'],
-                                                                  [(False,)])
+    a = concepts.Definition(('spam', 'eggs'),
+                            ('ni',),
+                            [(True,),
+                             (False,)])
+
+    b = concepts.Definition(('ham', 'spam'),
+                            ('nini', 'ni',),
+                            [(True, True),
+                             (False, False)])
+
+    assert a.intersection(b, ignore_conflicts=True) == \
+        concepts.Definition(['spam'], ['ni'], [(False,)])
 
 
 def test_inters_augmented():
-    a = Definition(('spam', 'eggs'), ('ni',), [(True,), (False,)])
-    b = Definition(('ham', 'spam'), ('nini', 'ni',), [(True, True), (False, True)])
+    a = concepts.Definition(('spam', 'eggs'),
+                            ('ni',),
+                            [(True,),
+                             (False,)])
+
+    b = concepts.Definition(('ham', 'spam'),
+                            ('nini', 'ni',),
+                            [(True, True),
+                             (False, True)])
+
     a &= b
-    assert a == Definition(['spam'], ['ni'], [(True,)])
+
+    assert a == concepts.Definition(['spam'], ['ni'], [(True,)])

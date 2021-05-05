@@ -1,50 +1,57 @@
 import pytest
 
-from concepts import Context
+import concepts
 
 
 def test_empty_objects():
     with pytest.raises(ValueError, match=r'empty objects'):
-        Context((), ('spam',), [(False,)])
+        concepts.Context((), ('spam',), [(False,)])
 
 
 def test_empty_properies():
     with pytest.raises(ValueError, match=r'empty properties'):
-        Context(('spam',), (), [(False,)])
+        concepts.Context(('spam',), (), [(False,)])
 
 
 def test_duplicate_object():
     with pytest.raises(ValueError, match=r'duplicate objects'):
-        Context(('spam', 'spam'), ('ham', 'eggs'),
-                [(True, False), (False, True)])
+        concepts.Context(('spam', 'spam'),
+                         ('ham', 'eggs'),
+                         [(True, False), (False, True)])
 
 
 def test_duplicate_property():
     with pytest.raises(ValueError, match=r'duplicate properties'):
-        Context(('spam', 'eggs'), ('ham', 'ham'),
-                [(True, False), (False, True)])
+        concepts.Context(('spam', 'eggs'),
+                         ('ham', 'ham'),
+                         [(True, False), (False, True)])
 
 
 def test_object_property_overlap():
     with pytest.raises(ValueError, match=r'overlap'):
-        Context(('spam', 'eggs'), ('eggs', 'ham'),
-                [(True, False), (False, True)])
+        concepts.Context(('spam', 'eggs'),
+                         ('eggs', 'ham'),
+                         [(True, False), (False, True)])
 
 
 def test_invalid_bools_1():
     with pytest.raises(ValueError, match=r'bools is not 2 items of length 2'):
-        Context(('spam', 'eggs'), ('camelot', 'launcelot'), [(True, False)])
+        concepts.Context(('spam', 'eggs'),
+                         ('camelot', 'launcelot'),
+                         [(True, False)])
 
 
 def test_invalid_bools_2():
     with pytest.raises(ValueError, match=r'bools is not 2 items of length 2'):
-        Context(('spam', 'eggs'), ('camelot', 'launcelot'),
-                [(True, False, False), (False, True)])
+        concepts.Context(('spam', 'eggs'),
+                         ('camelot', 'launcelot'),
+                         [(True, False, False), (False, True)])
 
 
 def test_init():
-    c = Context(('spam', 'eggs'), ('camelot', 'launcelot'),
-                [(True, False), (False, True)])
+    c = concepts.Context(('spam', 'eggs'),
+                         ('camelot', 'launcelot'),
+                         [(True, False), (False, True)])
 
     assert c.objects == ('spam', 'eggs')
     assert c.properties == ('camelot', 'launcelot')
@@ -52,7 +59,9 @@ def test_init():
 
 
 def test_copy(context):
-    context = Context(context.objects, context.properties, context.bools)
+    context = concepts.Context(context.objects,
+                               context.properties,
+                               context.bools)
     assert context.lattice is not None
 
     copy = context.copy()
@@ -66,14 +75,15 @@ def test_eq_noncontext(context):
 
 
 def test_eq_true(context):
-    assert context == Context(context.objects, context.properties,
-                              context.bools)
+    assert context == concepts.Context(context.objects,
+                                       context.properties,
+                                       context.bools)
 
 
 def test_eq_false(context):
     d = context.definition()
     d.move_object('3pl', 0)
-    assert not context == Context(*d)
+    assert not context == concepts.Context(*d)
 
 
 def test_ne_concontext(context):
@@ -83,12 +93,13 @@ def test_ne_concontext(context):
 def test_ne_true(context):
     d = context.definition()
     d.move_object('3pl', 0)
-    assert context != Context(*d)
+    assert context != concepts.Context(*d)
 
 
 def test_ne_false(context):
-    assert not context != Context(context.objects, context.properties,
-                                  context.bools)
+    assert not context != concepts.Context(context.objects,
+                                           context.properties,
+                                           context.bools)
 
 
 def test_crc32(context):
@@ -145,5 +156,6 @@ X..X.X.XX.
 
 
 def test_definition(context):
-    assert context.definition() == (context.objects, context.properties,
+    assert context.definition() == (context.objects,
+                                    context.properties,
                                     context.bools)

@@ -1,6 +1,6 @@
 import pytest
 
-from concepts.matrices import Relation
+from concepts import matrices
 
 
 @pytest.fixture(scope='module')
@@ -10,7 +10,7 @@ def relation():
     xmembers = 'TT', 'TF', 'FT', 'FF'
     ymembers = '->', '<-'
     xbools = [(True, False, True, True), (True, True, False, True)]
-    return Relation(xname, yname, xmembers, ymembers, xbools)
+    return matrices.Relation(xname, yname, xmembers, ymembers, xbools)
 
 
 def test_pair_with(relation):
