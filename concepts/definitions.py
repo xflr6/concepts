@@ -898,3 +898,23 @@ class Definition(MutableMixin, TransformableMixin, FormattingMixin, Triple):
             Shape(objects=2, properties=1)
         """
         return _common.Shape._from_pair(self.objects, self.properties)
+
+    @property
+    def fill_ratio(self) -> float:
+        """The fill ratio (density of ``True`` values) of the definition.
+
+        Fill ratio 0.25 means that 25% of the values in ``self.bools`` are ``True``.
+
+        Returns:
+            Definition fill ratio (can be interpreted as percentages).
+
+        Example:
+            >>> import concepts
+            >>> definition = concepts.Definition(['King Arthur', 'grail'],
+            ...                                  ['holy', 'historic'],
+            ...                                  [(False, True), (True, True)])
+            >>> definition.fill_ratio
+            0.75
+        """
+        shape = self.shape
+        return len(self._pairs) / (shape.objects * shape.properties)
