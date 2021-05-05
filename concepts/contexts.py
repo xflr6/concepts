@@ -702,7 +702,7 @@ class Context(ExportableMixin, LatticeMixin,
         """The shape/dimensions of the context.
 
         Returns:
-            New :class:`.Shape` instance.
+            :class:`.Shape` instance.
 
         Example:
             >>> import concepts
