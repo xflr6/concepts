@@ -400,6 +400,11 @@ class MutableMixin:
                        |holy|
             King Arthur|X   |
             grail      |X   |
+            >>> definition['King Arthur', 'holy'] = False
+            >>> print(definition)
+                       |holy|
+            King Arthur|    |
+            grail      |X   |
         """
         if isinstance(pair, int):
             raise ValueError("can't set item")
@@ -707,6 +712,11 @@ class MutableMixin:
                        |moose|
             King Arthur|     |
             holy grail |     |
+            >>> definition.set_property('moose', ['King Arthur', 'holy grail'])
+            >>> print(definition)
+                       |moose|
+            King Arthur|X    |
+            holy grail |X    |
         """
         self._properties.add(prop)
         objects = set(objects)
