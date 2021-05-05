@@ -53,6 +53,37 @@ SERIALIZED_NOLATTICE = {'objects': SERIALIZED['objects'],
                         'context': list(SERIALIZED['context'])}
 
 
+@pytest.mark.parametrize('source, filename, includes_lattice', [
+    (repr(SERIALIZED), None, True),
+    (repr(SERIALIZED_NOLATTICE), None, False),
+    (repr(SERIALIZED), 'example-serialized-lattice.py', True),
+    (repr(SERIALIZED_NOLATTICE), 'example-serialized-lattice.py', False),
+])
+def test_fromstring_serialized(tmp_path, source, filename, includes_lattice):
+    if filename is None:
+        context = Context.fromstring(source, frmat='python-literal')
+    else:
+        target = tmp_path / filename
+        kwargs = {'encoding': 'utf-8'}
+        target.write_text(source, **kwargs)
+        context =  Context.fromfile(str(target), frmat='python-literal', **kwargs)
+
+    assert context.objects == SERIALIZED['objects']
+    assert context.properties == SERIALIZED['properties']
+    assert context.bools == [
+        (True, False, False, True, False, True, True, False, False, True),
+        (True, False, False, True, False, True, False, True, True, False),
+        (False, True, True, False, False, True, True, False, False, True),
+        (False, True, True, False, False, True, False, True, True, False),
+        (False, True, False, True, True, False, True, False, False, True),
+        (False, True, False, True, True, False, False, True, True, False)]
+
+    if includes_lattice:
+        assert 'lattice' in context.__dict__
+    else:
+        assert 'lattice' not in context.__dict__
+
+
 @pytest.fixture(params=[SERIALIZED, SERIALIZED_NOLATTICE])
 def d(request):
     return request.param
