@@ -38,7 +38,7 @@ def fast_generate_from(context):
          ('AD', '12'),
          ('ABD', '2')]
     """
-    n_properties = len(context.properties)
+    n_properties = context.shape.properties
 
     Properties = context._Properties
 
@@ -113,7 +113,7 @@ def fcbo_dual(context):
          ('BC', '04'),
          ('C', '014')]
     """
-    n_objects = len(context.objects)
+    n_objects = context.shape.objects
 
     Objects = context._Objects
 

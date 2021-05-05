@@ -17,8 +17,7 @@ def bob_ross(test_examples, filename=BOB_ROSS):
 
     context = concepts.load_cxt(str(path), encoding=ENCODING)
 
-    assert len(context.objects) == 403
-    assert len(context.properties) == 67
+    assert context.shape == (403, 67)
 
     return context
 
@@ -29,8 +28,7 @@ def mushroom(test_examples, filename='mushroom.cxt'):
 
     context = concepts.load_cxt(str(path))
 
-    assert len(context.objects) == 8_124
-    assert len(context.properties) == 119
+    assert context.shape == (8_124, 119)
 
     return context
 

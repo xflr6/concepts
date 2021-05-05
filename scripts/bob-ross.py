@@ -64,8 +64,7 @@ start = time.perf_counter()
 context = concepts.load_cxt(CXT)
 print(f'{context!r}')
 
-assert len(context.objects) == 403, f'{len(context.object):_d} != 403'
-assert len(context.properties) == 67, f'{len(context.properties):_d} != 67'
+assert context.shape == (403, 67), f'{context.shape} != (403, 67)'
 
 lattice = context.lattice
 print(f'{lattice!r}')
