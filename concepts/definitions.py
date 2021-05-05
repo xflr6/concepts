@@ -2,6 +2,7 @@
 
 import typing
 
+from . import _common
 from . import formats
 from . import tools
 from . import contexts
@@ -194,8 +195,8 @@ class Triple:
         return [tuple((o, p) in pairs for p in prop) for o in self._objects]
 
     @property
-    def shape(self) -> 'contexts.Shape':
-        """Return shape/dimensions of the context.
+    def shape(self) -> _common.Shape:
+        """The shape/dimensions of the definition.
 
         Returns:
             New :class:`.Shape` instance.
@@ -208,7 +209,7 @@ class Triple:
             >>> definition.shape
             Shape(objects=2, properties=1)
         """
-        return contexts.Shape(len(self.objects), len(self.properties))
+        return _common.Shape._from_pair(self.objects, self.properties)
 
     def __str__(self) -> str:
         """

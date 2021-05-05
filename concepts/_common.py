@@ -3,7 +3,55 @@ import typing
 from . import formats
 from . import matrices
 
-__all__ = ['ConceptList']
+__all__ = ['Shape',
+           'Concept',
+           'ConceptList']
+
+
+class Shape(typing.NamedTuple):
+    """Tuple of ``len(objects)`` and  ``len(properties))``.
+
+    Example:
+        >>> import concepts
+        >>> c = concepts.Context.fromstring(concepts.EXAMPLE)
+        >>> c.shape
+        Shape(objects=6, properties=10)
+        >>> n_objects, n_properties = c.shape
+        >>> n_objects, n_properties
+        (6, 10)
+    """
+
+    @classmethod
+    def _from_pair(cls, objects, properties):
+        return cls(len(objects), len(properties))
+
+    objects: int
+
+    properties: int
+
+    @property
+    def rows(self) -> int:
+        """The number of (object) rows.
+
+        Example:
+        >>> import concepts
+        >>> c = concepts.Context.fromstring(concepts.EXAMPLE)
+        >>> c.shape.rows
+        6
+        """
+        return self.objects
+
+    @property
+    def columns(self) -> int:
+        """The number of (property) columns.
+
+        Example:
+        >>> import concepts
+        >>> c = concepts.Context.fromstring(concepts.EXAMPLE)
+        >>> c.shape.columns
+        10
+        """
+        return self.properties
 
 
 class Concept(typing.NamedTuple):

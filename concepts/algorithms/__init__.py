@@ -1,6 +1,6 @@
 import typing
 
-from ..concepts import Concept, ConceptList
+from .._common import Concept, ConceptList
 
 from .common import iterunion
 from .fcbo import fast_generate_from, fcbo_dual

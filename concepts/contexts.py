@@ -2,6 +2,7 @@
 
 import typing
 
+from . import _common
 from . import algorithms
 from . import definitions
 from . import formats
@@ -10,30 +11,7 @@ from . import lattices
 from . import matrices
 from . import tools
 
-__all__ = ['Context', 'Shape']
-
-
-class Shape(typing.NamedTuple):
-    """Tuple of ``len(objects)`` and  ``len(properties))``.
-
-    >>> Shape(403, 67)
-    Shape(objects=403, properties=67)
-
-    >>> n_objects, _ = Shape(403, 67)
-    >>> n_objects
-    403
-    """
-
-    objects: int
-    properties: int
-
-    @property
-    def rows(self) -> int:
-        return self.objects
-
-    @property
-    def columns(self) -> int:
-        return self.properties
+__all__ = ['Context']
 
 
 class Data:
@@ -719,9 +697,9 @@ class Context(ExportableMixin, LatticeMixin,
             """
         return self._intents.bools()
 
-    @property
-    def shape(self) -> Shape:
-        """Return shape/dimensions of the context.
+    @tools.lazyproperty
+    def shape(self) -> _common.Shape:
+        """The shape/dimensions of the context.
 
         Returns:
             New :class:`.Shape` instance.
@@ -732,7 +710,7 @@ class Context(ExportableMixin, LatticeMixin,
             >>> c.shape
             Shape(objects=6, properties=10)
         """
-        return Shape(len(self.objects), len(self.properties))
+        return _common.Shape._from_pair(self.objects, self.properties)
 
     def definition(self) -> 'definitions.Definition':
         """Return ``(objects, properties, bools)`` triple as mutable object.

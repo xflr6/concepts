@@ -2,12 +2,12 @@
 
 import typing
 
+from ._common import ConceptList
 from ._example import EXAMPLE
-from .concepts import ConceptList
 from .contexts import Context
 from .definitions import Definition
 
-__all__ = ['Context', 'Definition',
+__all__ = ['EXAMPLE', 'Context', 'Definition',
            'load', 'load_cxt', 'load_csv',
            'make_context']
 
