@@ -9,6 +9,25 @@ https://doi.org/10.1016/j.ins.2011.09.023
 __all__ = ['fast_generate_from', 'fcbo_dual']
 
 
+def iter_unset(bitset: int, bit_length: int, *, start: int  = 0):
+    """Yield indexes of unset bits skipping bits before ``start``.
+
+    >>> tuple(iter_unset(0b10011, 7))
+    (2, 3, 5, 6)
+    """
+    i = start
+    bitset >>= start
+    while bitset:
+        shift = (bitset & -bitset).bit_length() - 1  # trailing zero(s)
+        if shift:
+            yield from range(i, i + shift)
+        else:
+            shift = 1
+        i += shift
+        bitset >>= shift
+    yield from range(i, bit_length)
+
+
 def fast_generate_from(context):
     """Yield ``(extent, intent)`` pairs from ``context`` (by intents).
 
@@ -42,8 +61,7 @@ def fast_generate_from(context):
 
     Properties = context._Properties
 
-    j_atom = list(enumerate(Properties.supremum.atoms()))
-
+    lower_masks = [a - 1 for a in Properties.supremum.atoms()]
     Objects = context._Objects
 
     prime = Objects.prime
@@ -62,11 +80,10 @@ def fast_generate_from(context):
 
         next_property_sets = property_sets.copy()
 
-        for j, j_property in reversed(j_atom[property_index:]):
-            if j_property & intent:
-                continue
+        unset = list(iter_unset(intent, n_properties, start=property_index))
 
-            j_mask = j_property - 1
+        for j in reversed(unset):
+            j_mask = lower_masks[j]
 
             x = next_property_sets[j] & j_mask
 
