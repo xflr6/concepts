@@ -150,69 +150,11 @@ class Triple:
             raise KeyError(pair)
         return pair in self._pairs
 
-    @property
-    def objects(self) -> typing.Tuple[str, ...]:
-        """(Names of the) objects described by the definition.
 
-        Example:
-            >>> from concepts import Definition
-            >>> definition = Definition(['Mr. Praline', 'parrot'],
-            ...                         ['alive', 'dead'],
-            ...                         [(True, False), (False, True)])
-            >>> definition.objects
-            ('Mr. Praline', 'parrot')
-        """
-        return tuple(self._objects)
-
-    @property
-    def properties(self) -> typing.Tuple[str, ...]:
-        """(Names of the) properties that describe the objects.
-
-        Example:
-            >>> from concepts import Definition
-            >>> definition = Definition(['Mr. Praline', 'parrot'],
-            ...                         ['alive', 'dead'],
-            ...                         [(True, False), (False, True)])
-            >>> definition.properties
-            ('alive', 'dead')
-        """
-        return tuple(self._properties)
-
-    @property
-    def bools(self) -> typing.List[typing.Tuple[bool, ...]]:
-        """Row-major :obj:`list` of boolean tuples.
-
-        Example:
-            >>> from concepts import Definition
-            >>> definition = Definition(['Mr. Praline', 'parrot'],
-            ...                         ['alive', 'dead'],
-            ...                         [(True, False), (False, True)])
-            >>> definition.bools
-            [(True, False), (False, True)]
-        """
-        prop = self._properties
-        pairs = self._pairs
-        return [tuple((o, p) in pairs for p in prop) for o in self._objects]
-
-    @property
-    def shape(self) -> _common.Shape:
-        """The shape/dimensions of the definition.
-
-        Returns:
-            New :class:`.Shape` instance.
-
-        Example:
-            >>> import concepts
-            >>> definition = concepts.Definition(['King Arthur', 'grail'],
-            ...                                  ['holy'],
-            ...                                  [(False,), (True,)])
-            >>> definition.shape
-            Shape(objects=2, properties=1)
-        """
-        return _common.Shape._from_pair(self.objects, self.properties)
+class FormattingMixin:
 
     def __str__(self) -> str:
-        """
+        """Return the full string representation of the definition.
 
         Example:
             >>> from concepts import Definition
@@ -227,7 +169,7 @@ class Triple:
         return self.tostring()
 
     def __repr__(self) -> str:
-        """
+        """Return the debug string representation of the definition.
 
         Example:
             >>> from concepts import Definition
@@ -874,7 +816,7 @@ class MutableMixin:
     __and__ = intersection
 
 
-class Definition(MutableMixin, TransformableMixin, Triple):
+class Definition(MutableMixin, TransformableMixin, FormattingMixin, Triple):
     """Mutable triple of ``(objects, properties, bools)`` for creating a context.
 
     Create definition from ``objects``, ``properties``, and ``bools`` correspondence.
@@ -895,3 +837,64 @@ class Definition(MutableMixin, TransformableMixin, Triple):
         >>> Definition()
         <Definition([], [], [])>
     """
+
+    @property
+    def objects(self) -> typing.Tuple[str, ...]:
+        """(Names of the) objects described by the definition.
+
+        Example:
+            >>> from concepts import Definition
+            >>> definition = Definition(['Mr. Praline', 'parrot'],
+            ...                         ['alive', 'dead'],
+            ...                         [(True, False), (False, True)])
+            >>> definition.objects
+            ('Mr. Praline', 'parrot')
+        """
+        return tuple(self._objects)
+
+    @property
+    def properties(self) -> typing.Tuple[str, ...]:
+        """(Names of the) properties that describe the objects.
+
+        Example:
+            >>> from concepts import Definition
+            >>> definition = Definition(['Mr. Praline', 'parrot'],
+            ...                         ['alive', 'dead'],
+            ...                         [(True, False), (False, True)])
+            >>> definition.properties
+            ('alive', 'dead')
+        """
+        return tuple(self._properties)
+
+    @property
+    def bools(self) -> typing.List[typing.Tuple[bool, ...]]:
+        """Row-major :obj:`list` of boolean tuples.
+
+        Example:
+            >>> from concepts import Definition
+            >>> definition = Definition(['Mr. Praline', 'parrot'],
+            ...                         ['alive', 'dead'],
+            ...                         [(True, False), (False, True)])
+            >>> definition.bools
+            [(True, False), (False, True)]
+        """
+        prop = self._properties
+        pairs = self._pairs
+        return [tuple((o, p) in pairs for p in prop) for o in self._objects]
+
+    @property
+    def shape(self) -> _common.Shape:
+        """The shape/dimensions of the definition.
+
+        Returns:
+            New :class:`.Shape` instance.
+
+        Example:
+            >>> import concepts
+            >>> definition = concepts.Definition(['King Arthur', 'grail'],
+            ...                                  ['holy'],
+            ...                                  [(False,), (True,)])
+            >>> definition.shape
+            Shape(objects=2, properties=1)
+        """
+        return _common.Shape._from_pair(self.objects, self.properties)
