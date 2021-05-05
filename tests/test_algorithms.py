@@ -163,7 +163,7 @@ def test_lattice_mushroom(stopwatch, mushroom):
 
     assert lattice is not None
 
-    assert len(latice) ==  238_710
+    assert len(lattice) == 238_710
 
 
 @pytest.mark.slow

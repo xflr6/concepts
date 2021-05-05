@@ -215,6 +215,7 @@ def test_dict_roundtrip(context, ignore_lattice):
         assert 'lattice' in result.__dict__
         assert result.lattice._eq(context.lattice)
 
+
 @pytest.mark.parametrize('to_file', [False, True])
 @pytest.mark.parametrize('with_lattice, expected_doc, expected_str', [
     (False, SERIALIZED_NOLATTICE,

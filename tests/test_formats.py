@@ -1,4 +1,3 @@
-import pathlib
 import unittest
 
 import pytest
@@ -142,7 +141,7 @@ Limburger|        |X       |'''
 
 class TestTableUnicode(unittest.TestCase, Unicode):
 
-    format =formats.Table
+    format = formats.Table
 
     result = '''\
      |majestic|bites|
@@ -159,6 +158,7 @@ class TestCsvAscii(unittest.TestCase, Ascii):
 Cheddar,,X\r
 Limburger,,X\r
 '''
+
 
 class TestCsvUnicode(unittest.TestCase, Unicode):
 
@@ -187,7 +187,7 @@ def test_csv_loads_auto_as_int(source, kwargs):
 
     assert args.objects == ['Cheddar', 'Limburger']
     assert args.properties == ['in_stock', 'sold_out']
-    assert args.bools ==  [(False, True), (False, True)]
+    assert args.bools == [(False, True), (False, True)]
 
 
 @pytest.mark.parametrize('source, expected, match', [
@@ -195,7 +195,7 @@ def test_csv_loads_auto_as_int(source, kwargs):
 cheese,in_stock,sold_out\r
 Cheddar,0,\r
 Limburger,0,1\r
-''', ValueError,  r"first row: \['Cheddar', '0', ''\]"),
+''', ValueError, r"first row: \['Cheddar', '0', ''\]"),
     ('''\
 cheese,in_stock,sold_out\r
 Cheddar,0,1\r
@@ -352,7 +352,7 @@ X..X.X.XX.
 1 3 4 6 9
 1 3 4 7 8
 '''),
-    ( 'wiki-table', 'wiki-table', {}, '''\
+    ('wiki-table', 'wiki-table', {}, '''\
 {| class="featuresystem"
 !
 !+1!!-1!!+2!!-2!!+3!!-3!!+sg!!+pl!!-sg!!-pl
@@ -391,7 +391,7 @@ def test_write_example(test_output, context, frmat, label, kwargs, expected):
     assert result == expected
 
     try:
-        reloaded = Format.load(target, encoding=Format.encoding, **kwargs)
+        _ = Format.load(target, encoding=Format.encoding, **kwargs)
     except NotImplementedError:
         pytest.skip('not implemented')
 
@@ -410,7 +410,7 @@ def write_format(target, objects, properties, bools, *, Format, **kwargs):
 
 
 @pytest.mark.parametrize('extents, label, expected', [
-    ( False, 'intents', '''\
+    (False, 'intents', '''\
 0 1 2 3 4 5 6 7 8 9
 0 3 5 6 9
 0 3 5 7 8
@@ -465,7 +465,7 @@ def test_write_example_concepts_dat(test_output, context, extents, label, expect
 
     target = test_output / f'example-{label}.dat'
     iterconcepts = ((c._extent, c._intent) for c in context.lattice)
-    
+
     formats.write_concepts_dat(target, iterconcepts, extents=extents)
 
     assert target.exists()

@@ -469,10 +469,10 @@ class NavigateableMixin:
 
 class VisualizableMixin:
     """Visualization methods."""
-    
+
     def graphviz(self, filename=None, directory=None,
                  render: bool = False,
-                 view: bool  = False,
+                 view: bool = False,
                  make_object_label=' '.join,
                  make_property_label=' '.join,
                  **kwargs) -> 'graphviz.Digraph':

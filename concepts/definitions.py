@@ -192,13 +192,13 @@ class Triple:
         prop = self._properties
         pairs = self._pairs
         return [tuple((o, p) in pairs for p in prop) for o in self._objects]
-    
+
     @property
     def shape(self) -> 'contexts.Shape':
         """Return shape/dimensions of the context.
 
         Returns:
-            Shape: New :class:`.Shape` instance.
+            New :class:`.Shape` instance.
 
         Example:
             >>> import concepts
@@ -290,7 +290,7 @@ class TransformableMixin:
         """Return a new definition flipping all booleans.
 
         Returns:
-            Definition: A new :class:`.Definition` instance.        
+            Definition: A new :class:`.Definition` instance.
 
         Example:
             >>> from concepts import Definition
@@ -314,7 +314,7 @@ class TransformableMixin:
         """Return a new definition swapping ``objects`` and ``properties``.
 
         Returns:
-            Definition: A new :class:`.Definition` instance.        
+            Definition: A new :class:`.Definition` instance.
 
         Example:
             >>> from concepts import Definition
@@ -754,7 +754,6 @@ class MutableMixin:
             other: Another :class:`.Definition` instance.
             ignore_conflicts: Allow overwrite from other.
 
-        
         Example:
             >>> import concepts
             >>> definition = concepts.Definition(['King Arthur'],
@@ -813,12 +812,13 @@ class MutableMixin:
         self.intersection_update(other)
         return self
 
-    def union(self, other: 'Definition', ignore_conflicts=False) -> 'Definition':
+    def union(self, other: 'Definition',
+              ignore_conflicts: bool = False) -> 'Definition':
         """Return a new definition from the union of the definitions.
 
         Args:
-            other (Definition): Another :class:`.Definition` instance.
-            ignore_conflicts (bool): 
+            other: Another :class:`.Definition` instance.
+            ignore_conflicts):
 
         Returns:
             Definition: A new :class:`.Definition` instance.
@@ -842,7 +842,7 @@ class MutableMixin:
         return result
 
     def intersection(self, other: 'Definition',
-                     ignore_conflicts: bool = False) ->  'Definition':
+                     ignore_conflicts: bool = False) -> 'Definition':
         """Return a new definition from the intersection of the definitions.
 
         Args:

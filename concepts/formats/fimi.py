@@ -19,9 +19,11 @@ class FimiDialect(csv.Dialect):
 
     strict = True
 
+
 def iter_fimi_rows(bools):
     for row in bools:
         yield [i for i, value in enumerate(row) if value]
+
 
 def dump_file(file, objects, properties, bools, *, _serialized=None):
     rows = iter_fimi_rows(bools)
@@ -58,4 +60,3 @@ def write_concepts_dat(path, iterconcepts, *, extents: bool = False,
 
     with open(path, 'w', encoding=encoding, newline=newline) as f:
         tools.write_csv_file(f, rows, dialect=Fimi.dialect)
-

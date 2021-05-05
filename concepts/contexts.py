@@ -14,7 +14,7 @@ __all__ = ['Context', 'Shape']
 
 
 class Shape(typing.NamedTuple):
-    """
+    """Tuple of ``len(objects)`` and  ``len(properties))``.
 
     >>> Shape(403, 67)
     Shape(objects=403, properties=67)
@@ -484,6 +484,7 @@ class MinimizeMixin:
             if it.prime() == extent:
                 yield it
 
+
 class LatticeMixin:
 
     def _lattice(self, infimum=()):
@@ -719,11 +720,11 @@ class Context(ExportableMixin, LatticeMixin,
         return self._intents.bools()
 
     @property
-    def shape(self) -> 'Shape':
+    def shape(self) -> Shape:
         """Return shape/dimensions of the context.
 
         Returns:
-            Shape: New :class:`.Shape` instance.
+            New :class:`.Shape` instance.
 
         Example:
             >>> import concepts
