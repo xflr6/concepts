@@ -712,6 +712,24 @@ class Context(ExportableMixin, LatticeMixin,
         """
         return _common.Shape._from_pair(self.objects, self.properties)
 
+    @tools.lazyproperty
+    def fill_ratio(self) -> float:
+        """The fill ratio (density of ``True`` values) of the context.
+
+        Fill ratio 0.25 means that 25% of the values in ``self.bools``
+        are ``True`` values.
+
+        Returns:
+            Context fill ratio (can be interpreted as percentages).
+
+        Example:
+            >>> import concepts
+            >>> context = concepts.Context.fromstring(concepts.EXAMPLE)
+            >>> context.fill_ratio
+            0.5
+        """
+        return sum(intent.count() for intent in self._intents) / (self.shape.objects * self.shape.properties)
+
     def definition(self) -> 'definitions.Definition':
         """Return ``(objects, properties, bools)`` triple as mutable object.
 
