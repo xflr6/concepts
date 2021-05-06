@@ -706,8 +706,8 @@ class Context(ExportableMixin, LatticeMixin,
 
         Example:
             >>> import concepts
-            >>> c = concepts.Context.fromstring(concepts.EXAMPLE)
-            >>> c.shape
+            >>> context = concepts.Context.fromstring(concepts.EXAMPLE)
+            >>> context.shape
             Shape(objects=6, properties=10)
         """
         return _common.Shape._from_pair(self.objects, self.properties)
