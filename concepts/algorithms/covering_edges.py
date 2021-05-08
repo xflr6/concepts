@@ -11,8 +11,8 @@ def covering_edges(concept_list, context):
     pairs (concept and it's lower neighbor) from ``context`` and ``concept_list``
     
     Example:
-        >>> from concepts import make_context
-        >>> from concepts.concepts import ConceptList, Concept
+        >>> from concepts import make_context, ConceptList
+        >>> from concepts._common import Concept
 
         >>> context = make_context('''
         ...  |0|1|2|3|4|5|
