@@ -12,6 +12,8 @@ env:
   - ARGS=
 jobs:
   exclude:
+    - python: 3.9
+      env: ARGS=
     - python: 3.8
       env: ARGS=--run-slow
     - python: 3.7
