@@ -3,20 +3,20 @@ dist: focal
 language: python
 cache: pip
 python:
-  - "3.6"
-  - "3.7"
-  - "3.8"
   - "3.9"
+  - "3.8"
+  - "3.7"
+  - "3.6"
 env:
-  - ARGS=
   - ARGS=--run-slow
+  - ARGS=
 jobs:
   exclude:
-    - python: 3.6
+    - python: 3.8
       env: ARGS=--run-slow
     - python: 3.7
       env: ARGS=--run-slow
-    - python: 3.8
+    - python: 3.6
       env: ARGS=--run-slow
 install: pip install -e .[test] codecov
 script: ./run-tests.py $ARGS
