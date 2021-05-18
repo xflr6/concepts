@@ -251,7 +251,7 @@ def write_lines(path, lines: typing.Iterable[str],
             write(line)
 
 
-def csv_iterrows(path, *, dialect: CsvDialectOrStr,
+def csv_iterrows(path, *, dialect: CsvDialectOrStr = csv.excel,
                  encoding: str = DEFAULT_ENCODING,
                  newline: typing.Optional[str] = ''):
     with open(path, encoding=encoding, newline=newline) as f:

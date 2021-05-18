@@ -166,7 +166,7 @@ if not all(path.exists() for path in RESULTS):
                        'ring-type:zone']
 
     context = concepts.Context(*definition)
-    assert context.shape.properties == 119, f'{context.shape.properties:_d} != 119'
+    assert context.shape == (8_124, 119), f'{context.shape} != (8_124, 119)'
 
     context.tofile(CXT_MINIMAL, frmat='cxt')  # examples/mushroom.cxt
     print(CXT_MINIMAL, f'{CXT_MINIMAL.stat().st_size:_d} bytes')
