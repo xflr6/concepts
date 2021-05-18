@@ -21,13 +21,19 @@ class Shape(typing.NamedTuple):
         (6, 10)
     """
 
+    objects: int
+
+    properties: int
+
+
     @classmethod
     def _from_pair(cls, objects, properties):
         return cls(len(objects), len(properties))
 
-    objects: int
-
-    properties: int
+    def __repr__(self):
+        return (f'{self.__class__.__name__}'
+                f'(objects={self.objects:_d},'
+                f' properties={self.properties:_d})')
 
     @property
     def rows(self) -> int:
