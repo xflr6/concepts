@@ -143,3 +143,4 @@ The ``'lattice'`` list items are 4-tuples where the first elements are
 references to ``'objects'`` (*extents*), the second elements are references to
 ``'properties'`` (*intents*), and the last two are references to the
 ``'lattice'`` list itself (upper and lower neighbors, a.k.a. *cover sets*).
+All references are zero-based index references into their target sequence.
