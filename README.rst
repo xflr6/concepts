@@ -161,7 +161,7 @@ Concepts is distributed under the `MIT license`_.
 .. _features: https://pypi.org/project/features/
 
 .. _other implementations: http://www.upriss.org.uk/fca/fcasoftware.html
-.. _more sophisticated algorithms: http://www.upriss.org.uk/fca/fcaalgorithms.html
+.. _more sophisticated algorithms: https://upriss.github.io/fca/fcaalgorithms.html
 .. _In-Close: https://sourceforge.net/projects/inclose/
 .. _Fcbo: http://fcalgs.sourceforge.net
 
