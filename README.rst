@@ -8,6 +8,8 @@ Concepts
 Concepts is a simple Python implementation of **Formal Concept Analysis**
 (FCA_).
 
+|Logo|
+
 FCA provides a mathematical model for describing a set of **objects** (e.g. King
 Arthur, Sir Robin, and the holy grail) with a set of **properties** (e.g. human,
 knight, king, and mysterious) which each of the objects either has or not. A
@@ -196,3 +198,6 @@ Concepts is distributed under the `MIT license`_.
 .. |Readthedocs-latest| image:: https://readthedocs.org/projects/concepts/badge/?version=latest
     :target: https://concepts.readthedocs.io/en/latest/?badge=latest
     :alt: Readthedocs latest
+
+.. |Logo| image:: https://raw.github.com/xflr6/concepts/master/docs/logo_full.png
+    :alt: Logo
