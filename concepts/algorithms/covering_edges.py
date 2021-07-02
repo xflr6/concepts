@@ -5,11 +5,37 @@ Concept data analysis: Theory and applications.
 John Wiley & Sons, 2004.
 """
 
+from .fcbo import fast_generate_from
+
+
+def lattice(context):
+    edges = covering_edges(fast_generate_from(context), context)
+
+    mapping = {}
+
+    for concept, lower_neighbor in edges:
+        extent, intent = concept
+        lower_extent, lower_intent = lower_neighbor
+
+        if extent in mapping:
+            _, _, _, lower = mapping[extent]
+            lower.append(lower_extent)
+        else:
+            mapping[extent] = (extent, intent, [], [lower_extent])
+
+        if lower_extent in mapping:
+            _, _, upper, _ = mapping[lower_extent]
+            upper.append(extent)
+        else:
+            mapping[lower_extent] = (lower_extent, lower_intent, [extent], [])
+
+    return mapping.values()
+
 
 def covering_edges(concept_list, context):
     """Yield mapping edge as ``((extent, intent), (lower_extent, lower_intent))``
     pairs (concept and it's lower neighbor) from ``context`` and ``concept_list``
-    
+
     Example:
         >>> from concepts import make_context, ConceptList
         >>> from concepts._common import Concept
@@ -40,7 +66,7 @@ def covering_edges(concept_list, context):
         ...         concepts))
 
         >>> edges = covering_edges(concept_list, context)
-        
+
         >>> [(''.join(concept[0].members()), # doctest: +NORMALIZE_WHITESPACE
         ...   ''.join(lower[0].members()))
         ...  for concept, lower in edges]
