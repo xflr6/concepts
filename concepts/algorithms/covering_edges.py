@@ -5,29 +5,23 @@ Concept data analysis: Theory and applications.
 John Wiley & Sons, 2004.
 """
 
+from collections import Counter
+
 from .fcbo import fast_generate_from
 
 
 def lattice(context):
-    edges = covering_edges(fast_generate_from(context), context)
+    concepts = tuple(fast_generate_from(context))
+    edges = covering_edges(concepts, context)
 
-    mapping = {}
+    mapping = dict([(extent, (extent, intent, [], [])) for extent, intent in concepts])
 
     for concept, lower_neighbor in edges:
-        extent, intent = concept
-        lower_extent, lower_intent = lower_neighbor
+        extent, _ = concept
+        lower_extent, _ = lower_neighbor
 
-        if extent in mapping:
-            _, _, _, lower = mapping[extent]
-            lower.append(lower_extent)
-        else:
-            mapping[extent] = (extent, intent, [], [lower_extent])
-
-        if lower_extent in mapping:
-            _, _, upper, _ = mapping[lower_extent]
-            upper.append(extent)
-        else:
-            mapping[lower_extent] = (lower_extent, lower_intent, [extent], [])
+        mapping[extent][3].append(lower_extent)
+        mapping[lower_extent][2].append(extent)
 
     return mapping.values()
 
@@ -97,7 +91,7 @@ def covering_edges(concept_list, context):
     concept_index = dict(concept_list)
 
     for extent, intent in concept_index.items():
-        candidate_counter = dict.fromkeys(concept_index, 0)
+        candidate_counter = Counter()
 
         property_candidates = Properties.fromint(Properties.supremum & ~intent)
 
