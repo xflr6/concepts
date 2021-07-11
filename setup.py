@@ -16,7 +16,7 @@ setup(
         'Documentation': 'https://concepts.readthedocs.io',
         'Changelog': 'https://concepts.readthedocs.io/en/latest/changelog.html',
         'Issue Tracker': 'https://github.com/xflr6/concepts/issues',
-        'CI': 'https://travis-ci.org/xflr6/concepts',
+        'CI': 'https://github.com/xflr6/concepts/actions',
         'Coverage': 'https://codecov.io/gh/xflr6/concepts',
     },
     packages=find_packages(),
