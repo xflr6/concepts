@@ -12,6 +12,12 @@ jobs:
           - python-version: 3.9
             args: --run-slow
             os: ubuntu-latest
+          - python-version: 3.9
+            args: --run-slow
+            os: windows-latest
+          - python-version: 3.9
+            args: --run-slow
+            os: macos-latest
           - python-version: 3.8
             args: ""
             os: ubuntu-latest
