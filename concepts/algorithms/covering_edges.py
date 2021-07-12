@@ -104,7 +104,7 @@ def lattice(context, n_of_processes=1):
     else:
         batches = [concepts[i::n_of_processes] for i in range(0, n_of_processes)]
 
-        with multiprocessing.Pool(4) as p:
+        with multiprocessing.Pool(n_of_processes) as p:
             results = [p.apply_async(_return_edges, (batch, context, concept_index)) for batch in batches]
             edges = itertools.chain.from_iterable([result.get() for result in results])
 
