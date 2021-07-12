@@ -100,13 +100,13 @@ def lattice(context, n_of_processes=1):
     concept_index = dict(concepts)
 
     if n_of_processes == 1:
-        edges = covering_edges(concepts, concept_index, context)
+        edges = covering_edges(concepts, context, concept_index=concept_index)
     else:
         batches = [concepts[i::n_of_processes] for i in range(0, n_of_processes)]
 
         with multiprocessing.Pool(4) as p:
-            results = [p.apply_async(_return_edges, (batch, concept_index, context)) for batch in batches]
-            edges = itertools.chain([result.get()[0] for result in results])
+            results = [p.apply_async(_return_edges, (batch, context, concept_index)) for batch in batches]
+            edges = itertools.chain.from_iterable([result.get() for result in results])
 
     mapping = dict([(extent, (extent, intent, [], [])) for extent, intent in concepts])
 
