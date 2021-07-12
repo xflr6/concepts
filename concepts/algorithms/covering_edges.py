@@ -5,28 +5,14 @@ Concept data analysis: Theory and applications.
 John Wiley & Sons, 2004.
 """
 
-from collections import Counter
+import multiprocessing
+import itertools
+import collections
 
 from .fcbo import fast_generate_from
 
 
-def lattice(context):
-    concepts = tuple(fast_generate_from(context))
-    edges = covering_edges(concepts, context)
-
-    mapping = dict([(extent, (extent, intent, [], [])) for extent, intent in concepts])
-
-    for concept, lower_neighbor in edges:
-        extent, _ = concept
-        lower_extent, _ = lower_neighbor
-
-        mapping[extent][3].append(lower_extent)
-        mapping[lower_extent][2].append(extent)
-
-    return mapping.values()
-
-
-def covering_edges(concept_list, context):
+def covering_edges(concept_list, context, concept_index=None):
     """Yield mapping edge as ``((extent, intent), (lower_extent, lower_intent))``
     pairs (concept and it's lower neighbor) from ``context`` and ``concept_list``
 
@@ -88,10 +74,11 @@ def covering_edges(concept_list, context):
     Objects = context._Objects
     Properties = context._Properties
 
-    concept_index = dict(concept_list)
+    if not concept_index:
+        concept_index = dict(concept_list)
 
-    for extent, intent in concept_index.items():
-        candidate_counter = Counter()
+    for extent, intent in concept_list:
+        candidate_counter = collections.Counter()
 
         property_candidates = Properties.fromint(Properties.supremum & ~intent)
 
@@ -102,3 +89,32 @@ def covering_edges(concept_list, context):
 
             if (intent_candidate.count() - intent.count()) == candidate_counter[extent_candidate]:
                 yield (extent, intent), (extent_candidate, intent_candidate)
+
+
+def _return_edges(batch, concept_index, context):
+    return list(covering_edges(batch, concept_index, context))
+
+
+def lattice(context, n_of_processes=1):
+    concepts = tuple(fast_generate_from(context))
+    concept_index = dict(concepts)
+
+    if n_of_processes == 1:
+        edges = covering_edges(concepts, concept_index, context)
+    else:
+        batches = [concepts[i::n_of_processes] for i in range(0, n_of_processes)]
+
+        with multiprocessing.Pool(4) as p:
+            results = [p.apply_async(_return_edges, (batch, concept_index, context)) for batch in batches]
+            edges = itertools.chain([result.get()[0] for result in results])
+
+    mapping = dict([(extent, (extent, intent, [], [])) for extent, intent in concepts])
+
+    for concept, lower_neighbor in edges:
+        extent, _ = concept
+        lower_extent, _ = lower_neighbor
+
+        mapping[extent][3].append(lower_extent)
+        mapping[lower_extent][2].append(extent)
+
+    return mapping.values()
