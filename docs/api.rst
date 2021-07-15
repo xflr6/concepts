@@ -42,7 +42,7 @@ Context
         __getitem__,
         __eq__, __ne__,
         tostring, tofile, todict, tojson, crc32,
-        objects, properties, bools, shape,
+        objects, properties, bools, shape, fill_ratio,
         definition, relations, lattice
 
 
@@ -53,7 +53,7 @@ Definition
     :members:
         fromfile, copy,
         __iter__, __getitem__,
-        objects, properties, bools, shape,
+        objects, properties, bools, shape, fill_ratio,
         tostring, crc32,
         take, transposed, inverted,
         rename_object, rename_property,
