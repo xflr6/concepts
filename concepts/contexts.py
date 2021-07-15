@@ -728,7 +728,7 @@ class Context(ExportableMixin, LatticeMixin,
             >>> context.fill_ratio
             0.5
         """
-        return sum(intent.count() for intent in self._intents) / (self.shape.objects * self.shape.properties)
+        return sum(intent.count() for intent in self._intents) / self.shape.size
 
     def definition(self) -> 'definitions.Definition':
         """Return ``(objects, properties, bools)`` triple as mutable object.

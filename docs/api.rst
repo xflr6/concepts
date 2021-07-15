@@ -12,6 +12,7 @@ API Reference
     ~concepts.make_context
     ~concepts.Context
     ~concepts.Definition
+    ~concepts._common.Shape
     concepts.lattices.Lattice
     concepts.lattices.Concept
 
@@ -65,6 +66,16 @@ Definition
         set_object, set_property,
         union_update, intersection_update,
         union, intersection
+
+
+Shape
+-----
+
+.. autoclass:: concepts.Shape
+    :members:
+        objects, properties,
+        rows, columns,
+        size
 
 
 Lattice

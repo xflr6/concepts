@@ -916,5 +916,4 @@ class Definition(MutableMixin, TransformableMixin, FormattingMixin, Triple):
             >>> definition.fill_ratio
             0.75
         """
-        shape = self.shape
-        return len(self._pairs) / (shape.objects * shape.properties)
+        return len(self._pairs) / self.shape.size

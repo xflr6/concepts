@@ -40,10 +40,10 @@ class Shape(typing.NamedTuple):
         """The number of (object) rows.
 
         Example:
-        >>> import concepts
-        >>> c = concepts.Context.fromstring(concepts.EXAMPLE)
-        >>> c.shape.rows
-        6
+            >>> import concepts
+            >>> c = concepts.Context.fromstring(concepts.EXAMPLE)
+            >>> c.shape.rows
+            6
         """
         return self.objects
 
@@ -52,12 +52,25 @@ class Shape(typing.NamedTuple):
         """The number of (property) columns.
 
         Example:
-        >>> import concepts
-        >>> c = concepts.Context.fromstring(concepts.EXAMPLE)
-        >>> c.shape.columns
-        10
+            >>> import concepts
+            >>> c = concepts.Context.fromstring(concepts.EXAMPLE)
+            >>> c.shape.columns
+            10
         """
         return self.properties
+
+    @property
+    def size(self) -> int:
+        """The number of booleans (``objects * properties``).
+
+        Example:
+            >>> import concepts
+            >>> c = concepts.Context.fromstring(concepts.EXAMPLE)
+            >>> c.shape.size
+            60
+            
+        """
+        return self.objects * self.properties
 
 
 class Concept(typing.NamedTuple):
