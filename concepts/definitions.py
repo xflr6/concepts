@@ -1,5 +1,6 @@
 """Mutable formal context creation arguments (object, properties, bools) with set-like operations."""
 
+import fractions
 import typing
 
 from . import _common
@@ -900,7 +901,7 @@ class Definition(MutableMixin, TransformableMixin, FormattingMixin, Triple):
         return _common.Shape._from_pair(self.objects, self.properties)
 
     @property
-    def fill_ratio(self) -> float:
+    def fill_ratio(self) -> fractions.Fraction:
         """The fill ratio (density of ``True`` values) of the definition.
 
         Fill ratio 0.25 means that 25% of the values in ``self.bools`` are ``True``.
@@ -913,7 +914,9 @@ class Definition(MutableMixin, TransformableMixin, FormattingMixin, Triple):
             >>> definition = concepts.Definition(['King Arthur', 'grail'],
             ...                                  ['holy', 'historic'],
             ...                                  [(False, True), (True, True)])
-            >>> definition.fill_ratio
+            >>> float(definition.fill_ratio)
             0.75
+            >>> definition.fill_ratio
+            Fraction(3, 4)
         """
-        return len(self._pairs) / self.shape.size
+        return fractions.Fraction(len(self._pairs), self.shape.size)

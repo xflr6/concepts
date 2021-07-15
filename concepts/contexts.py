@@ -1,5 +1,6 @@
 """Formal Concept Analysis contexts."""
 
+import fractions
 import typing
 
 from . import _common
@@ -713,7 +714,7 @@ class Context(ExportableMixin, LatticeMixin,
         return _common.Shape._from_pair(self.objects, self.properties)
 
     @tools.lazyproperty
-    def fill_ratio(self) -> float:
+    def fill_ratio(self) -> fractions.Fraction:
         """The fill ratio (density of ``True`` values) of the context.
 
         Fill ratio 0.25 means that 25% of the values in ``self.bools``
@@ -725,10 +726,13 @@ class Context(ExportableMixin, LatticeMixin,
         Example:
             >>> import concepts
             >>> context = concepts.Context.fromstring(concepts.EXAMPLE)
-            >>> context.fill_ratio
+            >>> float(context.fill_ratio)
             0.5
+            >>> context.fill_ratio
+            Fraction(1, 2)
         """
-        return sum(intent.count() for intent in self._intents) / self.shape.size
+        n_true = sum(intent.count() for intent in self._intents)
+        return fractions.Fraction(n_true, self.shape.size)
 
     def definition(self) -> 'definitions.Definition':
         """Return ``(objects, properties, bools)`` triple as mutable object.
