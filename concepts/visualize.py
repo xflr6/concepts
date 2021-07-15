@@ -50,11 +50,16 @@ def lattice(lattice, filename, directory, render, view,
     return dot
 
 
-def render_all(filepattern='*.cxt', encoding=None,
+def render_all(filepattern='*.cxt', *, exclude=(),
+               encoding: str = None,
                directory=None, out_format=None):  # pragma: no cover
     import concepts
 
     for cxtfile in glob.iglob(filepattern):
+        print(cxtfile)
+        if os.path.basename(cxtfile) in exclude:
+            print(f'  exclude match: skip')
+            continue
         c = concepts.load(cxtfile, encoding=encoding)
         l = c.lattice
 
