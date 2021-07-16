@@ -30,7 +30,10 @@ jobs:
           - python-version: 3.6
             args: ""
             os: ubuntu-latest
-          - python-version: pypy3
+          - python-version: pypy-3.7
+            args: ""
+            os: ubuntu-latest
+          - python-version: pypy-3.6
             args: ""
             os: ubuntu-latest
     steps:
