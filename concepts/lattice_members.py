@@ -27,33 +27,7 @@ class Pair:
         self._intent = intent
         self.upper_neighbors = upper  #: The directly implied concepts.
         self.lower_neighbors = lower  #: The directly subsumed concepts.
-
-    def __str__(self) -> str:
-        """
-
-        Example:
-            >>> import concepts
-            >>> lattice = concepts.Context.fromstring(concepts.EXAMPLE).lattice
-            >>> print(lattice['+1',])
-            {1sg, 1pl} <-> [+1 -2 -3] <=> +1
-        """
-        extent = ', '.join(self._extent.members())
-        intent = ' '.join(self._intent.members())
-        objects = ' <=> {}'.format(' '.join(self.objects)) if self.objects else ''
-        properties = ' <=> {}'.format(' '.join(self.properties)) if self.properties else ''
-        return f'{{{extent}}} <-> [{intent}]{objects}{properties}'
-
-    def __repr__(self) -> str:
-        """
-
-        Example:
-            >>> import concepts
-            >>> lattice = concepts.Context.fromstring(concepts.EXAMPLE).lattice
-            >>> lattice['+1',]
-            <Concept {1sg, 1pl} <-> [+1 -2 -3] <=> +1>
-        """
-        return f'<{self.__class__.__name__} {self}>'
-
+ 
     def _eq(self, other):
         if not isinstance(other, Concept):
             return NotImplemented
@@ -108,6 +82,38 @@ class Pair:
             ('+1', '-2', '-3')
         """
         return self._intent.members()
+
+
+class FormattingMixin:
+
+    def __str__(self) -> str:
+        """
+
+        Example:
+            >>> import concepts
+            >>> lattice = concepts.Context.fromstring(concepts.EXAMPLE).lattice
+            >>> print(lattice['+1',])
+            {1sg, 1pl} <-> [+1 -2 -3] <=> +1
+        """
+        extent = ', '.join(self._extent.members())
+        intent = ' '.join(self._intent.members())
+        objects = ' <=> {}'.format(' '.join(self.objects)) if self.objects else ''
+        properties = ' <=> {}'.format(' '.join(self.properties)) if self.properties else ''
+        return f'{{{extent}}} <-> [{intent}]{objects}{properties}'
+
+    def __repr__(self) -> str:
+        """
+
+        Example:
+            >>> import concepts
+            >>> lattice = concepts.Context.fromstring(concepts.EXAMPLE).lattice
+            >>> lattice['+1',]
+            <Concept {1sg, 1pl} <-> [+1 -2 -3] <=> +1>
+        """
+        return f'<{self.__class__.__name__} {self}>'
+
+
+class NavigateableMixin:
 
     def upset(self,
               _sortkey=operator.attrgetter('index'),
@@ -366,7 +372,8 @@ class RelationsMixin:
                 and (self._extent | other._extent) != self.lattice.supremum._extent)
 
 
-class Concept(RelationsMixin, TransformableMixin, OrderableMixin, Pair):
+class Concept(RelationsMixin, TransformableMixin, OrderableMixin,
+              NavigateableMixin, FormattingMixin, Pair):
     """Formal concept as pair of extent and intent.
 
     Example:
