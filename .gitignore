@@ -10,13 +10,14 @@ __pycache__/
 /.eggs/
 
 /.venv/
+/.pytest_cache/
+/.tox/
+/htmlcov/
 /.coverage
 /.coverage.*
-/htmlcov/
-/.tox/
+/test-log.txt
 
 .ipynb_checkpoints/
-.pytest_cache/
 
 Thumbs.db
 
