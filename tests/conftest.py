@@ -14,8 +14,6 @@ TEST_EXAMPLES = pathlib.Path('examples')
 
 TEST_OUTPUT = pathlib.Path('test-output')
 
-ENCODING = 'utf-8'
-
 
 if not TEST_OUTPUT.exists():
     TEST_OUTPUT.mkdir()
@@ -72,7 +70,7 @@ def lattice(context):
 def bob_ross(test_examples, filename='bob-ross.cxt'):
     path = test_examples / filename
 
-    context = concepts.load_cxt(str(path), encoding=ENCODING)
+    context = concepts.load_cxt(str(path), encoding='utf-8')
 
     assert context.shape == (403, 67)
 
