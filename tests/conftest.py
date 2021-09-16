@@ -14,6 +14,8 @@ TEST_EXAMPLES = pathlib.Path('examples')
 
 TEST_OUTPUT = pathlib.Path('test-output')
 
+ENCODING = 'utf-8'
+
 
 if not TEST_OUTPUT.exists():
     TEST_OUTPUT.mkdir()
@@ -64,6 +66,28 @@ def lattice(context):
     context = concepts.Context(context.objects, context.properties,
                                context.bools)
     return context.lattice
+
+
+@pytest.fixture(scope='session')
+def bob_ross(test_examples, filename='bob-ross.cxt'):
+    path = test_examples / filename
+
+    context = concepts.load_cxt(str(path), encoding=ENCODING)
+
+    assert context.shape == (403, 67)
+
+    return context
+
+
+@pytest.fixture(scope='session')
+def mushroom(test_examples, filename='mushroom.cxt'):
+    path = test_examples / filename
+
+    context = concepts.load_cxt(str(path))
+
+    assert context.shape == (8_124, 119)
+
+    return context
 
 
 @pytest.fixture(params=['str', 'bytes', 'pathlike', 'fileobj'])
