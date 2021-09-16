@@ -8,7 +8,7 @@ from .lindig import lattice, neighbors
 
 __all__ = ['iterunion',
            'fast_generate_from', 'fcbo_dual',
-           'lattice', 'neighbors'
+           'lattice', 'neighbors',
            'iterconcepts', 'get_concepts']
 
 
