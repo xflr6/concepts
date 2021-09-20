@@ -5,10 +5,11 @@ from .._common import Concept, ConceptList
 from .common import iterunion
 from .fcbo import fast_generate_from, fcbo_dual
 from .lindig import lattice, neighbors
+from .covering_edges import lattice_fcbo
 
 __all__ = ['iterunion',
            'fast_generate_from', 'fcbo_dual',
-           'lattice', 'neighbors',
+           'lattice', 'neighbors', 'lattice_fcbo',
            'iterconcepts', 'get_concepts']
 
 
