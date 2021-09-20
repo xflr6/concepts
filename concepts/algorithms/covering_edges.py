@@ -95,18 +95,18 @@ def _return_edges(batch, concept_index, context):
     return list(covering_edges(batch, concept_index, context))
 
 
-def lattice_fcbo(context, n_of_processes=1):
+def lattice_fcbo(context, process_count=1):
     """Returns tuple of tuples in form of ``(extent, intent, upper, lower)`` in short lexicographic order."""
     concepts = list(fast_generate_from(context))
     concepts.sort(key=lambda concept: concept[0].shortlex())
     concept_index = dict(concepts)
 
-    if n_of_processes == 1:
+    if process_count == 1:
         edges = covering_edges(concepts, context, concept_index=concept_index)
     else:
-        batches = [concepts[i::n_of_processes] for i in range(0, n_of_processes)]
+        batches = [concepts[i::process_count] for i in range(0, process_count)]
 
-        with multiprocessing.Pool(n_of_processes) as p:
+        with multiprocessing.Pool(process_count) as p:
             results = [p.apply_async(_return_edges, (batch, context, concept_index)) for batch in batches]
             edges = itertools.chain.from_iterable([result.get() for result in results])
 
