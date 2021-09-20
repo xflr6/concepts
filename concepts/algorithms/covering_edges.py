@@ -95,8 +95,10 @@ def _return_edges(batch, concept_index, context):
     return list(covering_edges(batch, concept_index, context))
 
 
-def lattice(context, n_of_processes=1):
-    concepts = tuple(fast_generate_from(context))
+def lattice_fcbo(context, n_of_processes=1):
+    """Returns tuple of tuples in form of ``(extent, intent, upper, lower)`` in short lexicographic order."""
+    concepts = list(fast_generate_from(context))
+    concepts.sort(key=lambda concept: concept[0].shortlex())
     concept_index = dict(concepts)
 
     if n_of_processes == 1:
@@ -117,4 +119,4 @@ def lattice(context, n_of_processes=1):
         mapping[extent][3].append(lower_extent)
         mapping[lower_extent][2].append(extent)
 
-    return mapping.values()
+    return tuple(mapping.values())
