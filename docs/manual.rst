@@ -330,7 +330,7 @@ The style of the graph can be customized by modifying the ``graph_attr``,
     ... ''')
     >>> dot = objects.lattice.graphviz()
     >>> dot
-    <graphviz.dot.Digraph object at 0x...>
+    <graphviz.graphs.Digraph object at 0x...>
 
 .. image:: _static/objects.svg
     :align: center
@@ -342,7 +342,7 @@ The style of the graph can be customized by modifying the ``graph_attr``,
     >>> dot.edge_attr = {'dir': 'none', 'labeldistance': '1',
     ...                  'minlen': '1', 'fontsize': '10'}
     >>> dot
-    <graphviz.dot.Digraph object at 0x...>
+    <graphviz.graphs.Digraph object at 0x...>
 
 .. image:: _static/objects_small.svg
     :align: center
@@ -351,7 +351,7 @@ The style of the graph can be customized by modifying the ``graph_attr``,
 
     >>> dot.node_attr['color'] = 'yellow'
     >>> dot
-    <graphviz.dot.Digraph object at 0x...>
+    <graphviz.graphs.Digraph object at 0x...>
 
 .. image:: _static/objects_yellow.svg
     :align: center
@@ -361,7 +361,7 @@ The style of the graph can be customized by modifying the ``graph_attr``,
     >>> del dot.node_attr['color']
     >>> dot.edge_attr['fontsize'] = '5'
     >>> dot
-    <graphviz.dot.Digraph object at 0x...>
+    <graphviz.graphs.Digraph object at 0x...>
 
 .. image:: _static/objects_fontsize.svg
     :align: center
@@ -370,7 +370,7 @@ The style of the graph can be customized by modifying the ``graph_attr``,
 
     >>> dot.edge_attr.update(fontsize='10', minlen='2')
     >>> dot
-    <graphviz.dot.Digraph object at 0x...>
+    <graphviz.graphs.Digraph object at 0x...>
 
 .. image:: _static/objects_minlen.svg
     :align: center

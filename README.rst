@@ -104,7 +104,7 @@ directly render it and display the resulting PDF):
 .. code:: python
 
     >>> context.lattice.graphviz()  # doctest: +ELLIPSIS
-    <graphviz.dot.Digraph object at 0x...>
+    <graphviz.graphs.Digraph object at 0x...>
 
 .. image:: https://raw.github.com/xflr6/concepts/master/docs/holy-grail.png
     :align: center
