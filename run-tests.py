@@ -17,7 +17,7 @@ ARGS = [#'--run-slow',
         #'--pdb',
         #'--exitfirst',  # a.k.a. -x
         #'-W', 'error',
-        ]
+       ]
 
 if platform.system() == 'Windows'and'idlelib' in sys.modules:
     ARGS += ['--capture=sys', '--color=no']
