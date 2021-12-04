@@ -14,7 +14,7 @@ NAME_GETTERS = [lambda c: f'c{c.index:d}']
 
 def lattice(lattice, filename, directory, render, view,
             make_object_label=' '.join, make_property_label=' '.join,
-            **kwargs):
+            **kwargs) -> graphviz.Digraph:
     """Return graphviz source for visualizing the lattice graph."""
     dot = graphviz.Digraph(name=lattice.__class__.__name__,
                            comment=repr(lattice),
@@ -52,7 +52,7 @@ def lattice(lattice, filename, directory, render, view,
 
 def render_all(filepattern='*.cxt', *, exclude=(),
                encoding: str = None,
-               directory=None, out_format=None):  # pragma: no cover
+               directory=None, out_format=None) -> None:  # pragma: no cover
     import concepts
 
     for cxtfile in glob.iglob(filepattern):

@@ -4,6 +4,8 @@ import heapq
 import operator
 import typing
 
+import graphviz
+
 from . import algorithms
 from . import contexts
 from .lattice_members import Concept, Infimum, Atom, Supremum
@@ -475,7 +477,7 @@ class VisualizableMixin:
                  view: bool = False,
                  make_object_label=' '.join,
                  make_property_label=' '.join,
-                 **kwargs) -> 'graphviz.Digraph':
+                 **kwargs) -> graphviz.Digraph:
         """Return DOT source for visualizing the lattice graph.
 
         Args:
