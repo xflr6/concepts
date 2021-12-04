@@ -1,9 +1,14 @@
 #!/usr/bin/env python3
 
+"""Run the tests with https://pytest.org."""
+
+import pathlib
 import platform
 import sys
 
 import pytest
+
+SELF = pathlib.Path(__file__)
 
 ARGS = [#'--run-slow',
         #'--collect-only',
@@ -14,11 +19,12 @@ ARGS = [#'--run-slow',
         #'-W', 'error',
         ]
 
-if platform.system() == 'Windows':
-    if 'idlelib' in sys.modules:
-        ARGS += ['--capture=sys', '--color=no']
+if platform.system() == 'Windows'and'idlelib' in sys.modules:
+    ARGS += ['--capture=sys', '--color=no']
 
-args = sys.argv[1:] + ARGS
+
+print('run', [SELF.name] + sys.argv[1:])
+args = ARGS + sys.argv[1:]
 
 print(f'pytest.main({args!r})')
 sys.exit(pytest.main(args))
