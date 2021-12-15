@@ -19,7 +19,7 @@ ARGS = [#'--run-slow',
         #'-W', 'error',
        ]
 
-if platform.system() == 'Windows'and'idlelib' in sys.modules:
+if platform.system() == 'Windows' and 'idlelib' in sys.modules:
     ARGS += ['--capture=sys', '--color=no']
 
 

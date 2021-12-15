@@ -1,4 +1,4 @@
-# tools.py - generic helpers
+"""Generic re-useable helpers."""
 
 import collections.abc
 import csv

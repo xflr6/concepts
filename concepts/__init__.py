@@ -7,7 +7,8 @@ from ._example import EXAMPLE
 from .contexts import Context
 from .definitions import Definition
 
-__all__ = ['EXAMPLE', 'Context', 'Definition', 'Shape',
+__all__ = ['EXAMPLE',
+           'Context', 'Definition', 'Shape',
            'load', 'load_cxt', 'load_csv',
            'make_context']
 

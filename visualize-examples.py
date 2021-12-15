@@ -12,6 +12,7 @@ KWARGS = {'exclude': {'bob-ross.cxt',
           'directory': 'visualize-output',
           'out_format': 'pdf'}
 
+
 concepts.visualize.render_all('examples/*.cxt', **KWARGS)
 
 concepts.visualize.render_all('examples/*.csv', **KWARGS)
