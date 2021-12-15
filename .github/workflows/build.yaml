@@ -45,10 +45,10 @@ jobs:
           python-version: ${{ matrix.python-version }}
       - name: Pip install dependencies
         run: |
-          echo ::group::Run python -m pip install --upgrade pip setuptools wheel
+          echo "::group::Run python -m pip install --upgrade pip setuptools wheel"
           python -m pip install --upgrade pip setuptools wheel
           echo ::endgroup::
-          echo ::group::Run pip install -e .[test]
+          echo "::group::Run pip install -e .[test]"
           pip install -e .[test]
           echo ::endgroup::
       - name: Run tests with ${{ matrix.args }}
