@@ -53,12 +53,12 @@ SERIALIZED_NOLATTICE = {'objects': SERIALIZED['objects'],
                         'context': list(SERIALIZED['context'])}
 
 
-@pytest.mark.parametrize('source, filename, includes_lattice', [
-    (repr(SERIALIZED), None, True),
-    (repr(SERIALIZED_NOLATTICE), None, False),
-    (repr(SERIALIZED), 'example-serialized-lattice.py', True),
-    (repr(SERIALIZED_NOLATTICE), 'example-serialized-lattice.py', False),
-])
+@pytest.mark.parametrize(
+    'source, filename, includes_lattice',
+    [(repr(SERIALIZED), None, True),
+     (repr(SERIALIZED_NOLATTICE), None, False),
+     (repr(SERIALIZED), 'example-serialized-lattice.py', True),
+     (repr(SERIALIZED_NOLATTICE), 'example-serialized-lattice.py', False)])
 def test_fromstring_serialized(tmp_path, source, filename, includes_lattice):
     if filename is None:
         context = Context.fromstring(source, frmat='python-literal')
@@ -248,8 +248,9 @@ def test_dict_roundtrip(context, ignore_lattice):
 
 
 @pytest.mark.parametrize('to_file', [False, True])
-@pytest.mark.parametrize('with_lattice, expected_doc, expected_str', [
-    (False, SERIALIZED_NOLATTICE,
+@pytest.mark.parametrize(
+    'with_lattice, expected_doc, expected_str',
+    [(False, SERIALIZED_NOLATTICE,
      '''\
 {
   'objects': (
@@ -268,7 +269,7 @@ def test_dict_roundtrip(context, ignore_lattice):
   ],
 }
 '''),
-    (True, SERIALIZED,
+     (True, SERIALIZED,
      '''\
 {
   'objects': (
