@@ -41,6 +41,14 @@ class LazyPair:
 
         return self._lower_neighbors
     
+    @property
+    def extent(self) -> typing.Tuple[str, ...]:
+        return self._extent.members()
+
+    @property
+    def intent(self) -> typing.Tuple[str, ...]:
+        return self._intent.members()
+    
     def _eq(self, other):
         if not isinstance(other, LazyConcept):
             return NotImplemented
