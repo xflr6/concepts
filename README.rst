@@ -1,7 +1,7 @@
 Concepts
 ========
 
-|PyPI version| |License| |Supported Python| |Format|
+|PyPI version| |License| |Supported Python| |Wheel|
 
 |Build| |Codecov| |Readthedocs-stable| |Readthedocs-latest|
 
@@ -177,14 +177,14 @@ Concepts is distributed under the `MIT license`_.
     :target: https://pypi.org/project/concepts/
     :alt: Latest PyPI Version
 .. |License| image:: https://img.shields.io/pypi/l/concepts.svg
-    :target: https://pypi.org/project/concepts/
+    :target: https://github.com/xflr6/concepts/blob/master/LICENSE.txt
     :alt: License
 .. |Supported Python| image:: https://img.shields.io/pypi/pyversions/concepts.svg
     :target: https://pypi.org/project/concepts/
     :alt: Supported Python Versions
-.. |Format| image:: https://img.shields.io/pypi/format/concepts.svg
-    :target: https://pypi.org/project/concepts/
-    :alt: Format
+.. |Wheel| image:: https://img.shields.io/pypi/wheel/concepts.svg
+    :target: https://pypi.org/project/concepts/#files
+    :alt: Wheel format
 
 .. |Build| image:: https://github.com/xflr6/concepts/actions/workflows/build.yaml/badge.svg?branch=master
     :target: https://github.com/xflr6/concepts/actions/workflows/build.yaml?query=branch%3Amaster
