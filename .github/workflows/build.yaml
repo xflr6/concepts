@@ -47,10 +47,10 @@ jobs:
         run: |
           echo "::group::Run python -m pip install --upgrade pip setuptools wheel"
           python -m pip install --upgrade pip setuptools wheel
-          echo ::endgroup::
+          echo "::endgroup::"
           echo "::group::Run pip install -e .[test]"
           pip install -e .[test]
-          echo ::endgroup::
+          echo "::endgroup::"
       - name: Run tests with ${{ matrix.args }}
         run: python run-tests.py ${{ matrix.args }}
       - name: Upload test coverage
