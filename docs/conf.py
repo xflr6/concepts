@@ -21,7 +21,7 @@ import concepts
 # -- Project information -----------------------------------------------------
 
 project = 'concepts'
-copyright = '2013-2021, Sebastian Bank'
+copyright = '2013-2022, Sebastian Bank'
 author = 'Sebastian Bank'
 
 # The short X.Y version

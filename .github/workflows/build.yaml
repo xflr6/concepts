@@ -27,13 +27,7 @@ jobs:
           - python-version: "3.7"
             args: ""
             os: ubuntu-latest
-          - python-version: "3.6"
-            args: ""
-            os: ubuntu-latest
           - python-version: pypy-3.7
-            args: ""
-            os: ubuntu-latest
-          - python-version: pypy-3.6
             args: ""
             os: ubuntu-latest
     steps:
