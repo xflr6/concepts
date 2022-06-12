@@ -16,7 +16,7 @@ command:
     $ pip install concepts
 
 For a system-wide install, this typically requires administrator access. For an
-isolated installation, you can run the same inside a :mod:`py3:venv` or a 
+isolated installation, you can run the same inside a :mod:`py:venv` or a 
 virtualenv_
 
 The pip-command will automatically install the (pure-Python) bitsets_ and
