@@ -1,5 +1,5 @@
 # development environment: --editable install in development mode (includes all extras_require)
 -e .[dev,test,docs]
 # exact dependency versions used in development
-bitsets==0.8.3
+bitsets==0.8.4
 graphviz==0.20
