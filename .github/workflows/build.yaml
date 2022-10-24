@@ -38,9 +38,9 @@ jobs:
             os: ubuntu-latest
     steps:
       - name: Checkout repo
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: Setup Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python-version }}
       - name: Pip install dependencies
@@ -54,4 +54,4 @@ jobs:
       - name: Run tests with ${{ matrix.args }}
         run: python run-tests.py ${{ matrix.args }}
       - name: Upload test coverage
-        uses: codecov/codecov-action@v1
+        uses: codecov/codecov-action@v3
