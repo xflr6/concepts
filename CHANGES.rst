@@ -7,7 +7,7 @@ Version 0.10 (in development)
 
 Drop Python 2 support.
 
-Drop Python 3.5 and 3.6 support and tag Python 3.9 and 3.10 support.
+Drop Python 3.5 and 3.6 support and tag Python 3.9, 3.10, and 3.11 support.
 
 Add ``shape`` property to ``Context```and ``Definition`` returning a named tuple of
 ``(len(objects), len(properties))`` (PR Tomáš Mikula).
