@@ -31,7 +31,7 @@ Links
 Installation
 ------------
 
-This package runs under Python 3.7+, use pip_ to install:
+This package runs under Python 3.8+, use pip_ to install:
 
 .. code:: bash
 

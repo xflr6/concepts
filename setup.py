@@ -19,7 +19,7 @@ setup(
     },
     packages=find_packages(),
     platforms='any',
-    python_requires='>=3.7',
+    python_requires='>=3.8',
     install_requires=[
         'bitsets~=0.7',
         'graphviz~=0.7',
@@ -30,6 +30,7 @@ setup(
         'docs': ['sphinx>=5', 'sphinx-autodoc-typehints', 'sphinx-rtd-theme'],
     },
     long_description=pathlib.Path('README.rst').read_text(encoding='utf-8'),
+    long_description_content_type='text/x-rst',
     classifiers=[
         'Development Status :: 4 - Beta',
         'Intended Audience :: Developers',
@@ -37,7 +38,6 @@ setup(
         'License :: OSI Approved :: MIT License',
         'Operating System :: OS Independent',
         'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.7',
         'Programming Language :: Python :: 3.8',
         'Programming Language :: Python :: 3.9',
         'Programming Language :: Python :: 3.10',
