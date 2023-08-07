@@ -27,7 +27,7 @@ setup(
     extras_require={
         'dev': ['tox>=3', 'flake8', 'pep8-naming', 'wheel', 'twine'],
         'test': ['pytest>=7', 'pytest-cov'],
-        'docs': ['sphinx>=5', 'sphinx-autodoc-typehints', 'sphinx-rtd-theme'],
+        'docs': ['sphinx>=5,<7', 'sphinx-autodoc-typehints', 'sphinx-rtd-theme'],
     },
     long_description=pathlib.Path('README.rst').read_text(encoding='utf-8'),
     long_description_content_type='text/x-rst',
