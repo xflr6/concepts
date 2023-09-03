@@ -7,6 +7,8 @@ __all__ = ['Concept',
            'Infimum', 'Atom', 'Supremum']
 
 from . import algorithms
+from . import matrices
+from . import tools
 
 
 class Pair:
@@ -82,7 +84,35 @@ class Pair:
             ('+1', '-2', '-3')
         """
         return self._intent.members()
+    
+    @tools.lazyproperty
+    def objects_vectors(self) -> typing.Tuple[matrices.Vector, ...]:
+        """The objects vectors which corresponds to attributes from the intent.
+        
+        Example:
+            >>> import concepts
+            >>> lattice = concepts.Context.fromstring(concepts.EXAMPLE).lattice
+            >>> lattice['+1',].objects_vectors
+            (Objects('110000'), Objects('110011'), Objects('111100'))
+        """
+        extents = self.lattice._context._extents
 
+        return tuple(map(extents.__getitem__, self._intent.iter_set()))
+
+    @tools.lazyproperty
+    def properties_vectors(self) -> typing.Tuple[matrices.Vector, ...]:
+        """The properties vectors which corresponds to objects from the extent.
+        
+        Example:
+            >>> import concepts
+            >>> lattice = concepts.Context.fromstring(concepts.EXAMPLE).lattice
+            >>> lattice['+1',].properties_vectors
+            (Properties('1001011001'), Properties('1001010110'))
+        """
+        intents = self.lattice._context._intents
+
+        return tuple(map(intents.__getitem__, self._extent.iter_set()))
+    
 
 class FormattingMixin:
 
