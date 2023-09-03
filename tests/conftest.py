@@ -66,6 +66,28 @@ def lattice(context):
     return context.lattice
 
 
+@pytest.fixture(scope='session')
+def bob_ross(test_examples, filename='bob-ross.cxt'):
+    path = test_examples / filename
+
+    context = concepts.load_cxt(str(path), encoding='utf-8')
+
+    assert context.shape == (403, 67)
+
+    return context
+
+
+@pytest.fixture(scope='session')
+def mushroom(test_examples, filename='mushroom.cxt'):
+    path = test_examples / filename
+
+    context = concepts.load_cxt(str(path))
+
+    assert context.shape == (8_124, 119)
+
+    return context
+
+
 @pytest.fixture(params=['str', 'bytes', 'pathlike', 'fileobj'])
 def path_or_fileobj(request, tmp_path, filename='context.json'):
     if request.param == 'str':

@@ -465,13 +465,37 @@ class MinimizeMixin:
 
 
 class LatticeMixin:
+    algorithm_for_lattice: str = 'lindig'
+    process_count: int = 1
+    _parallel_algorithms: list = ['fcbo']
+    _single_thread_algorithms: list = ['lindig']
+
+    def __init__(self,
+                 algorithm_for_lattice: typing.Optional[str] = None,
+                 process_count: typing.Optional[int] = None) -> None:
+
+        if algorithm_for_lattice is not None:
+            if algorithm_for_lattice not in self._parallel_algorithms + self._single_thread_algorithms:
+                raise NotImplementedError
+            self.algorithm_for_lattice = algorithm_for_lattice
+        
+        if process_count is not None:
+            if self.algorithm_for_lattice not in self._parallel_algorithms:
+                raise NotImplementedError
+            self.process_count = process_count
 
     def _lattice(self, infimum=()):
         """Yield ``(extent, intent, upper, lower)`` in short lexicographic order.
 
         cf. C. Lindig. 2000. Fast Concept Analysis.
         """
-        return algorithms.lattice(self._Objects, infimum=infimum)
+
+        if self.algorithm_for_lattice == 'lindig':
+            return algorithms.lattice(self._Objects, infimum=infimum)
+        elif self.algorithm_for_lattice == 'fcbo':
+            return algorithms.lattice_fcbo(self, process_count=self.process_count)
+        else:
+            raise NotImplementedError
 
     def _neighbors(self, objects):
         """Yield upper neighbors from extent (in colex order?).
@@ -630,23 +654,36 @@ class ExportableMixin:
 class Context(ExportableMixin, LatticeMixin,
               MinimizeMixin, PrimeMixin,
               ComparableMixin, FormattingMixin, Data):
-    """Formal context defining a relation between objects and properties.
+    """Formal context defining a relation between objects and properties."""
 
-    Create context from ``objects``, ``properties``, and ``bools`` correspondence.
+    def __init__(self,
+                 objects: typing.Iterable[str],
+                 properties: typing.Iterable[str],
+                 bools: typing.Iterable[typing.Tuple[bool, ...]],
+                 algorithm_for_lattice: typing.Optional[str] = None,
+                 process_count: typing.Optional[int] = None):
+        """Create context from ``objects``, ``properties``, and ``bools`` correspondence.
 
-    Args:
-        objects: Iterable of object label strings.
-        properties: Iterable of property label strings.
-        bools: Iterable of ``len(objects)`` tuples of ``len(properties)`` booleans.
+        Args:
+            objects: Iterable of object label strings.
+            properties: Iterable of property label strings.
+            bools: Iterable of ``len(objects)`` tuples of ``len(properties)`` booleans.
+            algorithm_for_lattice: String specifing name of the default algorithm which is 
+                used to build the lattice.
 
-    Returns:
-        Context: New :class:`.Context` instance.
+        Returns:
+            Context: New :class:`.Context` instance.
 
-    Example:
-        >>> from concepts import Context
-        >>> Context(['man', 'woman'], ['male', 'female'], [(True, False), (False, True)])  # doctest: +ELLIPSIS
-        <Context object mapping 2 objects to 2 properties [47e29724] at 0x...>
-    """
+        Example:
+            >>> from concepts import Context
+            >>> Context(['man', 'woman'],
+            ...         ['male', 'female'],
+            ...         [(True, False), (False, True)])  # doctest: +ELLIPSIS
+            <Context object mapping 2 objects to 2 properties [47e29724] at 0x...>
+        """
+        Data.__init__(self, objects, properties, bools)
+        LatticeMixin.__init__(self, algorithm_for_lattice, process_count)
+    
 
     @property
     def objects(self) -> typing.Tuple[str, ...]:

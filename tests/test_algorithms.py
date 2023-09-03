@@ -11,28 +11,6 @@ BOB_ROSS = pathlib.Path('bob-ross.cxt')
 ENCODING = 'utf-8'
 
 
-@pytest.fixture
-def bob_ross(test_examples, filename=BOB_ROSS):
-    path = test_examples / filename
-
-    context = concepts.load_cxt(str(path), encoding=ENCODING)
-
-    assert context.shape == (403, 67)
-
-    return context
-
-
-@pytest.fixture
-def mushroom(test_examples, filename='mushroom.cxt'):
-    path = test_examples / filename
-
-    context = concepts.load_cxt(str(path))
-
-    assert context.shape == (8_124, 119)
-
-    return context
-
-
 def test_lattice(lattice):
     pairs = [f'{x._extent.bits()} <-> {x._intent.bits()}' for x in lattice]
 
