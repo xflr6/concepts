@@ -29,8 +29,8 @@ def load_dataset(name: str, data_src: typing.Optional[str] = DATASET_SOURCE,
 
     Example:
         >>> import concepts
-        >>> concepts.load_dataset('living_beings_and_water.cxt')
-        <Context object mapping 8 objects to 9 properties [b1e86589] at 0x...>
+        >>> concepts.load_dataset('livingbeings_en')
+        <Context object mapping 8 objects to 9 properties [e32693ba] at 0x...>
     """
 
     url = f"{data_src}/{name}.cxt"
