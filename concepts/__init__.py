@@ -6,10 +6,11 @@ from ._common import Shape, ConceptList
 from ._example import EXAMPLE
 from .contexts import Context
 from .definitions import Definition
+from .examples import load_dataset
 
 __all__ = ['EXAMPLE',
            'Context', 'Definition', 'Shape',
-           'load', 'load_cxt', 'load_csv',
+           'load', 'load_cxt', 'load_csv', load_dataset,
            'make_context']
 
 __title__ = 'concepts'
