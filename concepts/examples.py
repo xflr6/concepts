@@ -11,7 +11,7 @@ DATASET_SOURCE = "https://raw.githubusercontent.com/fcatools/contexts/main/conte
 
 
 # inspired by https://github.com/mwaskom/seaborn/blob/master/seaborn/utils.py#L524
-def load_dataset(name: str, data_src: typing.Optional[str] = DATASET_SOURCE,
+def load_dataset(name: str, *, data_src: typing.Optional[str] = DATASET_SOURCE,
                  encoding: typing.Optional[str] = 'utf-8'):
     """Load an example formal context from the online repository (requires internet).
 
