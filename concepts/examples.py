@@ -2,7 +2,6 @@
 
 import typing
 from urllib.request import urlopen
-import contextlib
 
 from .contexts import Context
 
@@ -38,5 +37,5 @@ def load_dataset(name: str, *, data_src: typing.Optional[str] = DATASET_SOURCE,
 
     # TODO: implement caching here?
 
-    with contextlib.closing(urlopen(url)) as data:
+    with urlopen(url) as data:
         return Context.fromstring(data.read().decode(encoding), 'cxt')
