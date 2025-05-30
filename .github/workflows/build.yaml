@@ -9,31 +9,31 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - python-version: "3.11"
+          - python-version: "3.13"
             args: --run-slow
             os: ubuntu-latest
-          - python-version: "3.11"
+          - python-version: "3.13"
             os: windows-latest
             args: --run-slow
-          - python-version: "3.11"
+          - python-version: "3.13"
             args: --run-slow
             os: macos-latest
+          - python-version: "3.12"
+            args: ""
+            os: ubuntu-latest
+          - python-version: "3.11"
+            args: ""
+            os: ubuntu-latest
           - python-version: "3.10"
             args: ""
             os: ubuntu-latest
           - python-version: "3.9"
             args: ""
             os: ubuntu-latest
-          - python-version: "3.8"
-            args: ""
-            os: ubuntu-latest
           - python-version: pypy-3.10
             args: ""
             os: ubuntu-latest
           - python-version: pypy-3.9
-            args: ""
-            os: ubuntu-latest
-          - python-version: pypy-3.8
             args: ""
             os: ubuntu-latest
     steps:
