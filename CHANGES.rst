@@ -5,6 +5,8 @@ Changelog
 Version 0.10 (in development)
 -----------------------------
 
+Switch to pyprojec.toml.
+
 Drop Python 2 support.
 
 Drop Python 3.5, 3.6, and 3.7 support and tag Python 3.9, 3.10, and 3.11 support.
