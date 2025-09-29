@@ -7,7 +7,7 @@ readme = "README.rst"
 license = "MIT"
 license-files = ["LICENSE.txt"]
 dynamic = ["version"]
-requires-python = ">=3.9"
+requires-python = ">=3.10"
 dependencies = [
   "bitsets~=0.7",
   "graphviz~=0.7",
@@ -18,7 +18,6 @@ classifiers = [
   "Intended Audience :: Science/Research",
   "Operating System :: OS Independent",
   "Programming Language :: Python :: 3",
-  "Programming Language :: Python :: 3.9",
   "Programming Language :: Python :: 3.10",
   "Programming Language :: Python :: 3.11",
   "Programming Language :: Python :: 3.12",
@@ -76,7 +75,7 @@ branch = false
 [tool.tox]
 legacy_tox_ini = """
   [tox]
-  envlist = py{313,312,311,310,39}
+  envlist = py{313,312,311,310}
   skip_missing_interpreters = true
 
   [testenv]

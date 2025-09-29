@@ -7,7 +7,7 @@ User Guide
 Installation
 ------------
 
-:mod:`concepts` is a pure-python package that runs under Python 3.9+.
+:mod:`concepts` is a pure-python package that runs under Python 3.10+.
 It is `available from PyPI`_. To install it with pip_, run the following
 command:
 
