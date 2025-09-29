@@ -38,7 +38,7 @@ Coverage = "https://codecov.io/gh/xflr6/concepts"
 [project.optional-dependencies]
 dev = ["build", "wheel", "twine", "flake8", "Flake8-pyproject", "pep8-naming", "tox>=3"]
 test = ["pytest>=7", "pytest-cov"]
-docs = ["sphinx>=5,<7", "sphinx-autodoc-typehints", "sphinx-rtd-theme"]
+docs = ["sphinx", "sphinx-autodoc-typehints", "sphinx-rtd-theme"]
 
 [build-system]
 requires = ["setuptools"]

@@ -9,9 +9,9 @@
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
-#
 import os
 import sys
+
 sys.path.insert(0, os.path.abspath(os.pardir))
 import concepts
 
@@ -36,7 +36,7 @@ extensions = [
     'sphinx.ext.autosummary',
     'sphinx.ext.intersphinx',
     'sphinx.ext.napoleon',
-    'sphinx_autodoc_typehints',  # https://github.com/agronholm/sphinx-autodoc-typehints/issues/15
+    'sphinx_autodoc_typehints',  # https://github.com/tox-dev/sphinx-autodoc-typehints/issues/15
 ]
 
 def setup(app):
@@ -59,19 +59,15 @@ pygments_style = 'sphinx'
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
-#
 on_rtd = os.environ.get('READTHEDOCS', None) == 'True'
 if not on_rtd:
     import sphinx_rtd_theme
     html_theme = 'sphinx_rtd_theme'
-    html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
 
 html_logo = 'logo.svg'
 
 # Theme options are theme-specific and customize the look and feel of a theme
-# further.  For a list of options available for each theme, see the
-# documentation.
-#
+# further.  For a list of options available for each theme, see the documentation.
 html_theme_options = {'logo_only': True}
 
 # Add any paths that contain custom static files (such as style sheets) here,
