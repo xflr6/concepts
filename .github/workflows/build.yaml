@@ -9,15 +9,18 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - python-version: "3.13"
+          - python-version: "3.14"
             args: --run-slow
             os: ubuntu-latest
-          - python-version: "3.13"
+          - python-version: "3.14"
             os: windows-latest
             args: --run-slow
-          - python-version: "3.13"
+          - python-version: "3.14"
             args: --run-slow
             os: macos-latest
+          - python-version: "3.13"
+            args: ""
+            os: ubuntu-latest
           - python-version: "3.12"
             args: ""
             os: ubuntu-latest

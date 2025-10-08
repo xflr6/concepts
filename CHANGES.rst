@@ -9,7 +9,8 @@ Switch to pyprojec.toml.
 
 Drop Python 2 support.
 
-Drop Python 3.5, 3.6, 3.7, and 3.8 support and tag Python 3.10, 3.11, 3.12, and 3.13 support.
+Drop Python 3.5, 3.6, 3.7, 3.8, and 3.9 support and tag Python 3.10, 3.11, 3.12, 3.13,
+and 3.14 support.
 
 Add ``shape`` property to ``Context```and ``Definition`` returning a named tuple of
 ``(len(objects), len(properties))`` (PR Tomáš Mikula).
