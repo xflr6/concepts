@@ -94,10 +94,10 @@ class Unique(collections.abc.MutableSet):
         >>> u
         Unique([0, 'spam', 2])
 
-        >>> u.replace('eggs', 1)
+        >>> u.replace('eggs', 1)  # doctest: +ELLIPSIS
         Traceback (most recent call last):
             ...
-        ValueError: 'eggs' is not in list
+        ValueError: ... not in list
 
         >>> u.replace('spam', 0)
         Traceback (most recent call last):
@@ -120,10 +120,10 @@ class Unique(collections.abc.MutableSet):
         >>> u
         Unique(['eggs', 'spam'])
 
-        >>> u.move('ham', 0)
+        >>> u.move('ham', 0)  # doctest: +ELLIPSIS
         Traceback (most recent call last):
             ...
-        ValueError: 'ham' is not in list
+        ValueError: ... not in list
         """
         idx = self._items.index(item)
         if idx != new_index:
