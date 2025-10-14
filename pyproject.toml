@@ -64,7 +64,7 @@ minversion = "6"
 testpaths = ["README.rst", "docs", "concepts", "tests"]
 addopts = [
   "--doctest-modules",
-  "--doctest-glob='*.rst'", "--ignore=docs/conf.py",
+  "--doctest-glob=*.rst", "--ignore=docs/conf.py",
   "--cov", "--cov-report=term", "--cov-report=html",
   "--strict-config", "--strict-markers",
 ]
