@@ -1,7 +1,5 @@
 """Formal Concept Analysis (FCA) with Python."""
 
-import typing
-
 from ._common import Shape, ConceptList
 from ._example import EXAMPLE
 from .contexts import Context
@@ -19,7 +17,7 @@ __license__ = 'MIT, see LICENSE.txt'
 __copyright__ = 'Copyright (c) 2013-2022 Sebastian Bank'
 
 
-def load(filename, encoding: str = 'utf-8', frmat: typing.Optional[str] = None):
+def load(filename, encoding: str = 'utf-8', frmat: str | None = None):
     """Load and return formal context from file.
 
     Args:
@@ -39,7 +37,7 @@ def load(filename, encoding: str = 'utf-8', frmat: typing.Optional[str] = None):
     return Context.fromfile(filename, frmat, encoding)
 
 
-def load_cxt(filename, encoding: typing.Optional[str] = None):
+def load_cxt(filename, encoding: str | None = None):
     """Load and return formal context from CXT file.
 
     Args:

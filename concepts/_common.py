@@ -1,4 +1,4 @@
-import typing
+from typing import NamedTuple
 
 from . import formats
 from . import matrices
@@ -8,7 +8,7 @@ __all__ = ['Shape',
            'ConceptList']
 
 
-class Shape(typing.NamedTuple):
+class Shape(NamedTuple):
     """Tuple of ``len(objects)`` and  ``len(properties))``.
 
     Example:
@@ -24,7 +24,6 @@ class Shape(typing.NamedTuple):
     objects: int
 
     properties: int
-
 
     @classmethod
     def _from_pair(cls, objects, properties):
@@ -68,12 +67,11 @@ class Shape(typing.NamedTuple):
             >>> c = concepts.Context.fromstring(concepts.EXAMPLE)
             >>> c.shape.size
             60
-            
         """
         return self.objects * self.properties
 
 
-class Concept(typing.NamedTuple):
+class Concept(NamedTuple):
     """Pair of raw extent and raw intent.
 
     >>> import concepts
@@ -110,12 +108,12 @@ class Concept(typing.NamedTuple):
     intent: matrices.Vector
 
     @property
-    def objects(self) -> typing.Tuple[str]:
+    def objects(self) -> tuple[str, ...]:
         """The objects subsumed by the concept."""
         return self.extent.members()
 
     @property
-    def properties(self) -> typing.Tuple[str]:
+    def properties(self) -> tuple[str, ...]:
         """The properties implied by the concept."""
         return self.intent.members()
 

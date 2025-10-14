@@ -1,6 +1,6 @@
 """Generic re-useable helpers."""
 
-import collections.abc
+from collections.abc import Iterable, MutableSet
 import csv
 import functools
 import hashlib
@@ -8,7 +8,7 @@ from itertools import permutations, groupby, starmap
 import json
 import operator
 import re
-import typing
+from typing import TypeAlias
 import zlib
 
 __all__ = ['snakify',
@@ -27,7 +27,7 @@ CSV_DIALECT = 'excel'
 DEFAULT_ENCODING = 'utf-8'
 
 
-CsvDialectOrStr = typing.Union[csv.Dialect, str]
+CsvDialectOrStr: TypeAlias = csv.Dialect | str
 
 
 def snakify(name: str, *, sep: str = '_',
@@ -40,7 +40,7 @@ def snakify(name: str, *, sep: str = '_',
     return (name[:1] + _re_upper.sub(rf'{sep}\1', name[1:])).lower()
 
 
-class Unique(collections.abc.MutableSet):
+class Unique(MutableSet):
     """Unique items preserving order.
 
     >>> Unique([3, 2, 1, 3, 2, 1, 0])
@@ -241,9 +241,9 @@ def sha256sum(filepath, bufsize: int = 32_768) -> str:
     return h.hexdigest()
 
 
-def write_lines(path, lines: typing.Iterable[str],
+def write_lines(path, lines: Iterable[str],
                 *, encoding: str = DEFAULT_ENCODING,
-                newline: typing.Optional[str] = None):
+                newline: str | None = None):
     """Write ``lines`` to ``path``."""
     with open(path, 'w', encoding=encoding, newline=newline) as f:
         write = functools.partial(print, file=f)
@@ -253,24 +253,24 @@ def write_lines(path, lines: typing.Iterable[str],
 
 def csv_iterrows(path, *, dialect: CsvDialectOrStr = csv.excel,
                  encoding: str = DEFAULT_ENCODING,
-                 newline: typing.Optional[str] = ''):
+                 newline: str | None = ''):
     with open(path, encoding=encoding, newline=newline) as f:
         reader = csv.reader(f, dialect=dialect)
         yield from reader
 
 
 def write_csv(path, rows,
-              *, header: typing.Optional[typing.Iterable[str]] = None,
+              *, header: Iterable[str] | None = None,
               dialect: CsvDialectOrStr = CSV_DIALECT,
               encoding: str = DEFAULT_ENCODING,
-              newline: typing.Optional[str] = ''):
+              newline: str | None = ''):
     """Write ``rows`` as CSV to ``path`` with optional ``header``."""
     with open(path, 'w', encoding=encoding, newline=newline) as f:
         write_csv_file(f, rows, header=header)
 
 
 def write_csv_file(file, rows,
-                   *, header: typing.Optional[typing.Iterable[str]] = None,
+                   *, header: Iterable[str] | None = None,
                    dialect: CsvDialectOrStr = CSV_DIALECT):
     """Write ``rows`` as CSV to file-like object with optional ``header``."""
     writer = csv.writer(file, dialect=dialect)

@@ -1,8 +1,8 @@
 """Formal Concept Analysis concept lattices from contexts."""
 
+from collections.abc import Iterable, Iterator
 import heapq
 import operator
-import typing
 
 import graphviz
 
@@ -155,7 +155,7 @@ class Data:
                  tuple(l.index for l in c.lower_neighbors))
                 for c in self._concepts]
 
-    def _eq(self, other) -> typing.Union[type(NotImplemented), bool]:
+    def _eq(self, other) -> type(NotImplemented) | bool:
         """Return ``True`` if two lattices are equivalent.
 
         Note:
@@ -254,7 +254,7 @@ class FormattingMixin:
 class CollectionMixin:
     """Formal concept lattice as collection of concepts."""
 
-    def __call__(self, properties: typing.Tuple[str]) -> Concept:
+    def __call__(self, properties: tuple[str, ...]) -> Concept:
         """Return concept having all given ``properties`` as intension.
 
         Args:
@@ -272,8 +272,7 @@ class CollectionMixin:
         extent = self._context.extension(properties, raw=True)
         return self._mapping[extent]
 
-    def __getitem__(self, key: typing.Union[int, typing.Tuple[str, ...]]
-                    ) -> Concept:
+    def __getitem__(self, key: int | tuple[str, ...]) -> Concept:
         """Return concept by index, intension, or extension.
 
         Args:
@@ -302,7 +301,7 @@ class CollectionMixin:
         extent, intent = self._context.__getitem__(key, raw=True)
         return self._mapping[extent]
 
-    def __iter__(self) -> typing.Iterator[Concept]:
+    def __iter__(self) -> Iterator[Concept]:
         """Yield all concepts of the lattice.
 
         Yields:
@@ -337,7 +336,7 @@ class CollectionMixin:
 class AggregagtionMixin:
     """Lattice generalized (n-ary) join and meet operations."""
 
-    def join(self, concepts: typing.Iterable[Concept]) -> Concept:
+    def join(self, concepts: Iterable[Concept]) -> Concept:
         """Return the nearest concept that subsumes all given concepts.
 
         Args:
@@ -358,7 +357,7 @@ class AggregagtionMixin:
         join = self._context._Objects.reduce_or(extents)
         return self._mapping[join.double()]
 
-    def meet(self, concepts: typing.Iterable[Concept]) -> Concept:
+    def meet(self, concepts: Iterable[Concept]) -> Concept:
         """Return the nearest concept that implies all given concepts.
 
         Args:
@@ -383,10 +382,10 @@ class AggregagtionMixin:
 class NavigateableMixin:
     """Iterators over concept neighbor unions."""
 
-    def upset_union(self, concepts: typing.Iterable[Concept],
+    def upset_union(self, concepts: Iterable[Concept],
                     _sortkey=operator.attrgetter('index'),
                     _next_concepts=operator.attrgetter('upper_neighbors')
-                    ) -> typing.Iterator[Concept]:
+                    ) -> Iterator[Concept]:
         """Yield all concepts that subsume any of the given ones.
 
         Args:
@@ -409,10 +408,10 @@ class NavigateableMixin:
         concepts = tools.maximal(concepts, comparison=Concept.properly_subsumes)
         return algorithms.iterunion(concepts, _sortkey, _next_concepts)
 
-    def downset_union(self, concepts: typing.Iterable[Concept],
+    def downset_union(self, concepts: Iterable[Concept],
                     _sortkey=operator.attrgetter('dindex'),
                     _next_concepts=operator.attrgetter('lower_neighbors')
-                      ) -> typing.Iterator[Concept]:
+                      ) -> Iterator[Concept]:
         """Yield all concepts that imply any of the given ones.
 
         Args:
@@ -436,8 +435,8 @@ class NavigateableMixin:
         concepts = tools.maximal(concepts, comparison=Concept.properly_implies)
         return algorithms.iterunion(concepts, _sortkey, _next_concepts)
 
-    def upset_generalization(self, concepts: typing.Iterable[Concept]
-                             ) -> typing.Iterator[Concept]:
+    def upset_generalization(self, concepts: Iterable[Concept]
+                             ) -> Iterator[Concept]:
         """Yield all concepts that subsume only the given ones.
 
         Args:
@@ -540,7 +539,7 @@ class Lattice(VisualizableMixin, NavigateableMixin, AggregagtionMixin,
         return self._concepts[-1]
 
     @property
-    def atoms(self) -> typing.Tuple[Atom, ...]:
+    def atoms(self) -> tuple[Atom, ...]:
         """The minimal non-infimum concepts of the lattice.
 
         Returns:

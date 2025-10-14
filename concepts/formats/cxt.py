@@ -1,5 +1,5 @@
+from collections.abc import Mapping
 import functools
-import typing
 
 from .base import ContextArgs, Format
 
@@ -8,8 +8,8 @@ __all__ = ['iter_cxt_lines', 'Cxt']
 SYMBOLS = {False: '.', True: 'X'}
 
 
-def iter_cxt_lines(objects, properties, bools,
-                   *, symbols: typing.Mapping[bool, str] = SYMBOLS):
+def iter_cxt_lines(objects, properties, bools, *,
+                   symbols: Mapping[bool, str] = SYMBOLS):
     assert len(objects) == len(bools)
     assert {len(properties)} == set(map(len, bools))
 

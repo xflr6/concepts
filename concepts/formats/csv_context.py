@@ -1,6 +1,5 @@
 import csv
 import itertools
-import typing
 
 from .. import tools
 
@@ -31,8 +30,8 @@ class Csv(Format):
     values = VALUES
 
     @classmethod
-    def loadf(cls, file, *, bools_as_int: typing.Optional[bool] = None,
-              dialect: typing.Optional[tools.CsvDialectOrStr] = None) -> ContextArgs:
+    def loadf(cls, file, *, bools_as_int: bool | None = None,
+              dialect: tools.CsvDialectOrStr | None = None) -> ContextArgs:
         if dialect is None:
             dialect = cls.dialect
 
@@ -71,9 +70,9 @@ class Csv(Format):
 
     @classmethod
     def dumpf(cls, file, objects, properties, bools,
-              *, object_header: typing.Optional[str] = None,
+              *, object_header: str | None = None,
               bools_as_int: bool = False,
-              dialect: typing.Optional[tools.CsvDialectOrStr] = None,
+              dialect: tools.CsvDialectOrStr | None = None,
               _serialized=None) -> None:
         if dialect is None:
             dialect = cls.dialect

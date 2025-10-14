@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# flake8: noqa
 
 """Run the tests with https://pytest.org."""
 

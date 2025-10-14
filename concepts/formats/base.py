@@ -2,7 +2,7 @@
 
 import io
 import os
-import typing
+from typing import NamedTuple, TypeAlias
 
 from .. import tools
 
@@ -10,27 +10,27 @@ __all__ = ['ContextArgs', 'SerializedArgs',
            'Format']
 
 
-class ContextArgs(typing.NamedTuple):
+class ContextArgs(NamedTuple):
     """Return value of ``.loads()`` and ``.load()``."""
 
-    objects: typing.List[str]
+    objects: list[str]
 
-    properties: typing.List[str]
+    properties: list[str]
 
-    bools: typing.List[typing.Tuple[bool, ...]]
+    bools: list[tuple[bool, ...]]
 
-    serialized: typing.Optional['SerializedArgs'] = None
+    serialized: 'SerializedArgs | None' = None
 
 
-LatticeType = typing.List[typing.Tuple[typing.Tuple[int],
-                                       typing.Tuple[int],
-                                       typing.Tuple[int],
-                                       typing.Tuple[int]]]
+LatticeType: TypeAlias = list[tuple[tuple[int, ...],
+                                    tuple[int, ...],
+                                    tuple[int, ...],
+                                    tuple[int, ...]]]
 
 
 class SerializedArgs(ContextArgs):
 
-    lattice: typing.Optional[LatticeType] = None
+    lattice: LatticeType | None = None
 
 
 class FormatMeta(type):
@@ -93,7 +93,7 @@ class Format(metaclass=FormatMeta):
 
     @classmethod
     def dump(cls, filename, objects, properties, bools,
-             *, encoding: typing.Optional[str], _serialized=None, **kwargs):
+             *, encoding: str | None, _serialized=None, **kwargs):
         """Write serialized objects, properties, bools to file."""
         if encoding is None:
             encoding = cls.encoding

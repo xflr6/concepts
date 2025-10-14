@@ -1,7 +1,8 @@
 """Mutable formal context creation arguments (object, properties, bools) with set-like operations."""
 
+from collections.abc import Sequence
 import fractions
-import typing
+from typing import TypeAlias
 
 from . import _common
 from . import formats
@@ -11,7 +12,7 @@ from . import contexts
 __all__ = ['Definition']
 
 
-StrSequence = typing.Sequence[str]
+StrSequence: TypeAlias = Sequence[str]
 
 
 class Triple:
@@ -20,7 +21,7 @@ class Triple:
     @classmethod
     def fromfile(cls, filename,
                  frmat: str = 'cxt',
-                 encoding: typing.Optional[str] = None, **kwargs):
+                 encoding: str | None = None, **kwargs):
         """Return a new definiton from file source in given format.
 
         Args:
@@ -46,7 +47,7 @@ class Triple:
     def __init__(self,
                  objects: StrSequence = (),
                  properties: StrSequence = (),
-                 bools: typing.Sequence[typing.Sequence[bool]] = ()):
+                 bools: Sequence[Sequence[bool]] = ()):
         self._objects = tools.Unique(objects)
         if len(self._objects) != len(objects):
             raise ValueError(f'duplicate objects: {objects!r}')
@@ -276,8 +277,8 @@ class TransformableMixin:
     __neg__ = transposed
 
     def take(self,
-             objects: typing.Optional[StrSequence] = None,
-             properties: typing.Optional[StrSequence] = None,
+             objects: StrSequence | None = None,
+             properties: StrSequence | None = None,
              reorder: bool = False):
         """Return a subset with given ``objects``/``properties`` as new definition.
 
@@ -576,7 +577,7 @@ class MutableMixin:
         self._properties.remove(prop)
         self._pairs.difference_update((o, prop) for o in self._objects)
 
-    def remove_empty_objects(self) -> typing.List[str]:
+    def remove_empty_objects(self) -> list[str]:
         """Remove objects without any ``True`` property
 
         Returns:
@@ -599,7 +600,7 @@ class MutableMixin:
             self._objects.remove(o)
         return empty_objects
 
-    def remove_empty_properties(self) -> typing.List[str]:
+    def remove_empty_properties(self) -> list[str]:
         """Remove properties without any ``True`` object.
 
         Returns:
@@ -840,7 +841,7 @@ class Definition(MutableMixin, TransformableMixin, FormattingMixin, Triple):
     """
 
     @property
-    def objects(self) -> typing.Tuple[str, ...]:
+    def objects(self) -> tuple[str, ...]:
         """(Names of the) objects described by the definition.
 
         Example:
@@ -854,7 +855,7 @@ class Definition(MutableMixin, TransformableMixin, FormattingMixin, Triple):
         return tuple(self._objects)
 
     @property
-    def properties(self) -> typing.Tuple[str, ...]:
+    def properties(self) -> tuple[str, ...]:
         """(Names of the) properties that describe the objects.
 
         Example:
@@ -868,7 +869,7 @@ class Definition(MutableMixin, TransformableMixin, FormattingMixin, Triple):
         return tuple(self._properties)
 
     @property
-    def bools(self) -> typing.List[typing.Tuple[bool, ...]]:
+    def bools(self) -> list[tuple[bool, ...]]:
         """Row-major :obj:`list` of boolean tuples.
 
         Example:

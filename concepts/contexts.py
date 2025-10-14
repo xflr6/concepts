@@ -1,7 +1,7 @@
 """Formal Concept Analysis contexts."""
 
+from collections.abc import Iterable
 import fractions
-import typing
 
 from . import _common
 from . import algorithms
@@ -53,7 +53,7 @@ class Data:
     @classmethod
     def fromfile(cls, filename,
                  frmat: str = 'cxt',
-                 encoding: typing.Optional[str] = None,
+                 encoding: str | None = None,
                  **kwargs) -> 'Context':
         """Return a new context from file source in given format.
 
@@ -164,9 +164,9 @@ class Data:
         return inst
 
     def __init__(self,
-                 objects: typing.Iterable[str],
-                 properties: typing.Iterable[str],
-                 bools: typing.Iterable[typing.Tuple[bool, ...]]) -> None:
+                 objects: Iterable[str],
+                 properties: Iterable[str],
+                 bools: Iterable[tuple[bool, ...]]) -> None:
         """Create context from ``objects``, ``properties``, and ``bools`` correspondence.
 
         Args:
@@ -207,14 +207,13 @@ class Data:
         self._Properties = self._intents.BitSet
         self._Objects = self._extents.BitSet
 
-    def copy(self, include_lattice: typing.Optional[bool] = False):
+    def copy(self, include_lattice: bool | None = False):
         """Return a fresh copy of the context (omits lattice)."""
         if include_lattice:  # pragma: no cover
             raise NotImplementedError(f'.copy(include_lattice={include_lattice!r})')
         return Context(self.objects, self.properties, self.bools)
 
-    def __getstate__(self) -> typing.Tuple[typing.Tuple[str, ...],
-                                           typing.Tuple[str, ...]]:
+    def __getstate__(self) -> tuple[tuple[str, ...], tuple[str, ...]]:
         """Pickle context as ``(intents, extents)`` tuple.
 
         Returns:
@@ -222,8 +221,7 @@ class Data:
         """
         return self._intents, self._extents
 
-    def __setstate__(self, state: typing.Tuple[typing.Tuple[str, ...],
-                                               typing.Tuple[str, ...]]) -> None:
+    def __setstate__(self, state: tuple[tuple[str, ...], tuple[str, ...]]) -> None:
         """Unpickle context from ``(intents, extents)`` tuple.
 
         Args:
@@ -313,7 +311,7 @@ class FormattingMixin:
 
 class ComparableMixin:
 
-    def __eq__(self, other: 'Context') -> typing.Union[bool, type(NotImplemented)]:
+    def __eq__(self, other: 'Context') -> bool | type(NotImplemented):
         """Return whether two contexts are equivalent.
 
         Args:
@@ -338,7 +336,7 @@ class ComparableMixin:
                 and self.properties == other.properties
                 and self.bools == other.bools)
 
-    def __ne__(self, other: 'Context') -> typing.Union[bool, type(NotImplemented)]:
+    def __ne__(self, other: 'Context') -> bool | type(NotImplemented):
         """Return whether two contexts are inequivalent.
 
         Args:
@@ -366,9 +364,8 @@ class ComparableMixin:
 
 class PrimeMixin:
 
-    def __getitem__(self, items: typing.Iterable[str],
-                    raw: bool = False) -> typing.Tuple[typing.Tuple[str, ...],
-                                                       typing.Tuple[str, ...]]:
+    def __getitem__(self, items: Iterable[str],
+                    raw: bool = False) -> tuple[tuple[str, ...], tuple[str, ...]]:
         """Return ``(extension, intension)`` pair by shared objects or properties.
 
         Args:
@@ -400,8 +397,8 @@ class PrimeMixin:
             return extent, intent
         return extent.members(), intent.members()
 
-    def intension(self, objects: typing.Iterable[str],
-                  raw: bool = False) -> typing.Tuple[str, ...]:
+    def intension(self, objects: Iterable[str],
+                  raw: bool = False) -> tuple[str, ...]:
         """Return all properties shared by the given ``objects``.
 
         Args:
@@ -422,8 +419,8 @@ class PrimeMixin:
             return intent
         return intent.members()
 
-    def extension(self, properties: typing.Iterable[str],
-                  raw: bool = False) -> typing.Tuple[str, ...]:
+    def extension(self, properties: Iterable[str],
+                  raw: bool = False) -> tuple[str, ...]:
         """Return all objects sharing the given ``properties``.
 
         Args:
@@ -480,9 +477,9 @@ class LatticeMixin:
         """
         return algorithms.neighbors(objects, Objects=self._Objects)
 
-    def neighbors(self, objects: typing.Iterable[str],
-                  raw: bool = False) -> typing.List[typing.Tuple[typing.Tuple[str, ...],
-                                                                 typing.Tuple[str, ...]]]:
+    def neighbors(self, objects: Iterable[str],
+                  raw: bool = False) -> list[tuple[tuple[str, ...],
+                                                   tuple[str, ...]]]:
         """Return the upper neighbors of the concept having all given ``objects``.
 
         Args:
@@ -541,7 +538,7 @@ class ExportableMixin:
 
     def tojson(self, path_or_fileobj,
                encoding: str = 'utf-8',
-               indent: typing.Optional[int] = None,
+               indent: int | None = None,
                sort_keys: bool = True,
                ignore_lattice: bool = False) -> None:
         """Write serialized context as json to path or file-like object.
@@ -563,13 +560,12 @@ class ExportableMixin:
                         indent=indent, sort_keys=sort_keys)
 
     def todict(self, ignore_lattice: bool = False
-               ) -> typing.Dict[str,
-                                typing.Union[typing.Tuple[str, ...],
-                                             typing.List[typing.Tuple[int, ...]],
-                                             typing.List[typing.Tuple[typing.Tuple[int, ...],
-                                                                      typing.Tuple[int, ...],
-                                                                      typing.Tuple[int, ...],
-                                                                      typing.Tuple[int, ...]]]]]:
+               ) -> dict[str, tuple[str, ...]
+                              | list[tuple[int, ...]]
+                              | list[tuple[tuple[int, ...],
+                                           tuple[int, ...],
+                                           tuple[int, ...],
+                                           tuple[int, ...]]]]:
         """Return serialized context with optional lattice.
 
         Args:
@@ -649,7 +645,7 @@ class Context(ExportableMixin, LatticeMixin,
     """
 
     @property
-    def objects(self) -> typing.Tuple[str, ...]:
+    def objects(self) -> tuple[str, ...]:
         """(Names of the) objects described by the context.
 
         Returns:
@@ -664,7 +660,7 @@ class Context(ExportableMixin, LatticeMixin,
         return self._Objects._members
 
     @property
-    def properties(self) -> typing.Tuple[str, ...]:
+    def properties(self) -> tuple[str, ...]:
         """(Names of the) properties that describe the objects.
 
         Returns:
@@ -679,7 +675,7 @@ class Context(ExportableMixin, LatticeMixin,
         return self._Properties._members
 
     @property
-    def bools(self) -> typing.List[typing.Tuple[bool, ...]]:
+    def bools(self) -> list[tuple[bool, ...]]:
         """Row-wise boolean relation matrix between objects and properties.
 
         Returns:

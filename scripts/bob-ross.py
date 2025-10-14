@@ -2,13 +2,13 @@
 
 """Download and convert dataset, save to examples/, try lattice generation."""
 
+from collections.abc import Mapping
 import csv
 import pathlib
 import os
 import shutil
 import sys
 import time
-import typing
 import urllib.request
 
 sys.path.insert(0, os.pardir)
@@ -31,8 +31,8 @@ CXT = CSV.with_suffix('.cxt')
 TARGET = pathlib.Path(os.pardir) / 'examples' / 'bob-ross.cxt'
 
 
-def read_episodes(path, *, dialect: typing.Union[csv.Dialect, str] = 'excel',
-                  symbols: typing.Mapping[str, bool] = {'0': False, '1': True}):
+def read_episodes(path, *, dialect: csv.Dialect | str = 'excel',
+                  symbols: Mapping[str, bool] = {'0': False, '1': True}):
     with path.open(**OPEN_KWARGS) as f:
         reader = csv.reader(f, dialect=dialect)
         episode, _, *elements = next(reader)  # omit TITLE column

@@ -1,7 +1,7 @@
 """Formal Concept Analysis concepts."""
 
+from collections.abc import Iterator
 import operator
-import typing
 
 __all__ = ['Concept',
            'Infimum', 'Atom', 'Supremum']
@@ -27,7 +27,7 @@ class Pair:
         self._intent = intent
         self.upper_neighbors = upper  #: The directly implied concepts.
         self.lower_neighbors = lower  #: The directly subsumed concepts.
- 
+
     def _eq(self, other):
         if not isinstance(other, Concept):
             return NotImplemented
@@ -60,7 +60,7 @@ class Pair:
         yield self._intent.members()
 
     @property
-    def extent(self) -> typing.Tuple[str, ...]:
+    def extent(self) -> tuple[str, ...]:
         """The objects subsumed by the concept.
 
         Example:
@@ -72,7 +72,7 @@ class Pair:
         return self._extent.members()
 
     @property
-    def intent(self) -> typing.Tuple[str, ...]:
+    def intent(self) -> tuple[str, ...]:
         """The properties implied by the concept."
 
         Example:
@@ -398,7 +398,7 @@ class Concept(RelationsMixin, TransformableMixin, OrderableMixin,
          <Atom {1pl} <-> [+1 -2 -3 +pl -sg] <=> 1pl>)
     """
 
-    def minimal(self) -> typing.Tuple[str, ...]:
+    def minimal(self) -> tuple[str, ...]:
         """Shortlex minimal properties generating the concept.
 
         Returns:
@@ -417,7 +417,7 @@ class Concept(RelationsMixin, TransformableMixin, OrderableMixin,
         return self.lattice._context._minimal(self._extent,
                                               self._intent).members()
 
-    def attributes(self) -> typing.Iterator[typing.Tuple[str]]:
+    def attributes(self) -> Iterator[tuple[str, ...]]:
         """Yield properties generating the concept in shortlex order.
 
         Yields:
@@ -458,7 +458,7 @@ class Infimum(Concept):
         ()
     """
 
-    def minimal(self) -> typing.Tuple[str, ...]:
+    def minimal(self) -> tuple[str, ...]:
         """Shortlex minimal properties generating the concept.
 
         Returns:

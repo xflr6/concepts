@@ -58,7 +58,7 @@ def render_all(filepattern='*.cxt', *, exclude=(),
     for cxtfile in glob.iglob(filepattern):
         print(cxtfile)
         if os.path.basename(cxtfile) in exclude:
-            print(f'  matches exclude, skip')
+            print('  matches exclude, skip')
             continue
         c = concepts.load(cxtfile, encoding=encoding)
         l = c.lattice

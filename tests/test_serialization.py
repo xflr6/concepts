@@ -66,7 +66,7 @@ def test_fromstring_serialized(tmp_path, source, filename, includes_lattice):
         target = tmp_path / filename
         kwargs = {'encoding': 'utf-8'}
         target.write_text(source, **kwargs)
-        context =  Context.fromfile(str(target), frmat='python-literal', **kwargs)
+        context = Context.fromfile(str(target), frmat='python-literal', **kwargs)
 
     assert context.objects == SERIALIZED['objects']
     assert context.properties == SERIALIZED['properties']

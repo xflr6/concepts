@@ -1,4 +1,4 @@
-import typing
+from collections.abc import Iterator
 
 from .._common import Concept, ConceptList
 
@@ -12,11 +12,11 @@ __all__ = ['iterunion',
            'iterconcepts', 'get_concepts']
 
 
-def iterconcepts(context) -> typing.Iterator[Concept]:
+def iterconcepts(context) -> Iterator[Concept]:
     iterconcepts = fast_generate_from(context)
     return map(Concept._make, iterconcepts)
 
 
-def get_concepts(context) -> typing.List[Concept]:
+def get_concepts(context) -> list[Concept]:
     iterconcepts = fast_generate_from(context)
     return ConceptList.frompairs(iterconcepts)
