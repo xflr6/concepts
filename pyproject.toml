@@ -72,7 +72,7 @@ log_cli_level = "WARNING"
 log_file = "test-log.txt"
 log_file_level = "DEBUG"
 
-[too.coverage.run]
+[tool.coverage.run]
 source = ["concepts"]
 branch = false
 
