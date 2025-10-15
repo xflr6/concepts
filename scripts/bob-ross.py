@@ -59,7 +59,7 @@ if not CXT.exists():
     print(TARGET)
     shutil.copy(CXT, TARGET)
 
-start = time.perf_counter()
+start = time.perf_counter_ns()
 
 context = concepts.load_cxt(CXT)
 print(f'{context!r}')
@@ -71,7 +71,7 @@ print(f'{lattice!r}')
 
 assert len(lattice) == 3_463, f'{len(lattice):_d} != 3_463'
 
-duration = time.perf_counter() - start
+duration = (time.perf_counter_ns() - start) / 1_000_000_000
 print(f'{duration:.1f} seconds')
 
 # concepts 0.9.2, 2.2 GHz Intel i3-2330M CPU, 4GB RAM: 189s (PY2), 132s (PY3)

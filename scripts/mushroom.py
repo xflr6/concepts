@@ -36,13 +36,13 @@ CXT = MUSHROOM.with_suffix('.cxt')
 
 DAT = MUSHROOM.with_suffix('.dat')
 
-CXT_MINIMAL = CXT.with_name(f'{CXT.stem}-minimal{CXT.suffix}')
+CXT_MINIMAL = CXT.with_stem(f'{CXT.stem}-minimal')
 
-CSV_MINIMAL_STR = CSV.with_name(f'{CSV.stem}-str{CSV.suffix}')
+CSV_MINIMAL_STR = CSV.with_stem(f'{CSV.stem}-str')
 
-CSV_MINIMAL_INT = CSV.with_name(f'{CSV.stem}-int{CSV.suffix}')
+CSV_MINIMAL_INT = CSV.with_stem(f'{CSV.stem}-int')
 
-DAT_MINIMAL = DAT.with_name(f'{DAT.stem}-minimal{DAT.suffix}')
+DAT_MINIMAL = DAT.with_stem(f'{DAT.stem}-minimal')
 
 RESULTS = (CSV, CXT, DAT,
            CSV_MINIMAL_STR, CSV_MINIMAL_INT, CXT_MINIMAL, DAT_MINIMAL)

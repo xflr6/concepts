@@ -14,10 +14,10 @@ from concepts import algorithms  # noqa: E402
 
 from mushroom import CXT_MINIMAL, ENCODING  # noqa: E402
 
-INTENTS = CXT_MINIMAL.with_name(f'{CXT_MINIMAL.stem}-intents.dat')
+INTENTS = CXT_MINIMAL.with_stem(f'{CXT_MINIMAL.stem}-intents')
 
 
-start = time.perf_counter()
+start = time.perf_counter_ns()
 
 context = concepts.load(CXT_MINIMAL, encoding=ENCODING)
 print(f'{context!r}')
@@ -30,7 +30,7 @@ print(f'{len(result):_d} concepts')
 result.tofile(INTENTS)
 print(INTENTS, f'{INTENTS.stat().st_size:_d} bytes')
 
-duration = time.perf_counter() - start
+duration = (time.perf_counter_ns() - start) / 1_000_000_000
 print(f'{duration:.1f} seconds')
 
 assert len(result) == 238_710, f'{len(result):_d} != 238_710'

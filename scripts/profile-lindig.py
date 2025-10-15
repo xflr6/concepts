@@ -17,7 +17,7 @@ SEGMENTS = pathlib.Path(os.pardir) / 'examples' / 'segments.cxt'
 ENCODING = 'utf-8'
 
 
-start = time.perf_counter()
+start = time.perf_counter_ns()
 
 context = concepts.load(SEGMENTS, encoding=ENCODING)
 print(f'{context!r:}')
@@ -29,7 +29,7 @@ print(f'{lattice!r:}')
 
 assert len(lattice) == 11_878, f'{len(lattice):_d} != 11_878'
 
-duration = time.perf_counter() - start
+duration = (time.perf_counter_ns() - start) / 1_000_000_000
 print(f'{duration:.1f} seconds')
 
 assert duration <= 40, f'{duration:.1f} > 40'

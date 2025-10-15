@@ -95,12 +95,12 @@ def stopwatch():
 def _stopwatch(*, quiet: bool = False):
     """Context manager that measures and prints the execution wall time."""
     timing = types.SimpleNamespace(start=None, end=None, duration=None)
-    timing.start = time.perf_counter()
+    timing.start = time.perf_counter_ns()
 
     yield timing
 
-    timing.end = time.perf_counter()
-    timing.duration = timing.end - timing.start
+    timing.end = time.perf_counter_ns()
+    timing.duration = (timing.end - timing.start) / 1_000_000_000
 
     if not quiet:
         print(timing.duration)
