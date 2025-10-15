@@ -14,7 +14,6 @@ import zlib
 __all__ = ['snakify',
            'Unique',
            'max_len', 'maximal',
-           'lazyproperty',
            'crc32_hex',
            'sha256sum',
            'write_lines',
@@ -187,39 +186,6 @@ def maximal(iterable, comparison=operator.lt, _groupkey=operator.itemgetter(0)):
     return (item
             for item, pairs in groupby(permutations(iterable, 2), key=_groupkey)
             if not any(starmap(comparison, pairs)))
-
-
-class lazyproperty:  # noqa: N801
-    """Non-data descriptor caching the computed result as instance attribute.
-
-    >>> class Spam(object):
-    ...     @lazyproperty
-    ...     def eggs(self):
-    ...         return 'spamspamspam'
-
-    >>> spam=Spam(); spam.eggs
-    'spamspamspam'
-
-    >>> spam.eggs='eggseggseggs'; spam.eggs
-    'eggseggseggs'
-
-    >>> Spam().eggs
-    'spamspamspam'
-
-    >>> Spam.eggs  # doctest: +ELLIPSIS
-    <...lazyproperty object at 0x...>
-    """
-
-    def __init__(self, fget):
-        self.fget = fget
-        for attr in ('__module__', '__name__', '__doc__'):
-            setattr(self, attr, getattr(fget, attr))
-
-    def __get__(self, instance, owner):
-        if instance is None:
-            return self
-        result = instance.__dict__[self.__name__] = self.fget(instance)
-        return result
 
 
 def crc32_hex(data):

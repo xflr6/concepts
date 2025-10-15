@@ -1,6 +1,7 @@
 """Formal Concept Analysis contexts."""
 
 from collections.abc import Iterable
+import functools
 import fractions
 
 from . import _common
@@ -501,7 +502,7 @@ class LatticeMixin:
         return [(extent.members(), intent.members())
                 for extent, intent in self._neighbors(objects)]
 
-    @tools.lazyproperty
+    @functools.cached_property
     def lattice(self) -> 'lattices.Lattice':
         """The concept lattice of the formal context.
 
@@ -694,7 +695,7 @@ class Context(ExportableMixin, LatticeMixin,
             """
         return self._intents.bools()
 
-    @tools.lazyproperty
+    @functools.cached_property
     def shape(self) -> _common.Shape:
         """The shape/dimensions of the context.
 
@@ -709,7 +710,7 @@ class Context(ExportableMixin, LatticeMixin,
         """
         return _common.Shape._from_pair(self.objects, self.properties)
 
-    @tools.lazyproperty
+    @functools.cached_property
     def fill_ratio(self) -> fractions.Fraction:
         """The fill ratio (density of ``True`` values) of the context.
 
