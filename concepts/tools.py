@@ -53,7 +53,7 @@ class Unique(MutableSet):
         inst._items = _items
         return inst
 
-    def __init__(self, iterable=()):
+    def __init__(self, iterable=()) -> None:
         self._seen = seen = set()
         add = seen.add
         self._items = [item for item in iterable
@@ -65,27 +65,27 @@ class Unique(MutableSet):
     def __iter__(self):
         return iter(self._items)
 
-    def __len__(self):
+    def __len__(self) -> int:
         return len(self._items)
 
-    def __contains__(self, item):
+    def __contains__(self, item) -> bool:
         return item in self._seen
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         arg = repr(self._items) if self._items else ''
         return f'{self.__class__.__name__}({arg})'
 
-    def add(self, item):
+    def add(self, item) -> None:
         if item not in self._seen:
             self._seen.add(item)
             self._items.append(item)
 
-    def discard(self, item):
+    def discard(self, item) -> None:
         if item in self._seen:
             self._seen.remove(item)
             self._items.remove(item)
 
-    def replace(self, item, new_item):
+    def replace(self, item, new_item) -> None:
         """Replace an item preserving order.
 
         >>> u = Unique([0, 1, 2])
@@ -111,7 +111,7 @@ class Unique(MutableSet):
         self._seen.add(new_item)
         self._items[idx] = new_item
 
-    def move(self, item, new_index):
+    def move(self, item, new_index) -> None:
         """Move an item to the given position.
 
         >>> u = Unique(['spam', 'eggs'])
@@ -129,7 +129,7 @@ class Unique(MutableSet):
             item = self._items.pop(idx)
             self._items.insert(new_index, item)
 
-    def issuperset(self, items):
+    def issuperset(self, items) -> bool:
         """Return whether this collection contains all items.
 
         >>> Unique(['spam', 'eggs']).issuperset(['spam', 'spam', 'spam'])
@@ -188,7 +188,7 @@ def maximal(iterable, comparison=operator.lt, _groupkey=operator.itemgetter(0)):
             if not any(starmap(comparison, pairs)))
 
 
-def crc32_hex(data):
+def crc32_hex(data: bytes) -> str:
     """Return unsigned CRC32 of binary data as hex-encoded string.
 
     >>> crc32_hex(b'spam')
@@ -207,9 +207,9 @@ def sha256sum(filepath, bufsize: int = 32_768) -> str:
     return h.hexdigest()
 
 
-def write_lines(path, lines: Iterable[str],
-                *, encoding: str = DEFAULT_ENCODING,
-                newline: str | None = None):
+def write_lines(path, lines: Iterable[str], *,
+                encoding: str = DEFAULT_ENCODING,
+                newline: str | None = None) -> None:
     """Write ``lines`` to ``path``."""
     with open(path, 'w', encoding=encoding, newline=newline) as f:
         write = functools.partial(print, file=f)
@@ -225,19 +225,19 @@ def csv_iterrows(path, *, dialect: CsvDialectOrStr = csv.excel,
         yield from reader
 
 
-def write_csv(path, rows,
-              *, header: Iterable[str] | None = None,
+def write_csv(path, rows, *,
+              header: Iterable[str] | None = None,
               dialect: CsvDialectOrStr = CSV_DIALECT,
               encoding: str = DEFAULT_ENCODING,
-              newline: str | None = ''):
+              newline: str | None = '') -> None:
     """Write ``rows`` as CSV to ``path`` with optional ``header``."""
     with open(path, 'w', encoding=encoding, newline=newline) as f:
         write_csv_file(f, rows, header=header)
 
 
-def write_csv_file(file, rows,
-                   *, header: Iterable[str] | None = None,
-                   dialect: CsvDialectOrStr = CSV_DIALECT):
+def write_csv_file(file, rows, *,
+                   header: Iterable[str] | None = None,
+                   dialect: CsvDialectOrStr = CSV_DIALECT) -> None:
     """Write ``rows`` as CSV to file-like object with optional ``header``."""
     writer = csv.writer(file, dialect=dialect)
     if header is not None:
@@ -245,9 +245,9 @@ def write_csv_file(file, rows,
     writer.writerows(rows)
 
 
-def dump_json(obj, path_or_fileobj,
-              *, encoding: str = DEFAULT_ENCODING,
-              mode: str = 'w', **kwargs):
+def dump_json(obj, path_or_fileobj, *,
+              encoding: str = DEFAULT_ENCODING,
+              mode: str = 'w', **kwargs) -> None:
     """Serialize ``obj`` via :func:`json.load` to path or file-like object."""
     kwargs['obj'] = obj
     _call_json('dump', path_or_fileobj, encoding, mode, **kwargs)
