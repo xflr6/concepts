@@ -4,8 +4,8 @@
 
 from collections.abc import Mapping
 import csv
-import pathlib
 import os
+import pathlib
 import shutil
 import sys
 import time
@@ -31,7 +31,8 @@ CXT = CSV.with_suffix('.cxt')
 TARGET = pathlib.Path(os.pardir) / 'examples' / 'bob-ross.cxt'
 
 
-def read_episodes(path, *, dialect: csv.Dialect | str = 'excel',
+def read_episodes(path, *,
+                  dialect: csv.Dialect | type[csv.Dialect] | str = csv.excel,
                   symbols: Mapping[str, bool] = {'0': False, '1': True}):
     with path.open(**OPEN_KWARGS) as f:
         reader = csv.reader(f, dialect=dialect)
