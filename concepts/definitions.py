@@ -341,8 +341,7 @@ def conflicting_pairs(left, right):
 
 def ensure_compatible(left, right):
     """Raise an informative ``ValueError`` if the two definitions disagree."""
-    conflicts = list(conflicting_pairs(left, right))
-    if conflicts:
+    if (conflicts := list(conflicting_pairs(left, right))):
         raise ValueError('conflicting values for object/property pairs:'
                          f' {conflicts!r}')
 

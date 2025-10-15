@@ -27,7 +27,7 @@ def test_eq(lattice):
 
 def test_eq_mapping(lattice):
     other = concepts.Context(*lattice._context.definition()).lattice
-    k, v = other._mapping.popitem()
+    (k, v) = other._mapping.popitem()
     assert not other._eq(lattice)
 
     k = k.__class__.frommembers(['1sg', '3pl'])
@@ -78,8 +78,8 @@ def test_concept_eq_neighors(lattice):
 def test_pickling(lattice):
     result = pickle.loads(pickle.dumps(lattice))
     assert result._context, lattice._context
-    assert [tuple(c) for c in result._concepts] == \
-           [tuple(c) for c in lattice._concepts]
+    assert ([tuple(c) for c in result._concepts]
+            == [tuple(c) for c in lattice._concepts])
 
 
 def test_len(lattice):
@@ -92,7 +92,8 @@ def test_len(lattice):
                            ('-3',), ('-2',), ('-1',),
                            ()])])
 def test_upset_union(lattice, concepts, expected):
-    concepts, expected = ([lattice[a] for a in arg] for arg in (concepts, expected))
+    (concepts, expected) = ([lattice[a] for a in arg]
+                            for arg in [concepts, expected])
     assert list(lattice.upset_union(concepts)) == expected
 
 
@@ -103,8 +104,8 @@ def test_upset_union(lattice, concepts, expected):
                            ('+2', '+sg'), ('+2', '+pl'),
                            ('+1', '-1', '+2', '-2', '+3', '-3', '+sg', '+pl', '-sg', '-pl')])])
 def test_downset_union(lattice, concepts, expected):
-    concepts, expected = ([lattice[a] for a in arg]
-                          for arg in (concepts, expected))
+    (concepts, expected) = ([lattice[a] for a in arg]
+                            for arg in [concepts, expected])
     assert list(lattice.downset_union(concepts)) == expected
 
 
@@ -115,8 +116,8 @@ def test_downset_union(lattice, concepts, expected):
        ('-3', '+sg'), ('-2', '+sg'), ('-1', '+sg'),
        ('+sg',)])])
 def test_upset_generalization(lattice, concepts, expected):
-    concepts, expected = ([lattice[a] for a in arg]
-                          for arg in (concepts, expected))
+    (concepts, expected) = ([lattice[a] for a in arg]
+                            for arg in [concepts, expected])
     assert list(lattice.upset_generalization(concepts)) == expected
 
 
@@ -147,7 +148,7 @@ def test_nonatomic():
 
 
 def test_visualize(lattice):
-    dot = lattice.graphviz(make_object_label=lambda x: '{%s}' % ' '.join(x),
+    dot = lattice.graphviz(make_object_label=lambda x: f"{{{' '.join(x)}}}",
                            make_property_label=', '.join)
     src = str(dot)
 
