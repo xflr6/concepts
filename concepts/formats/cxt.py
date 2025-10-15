@@ -40,8 +40,8 @@ class Cxt(Format):
     @classmethod
     def loadf(cls, file):
         source = file.read().strip()
-        b, yx, table = source.split('\n\n')
-        y, x = map(int, yx.split())
+        (b, yx, table) = source.split('\n\n')
+        (y, x) = map(int, yx.split())
         lines = [l.strip() for l in table.strip().split('\n')]
         objects = lines[:y]
         properties = lines[y:y + x]

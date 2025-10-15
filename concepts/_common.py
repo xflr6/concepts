@@ -29,7 +29,7 @@ class Shape(NamedTuple):
     def _from_pair(cls, objects, properties):
         return cls(len(objects), len(properties))
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return (f'{self.__class__.__name__}'
                 f'(objects={self.objects:_d},'
                 f' properties={self.properties:_d})')
@@ -147,9 +147,8 @@ class ConceptList(list):
     def frompairs(cls, iterconcepts) -> 'ConceptList':
         return cls(map(Concept._make, iterconcepts))
 
-    def tofile(self, filename,
-               *, frmat: str = 'fimi',
-               **kwargs) -> None:
+    def tofile(self, filename, *,
+               frmat: str = 'fimi', **kwargs) -> None:
         if frmat != 'fimi':  # pragma: no cover
             raise NotImplementedError(f'tofile(frmat={frmat!r})')
         formats.write_concepts_dat(filename, self, **kwargs)

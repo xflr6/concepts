@@ -47,7 +47,7 @@ class Triple:
     def __init__(self,
                  objects: StrSequence = (),
                  properties: StrSequence = (),
-                 bools: Sequence[Sequence[bool]] = ()):
+                 bools: Sequence[Sequence[bool]] = ()) -> None:
         self._objects = tools.Unique(objects)
         if len(self._objects) != len(objects):
             raise ValueError(f'duplicate objects: {objects!r}')
@@ -147,7 +147,7 @@ class Triple:
         if isinstance(pair, int):
             return list(self)[pair]
 
-        o, p = pair
+        (o, p) = pair
         if o not in self._objects or p not in self._properties:
             raise KeyError(pair)
         return pair in self._pairs

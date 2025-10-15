@@ -124,7 +124,7 @@ class Data:
             missing = [k for k in required_keys if k not in d]
             raise ValueError(f'missing required keys in fromdict: {missing!r}')
         else:
-            objects, properties, context = args
+            (objects, properties, context) = args
 
         for name, values in zip(['objects', 'properties'], args[:2]):
             if not all(isinstance(v, str) for v in values):
@@ -185,7 +185,7 @@ class Data:
             ...         [(True, False), (False, True)])  # doctest: +ELLIPSIS
             <Context object mapping 2 objects to 2 properties [47e29724] at 0x...>
         """
-        objects, properties = map(tuple, (objects, properties))
+        (objects, properties) = map(tuple, (objects, properties))
 
         for items, name in [(objects, 'objects'), (properties, 'properties')]:
             if not items:
@@ -202,8 +202,8 @@ class Data:
             raise ValueError(f'bools is not {len(objects)} items'
                              f' of length {len(properties)}')
 
-        self._intents, self._extents = matrices.Relation('Properties', 'Objects',
-                                                         properties, objects, bools)
+        (self._intents, self._extents) = matrices.Relation('Properties', 'Objects',
+                                                           properties, objects, bools)
 
         self._Properties = self._intents.BitSet
         self._Objects = self._extents.BitSet
@@ -220,7 +220,7 @@ class Data:
         Returns:
             Pair of ``intents`` and ``extents``.
         """
-        return self._intents, self._extents
+        return (self._intents, self._extents)
 
     def __setstate__(self, state: tuple[tuple[str, ...], tuple[str, ...]]) -> None:
         """Unpickle context from ``(intents, extents)`` tuple.
@@ -390,13 +390,13 @@ class PrimeMixin:
             extent = self._Objects.frommembers(items)
         except KeyError:
             intent = self._Properties.frommembers(items)
-            intent, extent = intent.doubleprime()
+            (intent, extent) = intent.doubleprime()
         else:
-            extent, intent = extent.doubleprime()
+            (extent, intent) = extent.doubleprime()
 
         if raw:
-            return extent, intent
-        return extent.members(), intent.members()
+            return (extent, intent)
+        return (extent.members(), intent.members())
 
     def intension(self, objects: Iterable[str],
                   raw: bool = False) -> tuple[str, ...]:

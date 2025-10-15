@@ -37,14 +37,14 @@ class Csv(Format):
 
         reader = csv.reader(file, dialect=dialect)
 
-        objects, bools = ([] for _ in range(2))
+        (objects, bools) = ([] for _ in range(2))
 
-        object_header, *properties = next(reader)
+        (object_header, *properties) = next(reader)
         del object_header  # TODO
 
         if bools_as_int is None:
             first_row = next(reader)
-            _, *first_symbols = first_row
+            (_, *first_symbols) = first_row
             for as_int, values in cls.values.items():
                 try:
                     list(map(values.__getitem__, first_symbols))
@@ -69,8 +69,8 @@ class Csv(Format):
         return ContextArgs(objects, properties, bools)
 
     @classmethod
-    def dumpf(cls, file, objects, properties, bools,
-              *, object_header: str | None = None,
+    def dumpf(cls, file, objects, properties, bools, *,
+              object_header: str | None = None,
               bools_as_int: bool = False,
               dialect: tools.CsvDialectOrStr | None = None,
               _serialized=None) -> None:

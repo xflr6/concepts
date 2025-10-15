@@ -57,7 +57,7 @@ class FormatMeta(type):
             raise KeyError(f'{self!r} unknown format: {name!r}')
 
     def infer_format(self, filename, frmat=None):  # noqa: N804
-        _, suffix = os.path.splitext(filename)
+        (_, suffix) = os.path.splitext(filename)
         try:
             return self.by_suffix[suffix.lower()]
         except KeyError:
@@ -92,8 +92,8 @@ class Format(metaclass=FormatMeta):
             return cls.loadf(buf, **kwargs)
 
     @classmethod
-    def dump(cls, filename, objects, properties, bools,
-             *, encoding: str | None, _serialized=None, **kwargs):
+    def dump(cls, filename, objects, properties, bools, *,
+             encoding: str | None, _serialized=None, **kwargs):
         """Write serialized objects, properties, bools to file."""
         if encoding is None:
             encoding = cls.encoding

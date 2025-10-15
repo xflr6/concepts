@@ -122,7 +122,7 @@ class Relation(tuple):
 
     def __new__(cls, xname, yname, xmembers, ymembers, xbools, _ids=None):
         if _ids is not None:  # unpickle reconstruction
-            xid, yid = _ids
+            (xid, yid) = _ids
             X = bitsets.meta.bitset(xname, xmembers, xid, Vector, None, Vectors)  # noqa: N806
             Y = bitsets.meta.bitset(yname, ymembers, yid, Vector, None, Vectors)  # noqa: N806
         else:

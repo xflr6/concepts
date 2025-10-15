@@ -40,7 +40,7 @@ def dump_file(file, objects, properties, bools, *, _serialized=None) -> None:
     indent = ' ' * 2
 
     def itersection(key, lines, value_list: bool = False):
-        start, end = ('[', ']') if value_list else ('(', ')')
+        (start, end) = ('[', ']') if value_list else ('(', ')')
 
         yield f'{indent}{key!r}: {start}'
         yield from lines

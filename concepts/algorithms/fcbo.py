@@ -55,7 +55,7 @@ def fast_generate_from(context):
 
         yield concept
 
-        extent, intent = concept
+        (extent, intent) = concept
 
         if property_index == n_properties or not extent:
             continue
@@ -130,7 +130,7 @@ def fcbo_dual(context):
 
         yield concept
 
-        extent, intent = concept
+        (extent, intent) = concept
 
         if object_index == n_objects or not intent:
             continue

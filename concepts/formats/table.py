@@ -15,7 +15,7 @@ def load_file(file):
         tuple(bool(f.strip()) for f in flags.strip('|').split('|')))
         for obj, flags in
             (objflags.partition('|')[::2] for objflags in lines[1:])]
-    objects, bools = zip(*table)
+    (objects, bools) = zip(*table)
     return ContextArgs(objects, properties, bools)
 
 

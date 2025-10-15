@@ -16,7 +16,7 @@ __all__ = ['lattice', 'neighbors']
 
 def lattice(Objects, *, infimum):
     """Yield ``(extent, intent, upper, lower)`` in short lexicographic order."""
-    extent, intent = Objects.frommembers(infimum).doubleprime()
+    (extent, intent) = Objects.frommembers(infimum).doubleprime()
 
     concept = (extent, intent, [], [])
 
@@ -28,9 +28,9 @@ def lattice(Objects, *, infimum):
     pop = functools.partial(heapq.heappop, heap)
 
     while heap:
-        _, concept = pop()
+        (_, concept) = pop()
 
-        extent, _, upper, _ = concept
+        (extent, _, upper, _) = concept
 
         for n_extent, n_intent in neighbors(extent, Objects=Objects):
             upper.append(n_extent)
@@ -53,7 +53,7 @@ def neighbors(objects, *, Objects):
     for add in Objects.atomic(minimal):
         objects_and_add = objects | add
 
-        extent, intent = doubleprime(objects_and_add)
+        (extent, intent) = doubleprime(objects_and_add)
 
         if extent & ~objects_and_add & minimal:
             minimal &= ~add
