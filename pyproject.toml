@@ -34,12 +34,7 @@ Documentation = "https://concepts.readthedocs.io"
 Changelog = "https://concepts.readthedocs.io/en/latest/changelog.html"
 "Issue Tracker" = "https://github.com/xflr6/concepts/issues"
 CI = "https://github.com/xflr6/concepts/actions"
-Coverage = "https://codecov.io/gh/xflr6/concepts"
-
-[project.optional-dependencies]
-dev = ["build", "wheel", "twine", "mypy", "flake8", "Flake8-pyproject", "pep8-naming", "tox>=3"]
-test = ["pytest>=7", "pytest-cov"]
-docs = ["sphinx", "sphinx-autodoc-typehints", "sphinx-rtd-theme"]
+Coverage = "https://app.codecov.io/gh/xflr6/concepts"
 
 [build-system]
 requires = ["setuptools"]
@@ -50,6 +45,36 @@ platforms = ["any"]
 
 [tool.setuptools.dynamic]
 version = { attr = "concepts.__version__" }
+
+[dependency-groups]
+dev = [  # $ pip install -e . --group dev
+  "build",
+  "tox",
+  "twine",
+  "wheel",
+  { include-group = "docs" },
+  { include-group = "lint" },
+  { include-group = "test" },
+  { include-group = "typing" },
+]
+docs = [
+  "sphinx",
+  "sphinx-autodoc-typehints",
+  "sphinx-rtd-theme",
+]
+lint = [
+  "flake8",
+  "Flake8-pyproject",
+  "pep8-naming",
+]
+test = [
+  "coverage",
+  "pytest>=7",
+  "pytest-cov",
+]
+typing = [
+  "mypy",
+]
 
 [tool.mypy]
 packages = ["concepts"]
@@ -77,12 +102,10 @@ source = ["concepts"]
 branch = false
 
 [tool.tox]
-legacy_tox_ini = """
-  [tox]
-  envlist = py{314,313,312,311,310}
-  skip_missing_interpreters = true
+requires = ["tox>=4.22"]
+env_list = ["3.14", "3.13", "3.12", "3.11", "3.10"]
+skip_missing_interpreters = true
 
-  [testenv]
-  extras = test
-  commands = python -X dev run-tests.py {posargs}
-"""
+[tool.tox.env_run_base]
+dependency_groups = ["test"]
+commands = [["python", "-X", "dev", "run-tests.py", { replace = "posargs", extend = true }]]

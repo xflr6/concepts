@@ -4,74 +4,60 @@ on:
   - pull_request
 jobs:
   build:
-    runs-on: ${{ matrix.os }}
+    name: run-tests (${{ matrix.os || 'linux' }}-${{ matrix.python-version }})
+    runs-on: ${{ matrix.os || 'ubuntu' }}-latest
     strategy:
       fail-fast: false
       matrix:
         include:
-          - name: linux-3.14-typecheck
-            python-version: "3.14"
-            args: --run-slow
-            os: ubuntu-latest
-          - name: windows-3.14
-            python-version: "3.14"
-            os: windows-latest
-            args: --run-slow
-          - name: macos-3.14
-            python-version: "3.14"
-            args: --run-slow
-            os: macos-latest
-          - name: linux-3.13
-            python-version: "3.13"
-            args: ""
-            os: ubuntu-latest
-          - name: linux-3.12
-            python-version: "3.12"
-            args: ""
-            os: ubuntu-latest
-          - name: linux-3.11
-            python-version: "3.11"
-            args: ""
-            os: ubuntu-latest
-          - name: linux-3.10
-            python-version: "3.10"
-            args: ""
-            os: ubuntu-latest
-          - name: linux-pypy-3.11
-            python-version: pypy-3.11
-            args: ""
-            os: ubuntu-latest
-          - name: linux-pypy-3.10
-            python-version: pypy-3.10
-            args: ""
-            os: ubuntu-latest
+          - {python-version: "3.14", args: --run-slow}
+          - {os: windows, python-version: "3.14", args: --run-slow}
+          - {os: macos, python-version: "3.14", args: --run-slow}
+          - python-version: "3.13"
+          - python-version: "3.12"
+          - python-version: "3.11"
+          - python-version: "3.10"
+          - python-version: pypy-3.11
+          - python-version: pypy-3.10
     steps:
-      - name: Checkout repo
+      - name: Checkout source repo
         uses: actions/checkout@v4
       - name: Setup Python ${{ matrix.python-version }}
         uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
-      - name: Pip install dependencies
+      - name: Pip install -e . --group test
         run: |
           echo "::group::Run python -m pip install --upgrade pip setuptools wheel"
           python -m pip install --upgrade pip setuptools wheel
           echo "::endgroup::"
-          echo "::group::Run pip install -e .[test] mypy"
-          pip install -e .[test] mypy
+          echo "::group::Run pip install -e . --group test"
+          pip install -e . --group test
           echo "::endgroup::"
-      - name: Run tests with ${{ matrix.args }}
+      - name: Run tests${{ matrix.args && format(' with {0}', matrix.args) || '' }}
         run: python run-tests.py ${{ matrix.args }}
-      - name: Run mypy (if -typecheck)
-        if: ${{ contains(matrix.name, '-typecheck') }}
-        run: |
-          echo "::group::Run mypy"
-          FAILED=0
-          python -m mypy || FAILED=$?
-          echo "::endgroup::"
-          [ $FAILED -eq 0 ] || echo "::warning::mypy failed with exit code $FAILED"
-        shell: bash
       - name: Upload test coverage
         uses: codecov/codecov-action@v4
         env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+  typecheck-code:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - python-version: "3.14"
+    steps:
+      - name: Checkout source repo
+        uses: actions/checkout@v4
+      - name: Setup Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Pip install --group typing
+        run: pip install --group typing
+      - name: Run mypy
+        run: |
+          FAILED=0
+          python -m mypy || FAILED=$?
+          [ $FAILED -eq 0 ] || echo "::warning::mypy failed with exit code $FAILED"
+        shell: bash
