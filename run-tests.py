@@ -13,7 +13,6 @@ SELF = pathlib.Path(__file__)
 
 ARGS = [#'--run-slow',
         #'--collect-only',
-        '--capture=no',  # a.k.a. -s
         #'--verbose',
         #'--pdb',
         #'--exitfirst',  # a.k.a. -x
@@ -21,7 +20,7 @@ ARGS = [#'--run-slow',
        ]
 
 if platform.system() == 'Windows' and 'idlelib' in sys.modules:
-    ARGS += ['--capture=sys', '--color=no']
+    ARGS += ['-p', 'no:faulthandler']
 
 
 print('run', [SELF.name] + sys.argv[1:])
