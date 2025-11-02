@@ -7,7 +7,6 @@ from typing import TypeAlias
 from . import _common
 from . import formats
 from . import tools
-from . import contexts
 
 __all__ = ['Definition']
 
