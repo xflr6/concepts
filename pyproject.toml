@@ -8,10 +8,7 @@ license = "MIT"
 license-files = ["LICENSE.txt"]
 dynamic = ["version"]
 requires-python = ">=3.10"
-dependencies = [
-  "bitsets~=0.7",
-  "graphviz~=0.7",
-]
+dependencies = ["bitsets~=0.7", "graphviz~=0.7"]
 classifiers = [
   "Development Status :: 4 - Beta",
   "Intended Audience :: Developers",
@@ -48,44 +45,27 @@ version = { attr = "concepts.__version__" }
 
 [dependency-groups]
 dev = [  # $ pip install -e . --group dev
-  "build",
-  "tox",
-  "twine",
-  "wheel",
+  "build", "tox", "twine", "wheel",
   { include-group = "docs" },
   { include-group = "lint" },
   { include-group = "test" },
   { include-group = "typing" },
 ]
-docs = [
-  "sphinx",
-  "sphinx-autodoc-typehints",
-  "sphinx-rtd-theme",
-]
-lint = [
-  "flake8",
-  "Flake8-pyproject",
-  "pep8-naming",
-]
-test = [
-  "coverage",
-  "pytest>=7",
-  "pytest-cov",
-]
-typing = [
-  "mypy",
-]
+docs = ["sphinx", "sphinx-autodoc-typehints", "sphinx-rtd-theme"]
+lint = ["flake8", "Flake8-pyproject", "pep8-naming"]
+test = ["coverage", "pytest>=8", "pytest-cov"]
+typing = ["mypy"]
 
 [tool.mypy]
 packages = ["concepts"]
 
 [tool.flake8]
-exclude = [".tox", "docs", "examples"]
-ignore = ["E126", "E128", "E741", "W503"]
+exclude = [".tox", "build", "docs", "examples"]
+ignore = ["E126", "E128", "W503", "E741"]
 max-line-length = 100
 
 [tool.pytest.ini_options]
-minversion = "6"
+minversion = "8"
 testpaths = ["README.rst", "docs", "concepts", "tests"]
 addopts = [
   "--doctest-modules",
