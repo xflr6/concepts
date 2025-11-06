@@ -10,6 +10,7 @@ from . import definitions
 from . import formats
 from . import junctors
 from . import lattices
+from . import lazy_lattices
 from . import matrices
 from . import tools
 
@@ -510,6 +511,15 @@ class LatticeMixin:
              lattices.Lattice: Cached or new :class:`lattices.Lattice` instance.
         """
         return lattices.Lattice(self)
+
+    @tools.lazyproperty 
+    def lazy_lattice(self) -> 'lazy_lattices.LazyLattice':
+        """The lazy concept lattice of the formal context.
+
+        Returns:
+             lazy_lattices.LazyLattice: Cached or new :class:`lazy_lattices.LazyLattice` instance.
+        """
+        return lazy_lattices.LazyLattice(self)
 
 
 class ExportableMixin:
