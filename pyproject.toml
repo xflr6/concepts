@@ -39,6 +39,7 @@ build-backend = "setuptools.build_meta"
 
 [tool.setuptools]
 platforms = ["any"]
+packages = ["concepts", "concepts.formats", "concepts.algorithms"]
 
 [tool.setuptools.dynamic]
 version = { attr = "concepts.__version__" }
