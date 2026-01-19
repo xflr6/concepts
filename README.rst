@@ -156,6 +156,8 @@ They have been used in the following papers:
 
 - Bank, Sebastian. 2017. Assessing the typology of person portmanteaus. Morphology 27 (4), 459-495. `doi:10.1007/s11525-017-9305-z <https://doi.org/10.1007/s11525-017-9305-z>`__
 
+- Beniamine, Sacha. 2018. Classifications flexionnelles: Étude quantitative des structures de paradigmes. PhD thesis. Université Sorbonne Paris Cité - Université Paris Diderot (Paris 7). `tel-01840448 <https://theses.hal.science/tel-01840448/>`__
+
 - Trommer, Jochen & Bank, Sebastian. 2017. Inflectional learning as local optimization. Morphology 27 (3), 383-422. `doi:10.1007/s11525-017-9304-0 <https://doi.org/doi:10.1007/s11525-017-9304-0>`__
 
 
