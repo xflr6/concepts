@@ -8,15 +8,14 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - {python-version: "3.14", args: --run-slow}
-          - {os: windows, python-version: "3.14", args: --run-slow}
-          - {os: macos, python-version: "3.14", args: --run-slow}
+          - {python-version: "3.15", args: --run-slow}
+          - {os: windows, python-version: "3.15", args: --run-slow}
+          - {os: macos, python-version: "3.15", args: --run-slow}
+          - python-version: "3.15"
           - python-version: "3.13"
           - python-version: "3.12"
           - python-version: "3.11"
-          - python-version: "3.10"
           - python-version: pypy-3.11
-          - python-version: pypy-3.10
     steps:
       - name: Checkout source repo
         uses: actions/checkout@v7
@@ -43,7 +42,7 @@ jobs:
     strategy:
       matrix:
         include:
-          - python-version: "3.14"
+          - python-version: "3.15"
     steps:
       - name: Checkout source repo
         uses: actions/checkout@v7
@@ -64,7 +63,7 @@ jobs:
     strategy:
       matrix:
         include:
-          - python-version: "3.14"
+          - python-version: "3.15"
     steps:
       - name: Checkout source repo
         uses: actions/checkout@v7
